@@ -1,0 +1,146 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+start_service() {
+    config_load mihomo
+    
+    local enabled
+    config_get_bool enabled "config" "enabled" 0
+
+    [ "${enabled}" == 0 ] && return 1
+
+    # paths
+    local home_dir run_dir run_profile_path
+    home_dir="/etc/mihomo"
+    profiles_dir="${home_dir}/profiles"
+    run_dir="${home_dir}/run"
+    # load profile
+    local profile profile_path
+    config_get profile "config" "profile"
+    config_get profile_url "${profile}" "url"
+    config_get profile_path "${profile}" "path" "${profiles_dir}/${profile}.yaml"
+    run_profile_path="${run_dir}/config.yaml"
+    # download profile
+    if [ -n "${profile_url}" ]; then
+        curl -o "${profile_path}" "${profile_url}"
+    fi
+    # copy profile
+    cp "${profile_path}" "${run_profile_path}"
+    # load config
+    # basic
+    local mode http_port socks_port mixed_port redir_port tproxy_port
+    config_get mode "config" "mode" "rule"
+    config_get http_port "config" "http_port" "8080"
+    config_get socks_port "config" "socks_port" "1080"
+    config_get mixed_port "config" "mixed_port" "7890"
+    config_get redir_port "config" "redir_port" "7891"
+    config_get tproxy_port "config" "tproxy_port" "7892"
+    # dns
+    local dns_port dns_mode fake_ip_range
+    config_get dns_port "config" "dns_port" "5353"
+    config_get dns_mode "config" "dns_mode" "fake-ip"
+    config_get fake_ip_range "config" "fake_ip_range" "198.18.0.1/16"
+    # tun
+    local tun tun_stack
+    config_get_bool tun "config" "tun" 0
+    config_get tun_stack "config" "tun_stack" "system"
+    # marks
+    local fw_table fw_mark dns_mark mihomo_mark
+    fw_table=80
+    fw_mark=80
+    dns_mark=53
+    mihomo_mark=255
+    # mixin
+    # basic
+    mode="${mode}"                      yq e '.mode = env(mode)'                         -i "${run_profile_path}"
+    http_port="${http_port}"            yq e '.port = env(http_port)'                    -i "${run_profile_path}"
+    socks_port="${socks_port}"          yq e '.socks-port = env(socks_port)'             -i "${run_profile_path}"
+    mixed_port="${mixed_port}"          yq e '.mixed-port = env(mixed_port)'             -i "${run_profile_path}"
+    redir_port="${redir_port}"          yq e '.redir-port = env(redir_port)'             -i "${run_profile_path}"
+    tproxy_port="${tproxy_port}"        yq e '.tproxy-port = env(tproxy_port)'           -i "${run_profile_path}"
+    mihomo_mark="${mihomo_mark}"        yq e '.routing-mark = env(mihomo_mark)'          -i "${run_profile_path}"
+    # dns
+    dns_enable="true"                   yq e '.dns.enable = env(dns_enable)'             -i "${run_profile_path}"
+    dns_listen="0.0.0.0:${dns_port}"    yq e '.dns.listen = env(dns_listen)'             -i "${run_profile_path}"
+    dns_mode="${dns_mode}"              yq e '.dns.enhanced-mode = env(dns_mode)'        -i "${run_profile_path}"
+    fake_ip_range="${fake_ip_range}"    yq e '.dns.fake-ip-range = env(fake_ip_range)'   -i "${run_profile_path}"
+    # tun
+    # TODO NOT IMPLEMENT
+    # if [ "${tun}" == 1 ]; then
+    #     tun_enable="true"         yq e '.tun.enable = env(tun_enable)'         -i "${run_profile_path}"
+    #     tun_stack="${tun_stack}"  yq e '.tun.stack = env(tun_stack)'           -i "${run_profile_path}"
+    #     dns_hijack="any:53"       yq e '.tun.dns-hijack = [env(dns_hijack)]'   -i "${run_profile_path}"
+    # fi
+    # start process
+    procd_open_instance
+    procd_set_param command /usr/bin/mihomo
+    procd_append_param command -d "${run_dir}"
+    procd_set_param respawn
+    procd_close_instance
+    # hijack
+    ip rule add fwmark "${fw_mark}" table "${fw_table}"
+    ip route add local default dev lo table "${fw_table}"
+    nft -f "${home_dir}/hijack.nft" -D FW_MARK="${fw_mark}" -D DNS_MARK="${dns_mark}" -D MIHOMO_MARK="${mihomo_mark}" -D TPROXY_PORT="${tproxy_port}" -D DNS_PORT="${dns_port}"
+    # access control
+    config_list_foreach "access_control" "ip" add_acl_ip
+    config_list_foreach "access_control" "mac" add_acl_mac
+    local access_control_mode acl_ip acl_mac
+    config_get access_control_mode "access_control" "mode"
+    config_get acl_ip "access_control" "ip"
+    config_get acl_mac "access_control" "mac"
+    if [ "${access_control_mode}" == "white" ]; then
+        if [ -n "${acl_ip}" ]; then
+            nft insert rule ip mihomo dstnat position 0 ip saddr != @acl_ip return
+            nft insert rule ip mihomo mangle_prerouting position 1 ip saddr != @acl_ip return
+        fi
+        if [ -n "${acl_mac}" ]; then
+            nft insert rule ip mihomo dstnat position 0 ether saddr != @acl_mac return
+            nft insert rule ip mihomo mangle_prerouting position 1 ether saddr != @acl_mac return
+        fi
+    elif [ "${access_control_mode}" == "black" ]; then
+        if [ -n "${acl_ip}" ]; then
+            nft insert rule ip mihomo dstnat position 0 ip saddr @acl_ip return
+            nft insert rule ip mihomo mangle_prerouting position 1 ip saddr @acl_ip return
+        fi
+        if [ -n "${acl_mac}" ]; then
+            nft insert rule ip mihomo dstnat position 0 ether saddr @acl_mac return
+            nft insert rule ip mihomo mangle_prerouting position 1 ether saddr @acl_mac return
+        fi
+    fi
+    # cron
+    local scheduled_restart cron_exp
+    config_get scheduled_restart "config" "scheduled_restart"
+    config_get cron_exp "config" "cron_exp"
+    if [[ "${scheduled_restart}" == 1 && -n "${cron_exp}" ]]; then
+        echo "${cron_exp} /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+    fi
+}
+
+stop_service() {
+    # delete hijack
+    local fw_table=80
+    ip rule del table "${fw_table}"
+    ip route del local default dev lo table "${fw_table}"
+    nft delete table ip mihomo
+    # delete cron
+    sed -i '/#mihomo/d' "/etc/crontabs/root"
+}
+
+reload_service() {
+	stop
+	start
+}
+
+service_triggers() {
+    procd_add_reload_trigger "mihomo"
+}
+
+add_acl_ip() {
+    nft add element ip mihomo acl_ip { "$1" }
+}
+
+add_acl_mac() {
+    nft add element ip mihomo acl_mac { "$1" }
+}

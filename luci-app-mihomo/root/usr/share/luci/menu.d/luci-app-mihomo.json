@@ -1,0 +1,13 @@
+{
+	"admin/services/mihomo": {
+		"title": "Mihomo",
+		"action": {
+			"type": "view",
+			"path": "mihomo"
+		},
+		"depends": {
+			"acl": [ "luci-app-mihomo" ],
+			"uci": { "mihomo": true }
+		}
+	}
+}

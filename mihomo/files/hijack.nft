@@ -1,0 +1,57 @@
+#!/usr/sbin/nft -f
+
+table ip mihomo {
+    set private_ip {
+        type ipv4_addr
+        flags interval
+        elements = {
+            0.0.0.0/8,
+            10.0.0.0/8,
+            127.0.0.0/8,
+            100.64.0.0/10,
+            169.254.0.0/16,
+            172.16.0.0/12,
+            192.168.0.0/16,
+            224.0.0.0/4,
+            240.0.0.0/4
+        }
+    }
+
+    set acl_ip {
+        type ipv4_addr
+        flags interval
+    }
+
+    set acl_mac {
+        type ether_addr
+        flags interval
+    }
+
+    chain dstnat {
+        type nat hook prerouting priority dstnat; policy accept;
+        tcp dport 53 counter redirect to :$DNS_PORT
+        udp dport 53 counter redirect to :$DNS_PORT
+    }
+
+    chain nat_output {
+        type nat hook output priority filter; policy accept;
+        tcp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+        udp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+    }
+
+    chain mangle_prerouting {
+        type filter hook prerouting priority mangle; policy accept;
+        meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        ip daddr @private_ip counter return
+        tcp dport 53 counter return
+        udp dport 53 counter return
+        meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+    }
+
+    chain mangle_output {
+        type route hook output priority mangle; policy accept;
+        meta mark $MIHOMO_MARK counter return
+        ip daddr @private_ip counter return
+        meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
+    }
+}

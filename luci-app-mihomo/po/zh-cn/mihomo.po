@@ -1,0 +1,83 @@
+msgid "Title"
+msgstr "Mihomo"
+
+msgid "Description"
+msgstr "Mihomo是一个Go语言编写的基于规则的代理工具。"
+
+msgid "Basic Config"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Scheduled Restart"
+msgstr ""
+
+msgid "Cron Expression"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Proxy Mode"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "Rule"
+msgstr ""
+
+msgid "Script"
+msgstr ""
+
+msgid "Direct"
+msgstr ""
+
+msgid "HTTP Port"
+msgstr ""
+
+msgid "SOCKS Port"
+msgstr ""
+
+msgid "Mixed Port"
+msgstr ""
+
+msgid "Redirect Port"
+msgstr ""
+
+msgid "TPROXY Port"
+msgstr ""
+
+msgid "DNS Port"
+msgstr ""
+
+msgid "DNS Mode"
+msgstr ""
+
+msgid "Fake-IP"
+msgstr ""
+
+msgid "Redir-Host"
+msgstr ""
+
+msgid "Fake-IP Range"
+msgstr ""
+
+msgid "Profiles"
+msgstr ""
+
+msgid "Subscribe Url"
+msgstr ""
+
+msgid "Upload Profile"
+msgstr ""
+
+msgid "Access Control"
+msgstr ""
+
+msgid "Access Control IP"
+msgstr "IP"
+
+msgid "Access Control MAC"
+msgstr "MAC"
