@@ -79,6 +79,15 @@ msgstr "访问控制"
 msgid "Mode"
 msgstr "模式"
 
+msgid "Block Mode"
+msgstr "黑名单模式"
+
+msgid "Allow Mode"
+msgstr "白名单模式"
+
+msgid "Mode"
+msgstr "模式"
+
 msgid "IP"
 msgstr "IP"
 
