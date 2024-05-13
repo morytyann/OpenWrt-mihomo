@@ -1,6 +1,6 @@
 {
 	"luci-app-mihomo": {
-		"description": "Grant UCI access for luci-app-mihomo",
+		"description": "Grant access to mihomo procedures",
 		"read": {
 			"uci": [ "mihomo" ],
 			"file": {
