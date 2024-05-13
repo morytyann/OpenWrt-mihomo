@@ -76,7 +76,6 @@ return view.extend({
         o.datatype = 'url'
 
         o = s.option(form.FileUpload, 'path', _('Upload Profile'))
-        o.browser = true
         o.enable_remove = false
         o.root_directory = '/etc/mihomo/profiles'
 

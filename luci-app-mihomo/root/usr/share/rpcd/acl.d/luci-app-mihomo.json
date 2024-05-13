@@ -2,10 +2,18 @@
 	"luci-app-mihomo": {
 		"description": "Grant UCI access for luci-app-mihomo",
 		"read": {
-			"uci": [ "mihomo" ]
+			"uci": [ "mihomo" ],
+			"file": {
+				"/etc/mihomo/profiles/*.yaml": ["read"],
+				"/etc/mihomo/profiles/*.yml": ["read"]
+			}
 		},
 		"write": {
-			"uci": [ "mihomo" ]
+			"uci": [ "mihomo" ],
+			"file": {
+				"/etc/mihomo/profiles/*.yaml": ["write"],
+				"/etc/mihomo/profiles/*.yml": ["write"]
+			}
 		}
 	}
 }
