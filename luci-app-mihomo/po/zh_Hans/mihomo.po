@@ -1,83 +1,86 @@
-msgid "Title"
-msgstr "Mihomo"
+msgid "mihomo"
+msgstr "mihomo"
 
-msgid "Description"
-msgstr "Mihomo是一个Go语言编写的基于规则的代理工具。"
+msgid "mihomo is a rule based proxy in Go."
+msgstr "mihomo是一个Go语言编写的基于规则的代理工具。"
 
 msgid "Basic Config"
-msgstr ""
+msgstr "基础配置"
 
 msgid "Enable"
-msgstr ""
+msgstr "启用"
 
 msgid "Scheduled Restart"
-msgstr ""
+msgstr "定时重启"
 
 msgid "Cron Expression"
-msgstr ""
+msgstr "Cron表达式"
 
 msgid "Profile"
-msgstr ""
+msgstr "配置文件"
 
 msgid "Proxy Mode"
-msgstr ""
+msgstr "代理模式"
 
 msgid "Global"
-msgstr ""
+msgstr "全局模式"
 
 msgid "Rule"
-msgstr ""
+msgstr "规则模式"
 
 msgid "Script"
-msgstr ""
+msgstr "脚本模式"
 
 msgid "Direct"
-msgstr ""
+msgstr "直连模式"
 
 msgid "HTTP Port"
-msgstr ""
+msgstr "HTTP 端口"
 
 msgid "SOCKS Port"
-msgstr ""
+msgstr "SOCKS 端口"
 
 msgid "Mixed Port"
-msgstr ""
+msgstr "混合端口"
 
 msgid "Redirect Port"
-msgstr ""
+msgstr "Redirect 端口"
 
 msgid "TPROXY Port"
-msgstr ""
+msgstr "TPROXY 端口"
 
 msgid "DNS Port"
-msgstr ""
+msgstr "DNS 端口"
 
 msgid "DNS Mode"
-msgstr ""
+msgstr "DNS模式"
 
 msgid "Fake-IP"
-msgstr ""
+msgstr "Fake-IP"
 
 msgid "Redir-Host"
-msgstr ""
+msgstr "Redir-Host"
 
 msgid "Fake-IP Range"
-msgstr ""
+msgstr "Fake-IP 范围"
 
 msgid "Profiles"
-msgstr ""
+msgstr "配置文件"
 
 msgid "Subscribe Url"
-msgstr ""
+msgstr "订阅地址"
 
 msgid "Upload Profile"
-msgstr ""
+msgstr "上传配置文件"
 
 msgid "Access Control"
-msgstr ""
+msgstr "访问控制"
 
-msgid "Access Control IP"
+msgid "Mode"
+msgstr "模式"
+
+msgid "IP"
 msgstr "IP"
 
-msgid "Access Control MAC"
+msgid "MAC"
 msgstr "MAC"

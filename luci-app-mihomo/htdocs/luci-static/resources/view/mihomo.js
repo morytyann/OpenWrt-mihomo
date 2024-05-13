@@ -12,7 +12,7 @@ return view.extend({
     render: function () {
         var m, s, o;
 
-        m = new form.Map('mihomo', _('Title'), _('Description'));
+        m = new form.Map('mihomo', _('mihomo'), _('mihomo is a rule based proxy in Go.'));
 
         s = m.section(form.NamedSection, 'config', 'mihomo', _('Basic Config'));
 
@@ -82,15 +82,15 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'access_control', 'access_control', _('Access Control'));
 
-        o = s.option(form.ListValue, 'mode', _('Access Control Mode'));
+        o = s.option(form.ListValue, 'mode', _('Mode'));
         o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
         o.optional = true
 
-        o = s.option(form.DynamicList, 'ip', _('Access Control IP'))
+        o = s.option(form.DynamicList, 'ip', _('IP'))
         o.datatype = 'ipaddr'
     
-        o = s.option(form.DynamicList, 'mac', _('Access Control MAC'))
+        o = s.option(form.DynamicList, 'mac', _('MAC'))
         o.datatype = 'macaddr'
         return m.render();
     }
