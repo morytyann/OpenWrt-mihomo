@@ -16,18 +16,14 @@ start_service() {
     home_dir="/etc/mihomo"
     profiles_dir="${home_dir}/profiles"
     run_dir="${home_dir}/run"
-    # load profile
-    local profile profile_path
-    config_get profile "config" "profile"
-    config_get profile_url "${profile}" "url"
-    config_get profile_path "${profile}" "path" "${profiles_dir}/${profile}.yaml"
     run_profile_path="${run_dir}/config.yaml"
+    # load profile
+    local profile
+    config_get profile "config" "profile"
     # download profile
-    if [ -n "${profile_url}" ]; then
-        curl -o "${profile_path}" "${profile_url}"
+    if [ -n "${profile}" ]; then
+        curl -o "${run_profile_path}" "${profile}"
     fi
-    # copy profile
-    cp "${profile_path}" "${run_profile_path}"
     # load config
     # basic
     local mode http_port socks_port mixed_port redir_port tproxy_port

@@ -19,6 +19,12 @@ msgstr "Cron表达式"
 msgid "Profile"
 msgstr "配置文件"
 
+msgid "File:"
+msgstr "文件："
+
+msgid "Subscription:"
+msgstr "订阅："
+
 msgid "Proxy Mode"
 msgstr "代理模式"
 
@@ -64,20 +70,20 @@ msgstr "Redir-Host"
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
 
-msgid "Profiles"
-msgstr "配置文件"
+msgid "Subscription"
+msgstr "订阅"
 
-msgid "Subscribe Url"
-msgstr "订阅地址"
+msgid "Subscription Name"
+msgstr "订阅名称"
 
-msgid "Upload Profile"
-msgstr "上传配置文件"
+msgid "Subscription Url"
+msgstr "订阅链接"
 
 msgid "Access Control"
 msgstr "访问控制"
 
-msgid "Mode"
-msgstr "模式"
+msgid "Access Control Mode"
+msgstr "访问控制模式"
 
 msgid "Block Mode"
 msgstr "黑名单模式"

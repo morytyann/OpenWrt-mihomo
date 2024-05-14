@@ -2,14 +2,18 @@
 'require form';
 'require view';
 'require uci';
+'require fs';
 
 return view.extend({
     load: function () {
         return Promise.all([
-			uci.load('mihomo')
-		]);
+            fs.list('/etc/mihomo/profiles'),
+            uci.load('mihomo')
+        ]);
     },
-    render: function () {
+    render: function (data) {
+        var profiles = data[0];
+
         var m, s, o;
 
         m = new form.Map('mihomo', _('mihomo'), _('mihomo is a rule based proxy in Go.'));
@@ -21,13 +25,17 @@ return view.extend({
         o = s.option(form.Flag, 'scheduled_restart', _('Scheduled Restart'));
 
         o = s.option(form.Value, 'cron_exp', _('Cron Expression'));
-        o.depends('scheduled_restart', '1')
+        o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Profile'));
-        o.optional = true
+        o.optional = true;
 
-        for (const profile of uci.sections('mihomo', 'profile')) {
-            o.value(profile.name, profile.name)
+        for (const profile of profiles) {
+            o.value(_('Profile:') + profile.name, 'file:/etc/mihomo/profiles' + profile.name);
+        }
+
+        for (const subscription of uci.sections('mihomo', 'subscription')) {
+            o.value(_('Subscription:') + subscription.name, subscription.url);
         }
 
         o = s.option(form.ListValue, 'mode', _('Proxy Mode'));
@@ -61,36 +69,36 @@ return view.extend({
         o.default = '1053';
 
         o = s.option(form.ListValue, 'dns_mode', _('DNS Mode'));
-        o.value('fake-ip', _('Fake-IP'))
-        o.value('redir-host', _('Redir-Host'))
+        o.value('fake-ip', _('Fake-IP'));
+        o.value('redir-host', _('Redir-Host'));
 
         o = s.option(form.Value, 'fake_ip_range', _('Fake-IP Range'));
         o.datatype = 'ipcidr';
         o.default = '198.18.0.1/16';
-        o.depends('dns_mode', 'fake-ip')
+        o.depends('dns_mode', 'fake-ip');
 
-        s = m.section(form.TableSection, 'profile', _('Profiles'));
+        s = m.section(form.TableSection, 'subscription', _('Subscription'));
         s.addremove = true;
+        s.anonymous = true;
 
-        o = s.option(form.Value, 'url', _('Subscribe Url'))
-        o.datatype = 'url'
+        o = s.option(form.Value, 'name', _('Subscription Name'));
 
-        o = s.option(form.FileUpload, 'path', _('Upload Profile'))
-        o.enable_remove = false
-        o.root_directory = '/etc/mihomo/profiles'
+        o = s.option(form.Value, 'url', _('Subscription Url'));
+        o.datatype = 'url';
 
         s = m.section(form.NamedSection, 'access_control', 'access_control', _('Access Control'));
 
-        o = s.option(form.ListValue, 'mode', _('Mode'));
+        o = s.option(form.ListValue, 'mode', _('Access Control Mode'));
         o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
-        o.optional = true
+        o.optional = true;
 
-        o = s.option(form.DynamicList, 'ip', _('IP'))
-        o.datatype = 'ipaddr'
-    
-        o = s.option(form.DynamicList, 'mac', _('MAC'))
-        o.datatype = 'macaddr'
+        o = s.option(form.DynamicList, 'ip', _('IP'));
+        o.datatype = 'ipaddr';
+
+        o = s.option(form.DynamicList, 'mac', _('MAC'));
+        o.datatype = 'macaddr';
+
         return m.render();
     }
 });
