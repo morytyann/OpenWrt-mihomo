@@ -2,7 +2,7 @@ msgid "mihomo"
 msgstr "mihomo"
 
 msgid "mihomo is a rule based proxy in Go."
-msgstr "mihomo是一个Go语言编写的基于规则的代理工具。"
+msgstr "mihomo 是一个Go语言编写的基于规则的代理工具。"
 
 msgid "Basic Config"
 msgstr "基础配置"
@@ -14,7 +14,7 @@ msgid "Scheduled Restart"
 msgstr "定时重启"
 
 msgid "Cron Expression"
-msgstr "Cron表达式"
+msgstr "Cron 表达式"
 
 msgid "Profile"
 msgstr "配置文件"
@@ -59,7 +59,7 @@ msgid "DNS Port"
 msgstr "DNS 端口"
 
 msgid "DNS Mode"
-msgstr "DNS模式"
+msgstr "DNS 模式"
 
 msgid "Fake-IP"
 msgstr "Fake-IP"
@@ -91,11 +91,8 @@ msgstr "黑名单模式"
 msgid "Allow Mode"
 msgstr "白名单模式"
 
-msgid "Mode"
-msgstr "模式"
+msgid "Access Control IP"
+msgstr "访问控制 IP"
 
-msgid "IP"
-msgstr "IP"
-
-msgid "MAC"
-msgstr "MAC"
+msgid "Access Control MAC"
+msgstr "访问控制 MAC"

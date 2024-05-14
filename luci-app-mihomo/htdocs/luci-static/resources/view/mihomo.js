@@ -31,11 +31,11 @@ return view.extend({
         o.optional = true;
 
         for (const profile of profiles) {
-            o.value(_('Profile:') + profile.name, 'file:/etc/mihomo/profiles' + profile.name);
+            o.value('file:/etc/mihomo/profiles/' + profile.name, _('File:') + profile.name);
         }
 
         for (const subscription of uci.sections('mihomo', 'subscription')) {
-            o.value(_('Subscription:') + subscription.name, subscription.url);
+            o.value(subscription.url, _('Subscription:') + subscription.name);
         }
 
         o = s.option(form.ListValue, 'mode', _('Proxy Mode'));
@@ -93,10 +93,10 @@ return view.extend({
         o.value('allow', _('Allow Mode'));
         o.optional = true;
 
-        o = s.option(form.DynamicList, 'ip', _('IP'));
+        o = s.option(form.DynamicList, 'ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
 
-        o = s.option(form.DynamicList, 'mac', _('MAC'));
+        o = s.option(form.DynamicList, 'mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
 
         return m.render();
