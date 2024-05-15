@@ -101,12 +101,10 @@ return view.extend({
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
-        o.depends('transparent_proxy', '1')
         o.depends({'mode': '', '!reverse': true})
 
         o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
-        o.depends('transparent_proxy', '1')
         o.depends({'mode': '', '!reverse': true})
 
         return m.render();
