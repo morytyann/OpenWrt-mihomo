@@ -21,14 +21,15 @@ return view.extend({
         s = m.section(form.NamedSection, 'config', 'mihomo', _('Basic Config'));
 
         o = s.option(form.Flag, 'enabled', _('Enable'));
+        o.rmempty = false;
 
         o = s.option(form.Flag, 'scheduled_restart', _('Scheduled Restart'));
+        o.rmempty = false;
 
         o = s.option(form.Value, 'cron_exp', _('Cron Expression'));
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Profile'));
-        o.optional = true;
 
         for (const profile of profiles) {
             o.value('file:/etc/mihomo/profiles/' + profile.name, _('File:') + profile.name);
@@ -89,12 +90,15 @@ return view.extend({
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
         
         o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
+        o.rmempty = false;
 
         o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
+        o.rmempty = false;
         o.depends('transparent_proxy', '1')
 
         o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
         o.optional = true;
+        o.retain = true;
         o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
         o.depends('transparent_proxy', '1')
