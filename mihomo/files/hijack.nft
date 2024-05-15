@@ -27,8 +27,13 @@ table ip mihomo {
         flags interval
     }
 
+    acl {
+        
+    }
+
     chain dstnat {
         type nat hook prerouting priority dstnat; policy accept;
+        jump acl
         tcp dport 53 counter redirect to :$DNS_PORT
         udp dport 53 counter redirect to :$DNS_PORT
     }
@@ -42,6 +47,7 @@ table ip mihomo {
     chain mangle_prerouting {
         type filter hook prerouting priority mangle; policy accept;
         meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        jump acl
         ip daddr @private_ip counter return
         tcp dport 53 counter return
         udp dport 53 counter return

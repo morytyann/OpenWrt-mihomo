@@ -70,8 +70,8 @@ msgstr "Redir-Host"
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
 
-msgid "Subscription"
-msgstr "订阅"
+msgid "Subscription Config"
+msgstr "订阅配置"
 
 msgid "Subscription Name"
 msgstr "订阅名称"
@@ -79,8 +79,14 @@ msgstr "订阅名称"
 msgid "Subscription Url"
 msgstr "订阅链接"
 
-msgid "Access Control"
-msgstr "访问控制"
+msgid "Proxy Config"
+msgstr "代理配置"
+
+msgid "Transparent Proxy"
+msgstr "透明代理"
+
+msgid "Router Proxy"
+msgstr "路由器代理"
 
 msgid "Access Control Mode"
 msgstr "访问控制模式"

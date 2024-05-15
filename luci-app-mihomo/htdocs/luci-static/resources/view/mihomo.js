@@ -77,7 +77,7 @@ return view.extend({
         o.default = '198.18.0.1/16';
         o.depends('dns_mode', 'fake-ip');
 
-        s = m.section(form.TableSection, 'subscription', _('Subscription'));
+        s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
         s.anonymous = true;
 
@@ -86,18 +86,28 @@ return view.extend({
         o = s.option(form.Value, 'url', _('Subscription Url'));
         o.datatype = 'url';
 
-        s = m.section(form.NamedSection, 'access_control', 'access_control', _('Access Control'));
+        s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
+        
+        o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
 
-        o = s.option(form.ListValue, 'mode', _('Access Control Mode'));
+        o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
+        o.depends('transparent_proxy', '1')
+
+        o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
+        o.optional = true;
         o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
-        o.optional = true;
+        o.depends('transparent_proxy', '1')
 
-        o = s.option(form.DynamicList, 'ip', _('Access Control IP'));
+        o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
+        o.depends('transparent_proxy', '1')
+        o.depends({'mode': '', '!reverse': true})
 
-        o = s.option(form.DynamicList, 'mac', _('Access Control MAC'));
+        o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
+        o.depends('transparent_proxy', '1')
+        o.depends({'mode': '', '!reverse': true})
 
         return m.render();
     }
