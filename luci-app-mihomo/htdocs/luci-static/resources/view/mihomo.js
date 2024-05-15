@@ -27,6 +27,7 @@ return view.extend({
         o.rmempty = false;
 
         o = s.option(form.Value, 'cron_exp', _('Cron Expression'));
+        o.retain = true;
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Profile'));
@@ -93,6 +94,7 @@ return view.extend({
         o.rmempty = false;
 
         o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
+        o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1')
 
@@ -105,10 +107,12 @@ return view.extend({
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
+        o.retain = true;
         o.depends({'access_control_mode': '', '!reverse': true})
 
         o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
+        o.retain = true;
         o.depends({'access_control_mode': '', '!reverse': true})
 
         return m.render();
