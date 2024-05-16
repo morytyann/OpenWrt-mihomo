@@ -92,26 +92,14 @@ start_service() {
             nft delete chain ip mihomo nat_output
             nft delete chain ip mihomo mangle_output
         fi
-        local access_control_mode acl_ip acl_mac
+        local access_control_mode
         config_get access_control_mode "proxy" "access_control_mode"
-        config_get acl_ip "proxy" "acl_ip"
-        config_get acl_mac "proxy" "acl_mac"
         config_list_foreach "proxy" "acl_ip" add_acl_ip
         config_list_foreach "proxy" "acl_mac" add_acl_mac
         if [ "${access_control_mode}" == "allow" ]; then
-            if [ -n "${acl_ip}" ]; then
-                nft add rule ip mihomo acl ip saddr != @acl_ip accept
-            fi
-            if [ -n "${acl_mac}" ]; then
-                nft add rule ip mihomo acl ether saddr != @acl_mac accept
-            fi
+            nft add rule ip mihomo acl ip saddr != @acl_ip ether saddr != @acl_mac accept
         elif [ "${access_control_mode}" == "block" ]; then
-            if [ -n "${acl_ip}" ]; then
-                nft add rule ip mihomo acl ip saddr @acl_ip accept
-            fi
-            if [ -n "${acl_mac}" ]; then
-                nft add rule ip mihomo acl ether saddr @acl_mac accept
-            fi
+            nft add rule ip mihomo acl ip saddr . ether saddr { @acl_ip . @acl_mac } accept
         fi
     fi
     # cron
