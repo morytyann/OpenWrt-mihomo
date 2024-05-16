@@ -57,24 +57,24 @@ return view.extend({
         o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1')
+        o.depends('transparent_proxy', '1');
 
         o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
         o.optional = true;
         o.retain = true;
         o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
-        o.depends('transparent_proxy', '1')
+        o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
         o.retain = true;
-        o.depends('transparent_proxy', '1')
+        o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
         o.retain = true;
-        o.depends('transparent_proxy', '1')
+        o.depends('transparent_proxy', '1');
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
