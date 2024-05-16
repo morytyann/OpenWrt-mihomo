@@ -27,7 +27,7 @@ table ip mihomo {
         flags interval
     }
 
-    acl {
+    chain acl {
         
     }
 
