@@ -99,7 +99,8 @@ start_service() {
         if [ "${access_control_mode}" == "allow" ]; then
             nft 'add rule ip mihomo acl ip saddr != @acl_ip ether saddr != @acl_mac accept'
         elif [ "${access_control_mode}" == "block" ]; then
-            nft 'add rule ip mihomo acl ip saddr . ether saddr { @acl_ip . @acl_mac } accept'
+            nft 'add rule ip mihomo acl ip saddr @acl_ip accept'
+            nft 'add rule ip mihomo acl ether saddr @acl_mac accept'
         fi
     fi
     # cron
