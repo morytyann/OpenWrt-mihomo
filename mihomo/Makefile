@@ -38,12 +38,10 @@ define Package/mihomo/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
 	$(INSTALL_DIR) $(1)/etc/mihomo
-	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
-
 	$(INSTALL_DIR) $(1)/etc/mihomo/profiles
-	$(INSTALL_DATA) $(CURDIR)/files/default.yaml $(1)/etc/mihomo/profiles/default.yaml
-
 	$(INSTALL_DIR) $(1)/etc/mihomo/run
+
+	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
 
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) $(CURDIR)/files/mihomo.conf $(1)/etc/config/mihomo

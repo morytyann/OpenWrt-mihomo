@@ -16,41 +16,41 @@ start_service() {
     # paths
     local home_dir run_dir run_profile_path
     home_dir="/etc/mihomo"
-    profiles_dir="${home_dir}/profiles"
     run_dir="${home_dir}/run"
     run_profile_path="${run_dir}/config.yaml"
     # load profile
     local profile
     config_get profile "config" "profile"
     # download profile
-    if [ -n "${profile}" ]; then
-        curl -o "${run_profile_path}" "${profile}"
+    if [ -z "${profile}" ]; then
+        return 1
     fi
-    # load config
+    curl -o "${run_profile_path}" "${profile}"
+    # load mixin
     # basic
     local mode http_port socks_port mixed_port redir_port tproxy_port
-    config_get mode "config" "mode" "rule"
-    config_get http_port "config" "http_port" "8080"
-    config_get socks_port "config" "socks_port" "1080"
-    config_get mixed_port "config" "mixed_port" "7890"
-    config_get redir_port "config" "redir_port" "7891"
-    config_get tproxy_port "config" "tproxy_port" "7892"
+    config_get mode "mixin" "mode" "rule"
+    config_get http_port "mixin" "http_port" "8080"
+    config_get socks_port "mixin" "socks_port" "1080"
+    config_get mixed_port "mixin" "mixed_port" "7890"
+    config_get redir_port "mixin" "redir_port" "7891"
+    config_get tproxy_port "mixin" "tproxy_port" "7892"
     # dns
     local dns_port dns_mode fake_ip_range
-    config_get dns_port "config" "dns_port" "5353"
-    config_get dns_mode "config" "dns_mode" "fake-ip"
-    config_get fake_ip_range "config" "fake_ip_range" "198.18.0.1/16"
+    config_get dns_port "mixin" "dns_port" "5353"
+    config_get dns_mode "mixin" "dns_mode" "fake-ip"
+    config_get fake_ip_range "mixin" "fake_ip_range" "198.18.0.1/16"
     # tun
     local tun tun_stack
-    config_get_bool tun "config" "tun" 0
-    config_get tun_stack "config" "tun_stack" "system"
+    config_get_bool tun "mixin" "tun" 0
+    config_get tun_stack "mixin" "tun_stack" "system"
     # marks
     local fw_table fw_mark dns_mark mihomo_mark
     fw_table=80
     fw_mark=80
     dns_mark=53
     mihomo_mark=255
-    # update config
+    # mixin config
     # basic
     mode="${mode}"                      yq e '.mode = env(mode)'                         -i "${run_profile_path}"
     http_port="${http_port}"            yq e '.port = env(http_port)'                    -i "${run_profile_path}"
@@ -81,13 +81,13 @@ start_service() {
     procd_close_instance
     # hijack
     local transparent_proxy
-    config_get_bool transparent_proxy "proxy" "transparent_proxy"
+    config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
     if [ "${transparent_proxy}" == 1 ]; then
         ip rule add fwmark "${fw_mark}" table "${fw_table}"
         ip route add local default dev lo table "${fw_table}"
         nft -f "${home_dir}/hijack.nft" -D FW_MARK="${fw_mark}" -D DNS_MARK="${dns_mark}" -D MIHOMO_MARK="${mihomo_mark}" -D TPROXY_PORT="${tproxy_port}" -D DNS_PORT="${dns_port}"
         local router_proxy
-        config_get_bool router_proxy "proxy" "router_proxy"
+        config_get_bool router_proxy "proxy" "router_proxy" 0
         if [ "${router_proxy}" == 0 ]; then
             nft delete chain ip mihomo nat_output
             nft delete chain ip mihomo mangle_output
