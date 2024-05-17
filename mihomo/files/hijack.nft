@@ -35,8 +35,8 @@ table ip mihomo {
 
     chain nat_output {
         type nat hook output priority filter; policy accept;
-        tcp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
-        udp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+        ip daddr 127.0.0.1 tcp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+        ip daddr 127.0.0.1 udp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
     }
 
     chain mangle_prerouting {
