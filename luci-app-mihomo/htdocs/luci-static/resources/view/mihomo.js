@@ -99,13 +99,13 @@ return view.extend({
         o.value('strict');
         o.value('off');
 
-        o = taboption('global', form.Flag, 'unify_delay', _('Unify Delay'));
+        o = s.taboption('global', form.Flag, 'unify_delay', _('Unify Delay'));
         o.rmempty = false;
 
-        o = taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o = s.taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
         o.rmempty = false;
 
-        s.tab('external_control', _('External Control Config'))
+        s.tab('external_control', _('External Control Config'));
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
@@ -116,7 +116,7 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
         o.rmempty = false;
 
-        s.tab('inbound', _('Inbound Config'))
+        s.tab('inbound', _('Inbound Config'));
 
         o = s.taboption('inbound', form.Flag, 'allow_lan', _('Allow Lan'));
         o.rmempty = false;
@@ -141,7 +141,7 @@ return view.extend({
         o.datatype = 'port';
         o.placeholder = '7892';
 
-        s.tab('dns', _('DNS Config'))
+        s.tab('dns', _('DNS Config'));
 
         o = s.taboption('dns', form.Value, 'dns_port', _('DNS Port'));
         o.datatype = 'port';
@@ -162,7 +162,7 @@ return view.extend({
         o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
 
-        s.tab('geox', _('GeoX Config'))
+        s.tab('geox', _('GeoX Config'));
 
         o = s.taboption('geox', form.ListValue, 'geoip_format', _('GeoIP Format'));
         o.value('dat');
@@ -182,8 +182,8 @@ return view.extend({
         o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geox_update_interval', _('GeoX Update Interval'), _('Hour'));
-        o.datatype = 'integer'
-        o.placeholder = '24'
+        o.datatype = 'integer';
+        o.placeholder = '24';
         o.retain = true;
         o.depends('geox_auto_update', '1');
 
