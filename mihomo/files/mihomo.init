@@ -89,7 +89,7 @@ start_service() {
     api_secret="${api_secret}"                      yq e '.secret = env(api_secret)'                            -i "${run_profile_path}"
     selection_cache="${selection_cache}"            yq e '.profile.store-selected = env(selection_cache) == 1'  -i "${run_profile_path}"
     # inbound
-    allow_lan="${allow_lan}"                        yq e '.allow-lan = env(allow_lan)'                          -i "${run_profile_path}"
+    allow_lan="${allow_lan}"                        yq e '.allow-lan = env(allow_lan) == 1'                     -i "${run_profile_path}"
     http_port="${http_port}"                        yq e '.port = env(http_port)'                               -i "${run_profile_path}"
     socks_port="${socks_port}"                      yq e '.socks-port = env(socks_port)'                        -i "${run_profile_path}"
     mixed_port="${mixed_port}"                      yq e '.mixed-port = env(mixed_port)'                        -i "${run_profile_path}"
