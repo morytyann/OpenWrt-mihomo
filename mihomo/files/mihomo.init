@@ -103,10 +103,10 @@ start_service() {
             nft insert rule ip mihomo dstnat index 0 ip saddr != @acl_ip ether saddr != @acl_mac return
             nft insert rule ip mihomo mangle_prerouting index 1 ip saddr != @acl_ip ether saddr != @acl_mac return
         elif [ "${access_control_mode}" == "block" ]; then
-            nft insert rule ip mihomo dstnat index 0 ether saddr = @acl_mac return
-            nft insert rule ip mihomo dstnat index 0 ip saddr = @acl_ip return
-            nft insert rule ip mihomo mangle_prerouting index 1 ether saddr = @acl_mac return
-            nft insert rule ip mihomo mangle_prerouting index 1 ip saddr = @acl_ip return
+            nft insert rule ip mihomo dstnat index 0 ether saddr @acl_mac return
+            nft insert rule ip mihomo dstnat index 0 ip saddr @acl_ip return
+            nft insert rule ip mihomo mangle_prerouting index 1 ether saddr @acl_mac return
+            nft insert rule ip mihomo mangle_prerouting index 1 ip saddr @acl_ip return
         fi
     fi
     # cron
