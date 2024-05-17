@@ -5,7 +5,7 @@ USE_PROCD=1
 
 start_service() {
     config_load mihomo
-    
+
     local enabled
     config_get_bool enabled "config" "enabled" 0
 
@@ -29,7 +29,7 @@ start_service() {
     # load mixin
     # basic
     local mode http_port socks_port mixed_port redir_port tproxy_port
-    config_get mode "mixin" "mode" "rule"
+    config_get mode "mixin" "mode"
     config_get http_port "mixin" "http_port" "8080"
     config_get socks_port "mixin" "socks_port" "1080"
     config_get mixed_port "mixin" "mixed_port" "7890"
@@ -97,10 +97,13 @@ start_service() {
         config_list_foreach "proxy" "acl_ip" add_acl_ip
         config_list_foreach "proxy" "acl_mac" add_acl_mac
         if [ "${access_control_mode}" == "allow" ]; then
-            nft 'add rule ip mihomo acl ip saddr != @acl_ip ether saddr != @acl_mac accept'
+            nft insert rule ip mihomo dstnat position 0 ip saddr != @acl_ip ether saddr != @acl_mac return
+            nft insert rule ip mihomo mangle_prerouting position 1 ip saddr != @acl_ip ether saddr != @acl_mac return
         elif [ "${access_control_mode}" == "block" ]; then
-            nft 'add rule ip mihomo acl ip saddr @acl_ip accept'
-            nft 'add rule ip mihomo acl ether saddr @acl_mac accept'
+            nft insert rule ip mihomo dstnat position 0 ether saddr = @acl_mac return
+            nft insert rule ip mihomo dstnat position 0 ip saddr = @acl_ip return
+            nft insert rule ip mihomo mangle_prerouting position 1 ether saddr = @acl_mac return
+            nft insert rule ip mihomo mangle_prerouting position 1 ip saddr = @acl_ip return
         fi
     fi
     # cron
@@ -123,8 +126,8 @@ stop_service() {
 }
 
 reload_service() {
-	stop
-	start
+    stop
+    start
 }
 
 service_triggers() {
