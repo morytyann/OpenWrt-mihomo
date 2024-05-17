@@ -87,44 +87,105 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
-        o = s.option(form.ListValue, 'mode', _('Proxy Mode'));
-        o.value('global', _('Global'));
-        o.value('rule', _('Rule'));
-        o.value('script', _('Script'));
-        o.value('direct', _('Direct'));
+        s.tab('global', _('Global Config'));
 
-        o = s.option(form.Value, 'http_port', _('HTTP Port'));
+        o = s.taboption('global', form.ListValue, 'mode', _('Proxy Mode'));
+        o.value('global', _('Global Mode'));
+        o.value('rule', _('Rule Mode'));
+        o.value('direct', _('Direct Mode'));
+
+        o = s.taboption('global', form.ListValue, 'match_process', _('Match Process'));
+        o.value('always');
+        o.value('strict');
+        o.value('off');
+
+        o = taboption('global', form.Flag, 'unify_delay', _('Unify Delay'));
+        o.rmempty = false;
+
+        o = taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o.rmempty = false;
+
+        s.tab('external_control', _('External Control Config'))
+
+        o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
+        o.datatype = 'port';
+        o.placeholder = '9090';
+
+        o = s.taboption('external_control', form.Value, 'api_secret', _('API Secret'));
+
+        o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
+        o.rmempty = false;
+
+        s.tab('inbound', _('Inbound Config'))
+
+        o = s.taboption('inbound', form.Flag, 'allow_lan', _('Allow Lan'));
+        o.rmempty = false;
+
+        o = s.taboption('inbound', form.Value, 'http_port', _('HTTP Port'));
         o.datatype = 'port';
         o.placeholder = '8080';
 
-        o = s.option(form.Value, 'socks_port', _('SOCKS Port'));
+        o = s.taboption('inbound', form.Value, 'socks_port', _('SOCKS Port'));
         o.datatype = 'port';
         o.placeholder = '1080';
 
-        o = s.option(form.Value, 'mixed_port', _('Mixed Port'));
+        o = s.taboption('inbound', form.Value, 'mixed_port', _('Mixed Port'));
         o.datatype = 'port';
         o.placeholder = '7890';
 
-        o = s.option(form.Value, 'redir_port', _('Redirect Port'));
+        o = s.taboption('inbound', form.Value, 'redir_port', _('Redirect Port'));
         o.datatype = 'port';
         o.placeholder = '7891';
 
-        o = s.option(form.Value, 'tproxy_port', _('TPROXY Port'));
+        o = s.taboption('inbound', form.Value, 'tproxy_port', _('TPROXY Port'));
         o.datatype = 'port';
         o.placeholder = '7892';
 
-        o = s.option(form.Value, 'dns_port', _('DNS Port'));
+        s.tab('dns', _('DNS Config'))
+
+        o = s.taboption('dns', form.Value, 'dns_port', _('DNS Port'));
         o.datatype = 'port';
         o.placeholder = '1053';
 
-        o = s.option(form.ListValue, 'dns_mode', _('DNS Mode'));
+        o = s.taboption('dns', form.ListValue, 'dns_mode', _('DNS Mode'));
         o.value('fake-ip', _('Fake-IP'));
         o.value('redir-host', _('Redir-Host'));
 
-        o = s.option(form.Value, 'fake_ip_range', _('Fake-IP Range'));
+        o = s.taboption('dns', form.Value, 'fake_ip_range', _('Fake-IP Range'));
         o.datatype = 'ipcidr';
         o.placeholder = '198.18.0.1/16';
+        o.retain = true;
         o.depends('dns_mode', 'fake-ip');
+
+        o = s.taboption('dns', form.Flag, 'fake_ip_cache', _('Fake-IP Cache'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('dns_mode', 'fake-ip');
+
+        s.tab('geox', _('GeoX Config'))
+
+        o = s.taboption('geox', form.ListValue, 'geoip_format', _('GeoIP Format'));
+        o.value('dat');
+        o.value('mmdb');
+
+        o = s.taboption('geox', form.ListValue, 'geodata_loader', _('GeoData Loader'));
+        o.value('standard', _('Standard Loader'));
+        o.value('memconservative', _('Memory Conservative Loader'));
+
+        o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB)Url'));
+
+        o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT)Url'));
+
+        o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
+
+        o = s.taboption('geox', form.Flag, 'geox_auto_update', _('GeoX Auto Update'));
+        o.rmempty = false;
+
+        o = s.taboption('geox', form.Value, 'geox_update_interval', _('GeoX Update Interval'), _('Hour'));
+        o.datatype = 'integer'
+        o.placeholder = '24'
+        o.retain = true;
+        o.depends('geox_auto_update', '1');
 
         return m.render();
     }

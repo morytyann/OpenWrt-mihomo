@@ -64,20 +64,47 @@ msgstr "订阅链接"
 msgid "Mixin Config"
 msgstr "混入配置"
 
+msgid "Global Config"
+msgstr "全局配置"
+
 msgid "Proxy Mode"
 msgstr "代理模式"
 
-msgid "Global"
+msgid "Global Mode"
 msgstr "全局模式"
 
-msgid "Rule"
+msgid "Rule Mode"
 msgstr "规则模式"
 
-msgid "Script"
-msgstr "脚本模式"
-
-msgid "Direct"
+msgid "Direct Mode"
 msgstr "直连模式"
+
+msgid "Match Process"
+msgstr "匹配进程"
+
+msgid "Unify Delay"
+msgstr "统一延迟"
+
+msgid "TCP Concurrent"
+msgstr "TCP并发"
+
+msgid "External Control Config"
+msgstr "外部控制配置"
+
+msgid "API Port"
+msgstr "API 端口"
+
+msgid "API Secret"
+msgstr "API 密钥"
+
+msgid "Save Proxy Selection"
+msgstr "保存节点/策略组选择"
+
+msgid "Inbound Config"
+msgstr "入站配置"
+
+msgid "Allow Lan"
+msgstr "允许局域网访问"
 
 msgid "HTTP Port"
 msgstr "HTTP 端口"
@@ -94,6 +121,9 @@ msgstr "Redirect 端口"
 msgid "TPROXY Port"
 msgstr "TPROXY 端口"
 
+msgid "DNS Config"
+msgstr "DNS 配置"
+
 msgid "DNS Port"
 msgstr "DNS 端口"
 
@@ -108,3 +138,39 @@ msgstr "Redir-Host"
 
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
+
+msgid "Fake-IP Cache"
+msgstr "Fake-IP 缓存"
+
+msgid "GeoX Config"
+msgstr "GeoX 配置"
+
+msgid "GeoIP Format"
+msgstr "GeoIP 格式"
+
+msgid "GeoData Loader"
+msgstr "GeoData 加载器"
+
+msgid "Standard Loader"
+msgstr "标准加载器"
+
+msgid "Memory Conservative Loader"
+msgstr "为内存受限设备优化的加载器"
+
+msgid "GeoIP(MMDB)Url"
+msgstr "GeoIP(MMDB) 下载地址"
+
+msgid "GeoIP(DAT)Url"
+msgstr "GeoIP(DAT) 下载地址"
+
+msgid "GeoSite Url"
+msgstr "GeoSite 下载地址"
+
+msgid "GeoX Auto Update"
+msgstr "定时更新GeoX文件"
+
+msgid "GeoX Update Interval"
+msgstr "GeoX 文件更新间隔"
+
+msgid "Hour"
+msgstr "小时"
