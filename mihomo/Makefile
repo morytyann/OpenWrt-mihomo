@@ -6,7 +6,7 @@ PKG_RELEASE:=1715916190
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/metacubex/mihomo/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=d070c4b464650093c6a29ef475f1cf5beec7c4b93e7704ca01eaf01f6a56a020
+PKG_HASH:=7eb425f43fcb1ce512891d7cdab8af60a3f0fffc2ca7cf93087717a7c1b4da02
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
