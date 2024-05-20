@@ -107,6 +107,8 @@ return view.extend({
 
         s.tab('external_control', _('External Control Config'));
 
+        o = s.taboption('external_control', form.Value, 'ui_url', _('UI Url'));
+
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
         o.placeholder = '9090';
@@ -172,9 +174,9 @@ return view.extend({
         o.value('standard', _('Standard Loader'));
         o.value('memconservative', _('Memory Conservative Loader'));
 
-        o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB)Url'));
+        o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB) Url'));
 
-        o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT)Url'));
+        o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT) Url'));
 
         o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
 

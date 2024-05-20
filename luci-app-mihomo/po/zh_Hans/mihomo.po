@@ -91,6 +91,9 @@ msgstr "TCP并发"
 msgid "External Control Config"
 msgstr "外部控制配置"
 
+msgid "UI Url"
+msgstr "UI 下载地址"
+
 msgid "API Port"
 msgstr "API 端口"
 
@@ -157,10 +160,10 @@ msgstr "标准加载器"
 msgid "Memory Conservative Loader"
 msgstr "为内存受限设备优化的加载器"
 
-msgid "GeoIP(MMDB)Url"
+msgid "GeoIP(MMDB) Url"
 msgstr "GeoIP(MMDB) 下载地址"
 
-msgid "GeoIP(DAT)Url"
+msgid "GeoIP(DAT) Url"
 msgstr "GeoIP(DAT) 下载地址"
 
 msgid "GeoSite Url"
