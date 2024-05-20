@@ -26,6 +26,9 @@ start_service() {
     geoip_dat_path="${run_dir}/GeoIP.dat"
     geosite_path="${run_dir}/GeoSite.dat"
     # download profile
+    if [ -f "${run_profile_path}" ]; then
+        rm -f "${run_profile_path}"
+    fi
     local profile
     config_get      profile                 "config" "profile"
     curl -o "${run_profile_path}" -s "${profile}"

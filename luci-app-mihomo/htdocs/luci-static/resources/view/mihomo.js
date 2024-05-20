@@ -27,12 +27,10 @@ return view.extend({
         o.rmempty = false;
 
         o = s.option(form.Value, 'cron_expression', _('Cron Expression'));
-        o.optional = true;
         o.retain = true;
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Choose Profile'));
-        o.optional = true;
 
         for (const profile of profiles) {
             o.value('file:/etc/mihomo/profiles/' + profile.name, _('File:') + profile.name);
