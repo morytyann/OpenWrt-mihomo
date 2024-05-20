@@ -135,13 +135,15 @@ start_service() {
         config_list_foreach "proxy" "acl_ip" add_acl_ip
         config_list_foreach "proxy" "acl_mac" add_acl_mac
         if [ "${access_control_mode}" == "allow" ]; then
-            nft insert rule ip mihomo dstnat index 0 ip saddr != @acl_ip ether saddr != @acl_mac return
-            nft insert rule ip mihomo mangle_prerouting index 4 ip saddr != @acl_ip ether saddr != @acl_mac return
+            nft flush chain ip mihomo dns_hijack
+            nft add rule ip mihomo dns_hijack jump allow_dns_hijack
+            nft flush chain ip mihomo proxy
+            nft add rule ip mihomo proxy jump allow_proxy
         elif [ "${access_control_mode}" == "block" ]; then
-            nft insert rule ip mihomo dstnat index 0 ether saddr @acl_mac return
-            nft insert rule ip mihomo dstnat index 0 ip saddr @acl_ip return
-            nft insert rule ip mihomo mangle_prerouting index 4 ether saddr @acl_mac return
-            nft insert rule ip mihomo mangle_prerouting index 4 ip saddr @acl_ip return
+            nft flush chain ip mihomo dns_hijack
+            nft add rule ip mihomo dns_hijack jump block_dns_hijack
+            nft flush chain ip mihomo proxy
+            nft add rule ip mihomo proxy jump block_proxy
         fi
     fi
     # cron

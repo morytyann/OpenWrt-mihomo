@@ -27,10 +27,39 @@ table ip mihomo {
         flags interval
     }
 
-    chain dstnat {
-        type nat hook prerouting priority dstnat + 1; policy accept;
+    chain dns_hijack {
         tcp dport 53 counter redirect to :$DNS_PORT
         udp dport 53 counter redirect to :$DNS_PORT
+    }
+
+    chain allow_dns_hijack {
+        ip saddr @acl_ip tcp dport 53 counter redirect to :$DNS_PORT
+        ether saddr @acl_mac tcp dport 53 counter redirect to :$DNS_PORT
+        ip saddr @acl_ip udp dport 53 counter redirect to :$DNS_PORT
+        ether saddr @acl_mac udp dport 53 counter redirect to :$DNS_PORT
+    }
+
+    chain block_dns_hijack {
+        ip saddr != @acl_ip ether saddr != @acl_mac tcp dport 53 counter redirect to :$DNS_PORT
+        ip saddr != @acl_ip ether saddr != @acl_mac udp dport 53 counter redirect to :$DNS_PORT
+    }
+
+    chain proxy {
+        meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+    }
+
+    chain allow_proxy {
+        meta l4proto { tcp, udp } ip saddr @acl_ip meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } ether saddr @acl_mac meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+    }
+
+    chain block_proxy {
+        meta l4proto { tcp, udp } ip saddr != @acl_ip ether saddr != @acl_mac meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+    }
+
+    chain dstnat {
+        type nat hook prerouting priority dstnat + 1; policy accept;
+        jump dns_hijack
     }
 
     chain nat_output {
@@ -41,19 +70,19 @@ table ip mihomo {
 
     chain mangle_prerouting {
         type filter hook prerouting priority mangle; policy accept;
-        meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
         ip daddr @private_ip counter return
         tcp dport 53 counter return
         udp dport 53 counter return
-        meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        jump proxy
     }
 
     chain mangle_output {
         type route hook output priority mangle; policy accept;
-        meta mark $MIHOMO_MARK counter return
         ip daddr @private_ip counter return
         tcp dport 53 counter return
         udp dport 53 counter return
+        meta mark $MIHOMO_MARK counter return
         meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
     }
 }
