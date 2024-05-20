@@ -18,10 +18,12 @@ start_service() {
     fi
 
     # paths
-    local home_dir run_dir run_profile_path
+    local home_dir run_dir run_profile_path run_ui_path run_ui_dir
     home_dir="/etc/mihomo"
     run_dir="${home_dir}/run"
     run_profile_path="${run_dir}/config.yaml"
+    run_ui_path="${run_dir}/ui.zip"
+    run_ui_dir="${run_dir}/ui"
     geoip_mmdb_path="${run_dir}/Country.mmdb"
     geoip_dat_path="${run_dir}/GeoIP.dat"
     geosite_path="${run_dir}/GeoSite.dat"
@@ -32,6 +34,14 @@ start_service() {
     local profile
     config_get      profile                 "config" "profile"
     curl -o "${run_profile_path}" -s "${profile}"
+    # download ui
+    local ui_url
+    config_get      ui_url                  "mixin" "ui_url"
+    if [ ! -d "${run_ui_dir}" ]; then
+        curl -o "${run_ui_path}" -s "${ui_url}"
+        unzip -q "${run_ui_path}"
+        mv "${run_dir}/metacubexd-gh-pages" "${run_ui_dir}"
+    fi
     # download geox files
     local geoip_mmdb_url geoip_dat_url geosite_url
     config_get      geoip_mmdb_url          "mixin" "geoip_mmdb_url"
