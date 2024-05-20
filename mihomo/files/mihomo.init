@@ -27,7 +27,7 @@ start_service() {
     geosite_path="${run_dir}/GeoSite.dat"
     # download profile
     local profile
-    config_get profile "config" "profile"
+    config_get      profile                 "config" "profile"
     curl -o "${run_profile_path}" -s "${profile}"
     # download geox files
     local geoip_mmdb_url geoip_dat_url geosite_url
@@ -51,7 +51,9 @@ start_service() {
     config_get_bool unify_delay             "mixin" "unify_delay"           0
     config_get_bool tcp_concurrent          "mixin" "tcp_concurrent"        0
     # api
-    local api_port api_secret selection_cache
+    local ui_path ui_url api_port api_secret selection_cache
+    ui_path="ui"
+    config_get      ui_url                  "mixin" "ui_url"
     config_get      api_port                "mixin" "api_port"
     config_get      api_secret              "mixin" "api_secret"
     config_get_bool selection_cache         "mixin" "selection_cache"       0
@@ -85,7 +87,9 @@ start_service() {
     unify_delay="${unify_delay}"                    yq e '.unified-delay = env(unify_delay) == 1'               -i "${run_profile_path}"
     tcp_concurrent="${tcp_concurrent}"              yq e '.tcp-concurrent = env(tcp_concurrent) == 1'           -i "${run_profile_path}"
     # api
-    api_port="0.0.0.0:${api_port}"                  yq e '.external-controller = env(api_port)'                 -i "${run_profile_path}"
+    ui_path="${ui_path}"                            yq e '.external-ui = env(ui_path)'                          -i "${run_profile_path}"
+    ui_url="${ui_url}"                              yq e '.external-ui-url = env(ui_url)'                       -i "${run_profile_path}"
+    api_listen="0.0.0.0:${api_port}"                yq e '.external-controller = env(api_listen)'               -i "${run_profile_path}"
     api_secret="${api_secret}"                      yq e '.secret = env(api_secret)'                            -i "${run_profile_path}"
     selection_cache="${selection_cache}"            yq e '.profile.store-selected = env(selection_cache) == 1'  -i "${run_profile_path}"
     # inbound
@@ -156,8 +160,6 @@ start_service() {
 }
 
 stop_service() {
-    # delete profile
-    rm -f /etc/mihomo/run/config.yaml >/dev/null 2>&1
     # delete hijack
     ip rule del table "${FW_TABLE}" >/dev/null 2>&1
     ip route del local default dev lo table "${FW_TABLE}" >/dev/null 2>&1
