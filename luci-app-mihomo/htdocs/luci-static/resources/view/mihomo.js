@@ -105,7 +105,14 @@ return view.extend({
 
         s.tab('external_control', _('External Control Config'));
 
-        o = s.taboption('external_control', form.Value, 'ui_url', _('UI Url'));
+        o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
+        o.rmempty = false;
+
+        o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
+        o.rmempty = false;
+
+        o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
+        o.rmempty = false;
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';

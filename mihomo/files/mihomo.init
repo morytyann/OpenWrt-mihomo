@@ -22,26 +22,38 @@ start_service() {
     home_dir="/etc/mihomo"
     run_dir="${home_dir}/run"
     run_profile_path="${run_dir}/config.yaml"
-    run_ui_path="${run_dir}/ui.zip"
     run_ui_dir="${run_dir}/ui"
+    run_ui_razord_path="${run_ui_dir}/razord.zip"
+    run_ui_razord_src_dir="${run_ui_dir}/Razord-meta-gh-pages"
+    run_ui_razord_dir="${run_ui_dir}/razord"
+    run_ui_yacd_path="${run_ui_dir}/yacd.zip"
+    run_ui_yacd_src_dir="${run_ui_dir}/Yacd-meta-gh-pages"
+    run_ui_yacd_dir="${run_ui_dir}/yacd"
+    run_ui_metacubexd_path="${run_ui_dir}/metacubexd.zip"
+    run_ui_metacubexd_src_dir="${run_ui_dir}/metacubexd-gh-pages"
+    run_ui_metacubexd_dir="${run_ui_dir}/metacubexd"
     geoip_mmdb_path="${run_dir}/Country.mmdb"
     geoip_dat_path="${run_dir}/GeoIP.dat"
     geosite_path="${run_dir}/GeoSite.dat"
-    # download profile
+    # init dir/file
     if [ -f "${run_profile_path}" ]; then
         rm -f "${run_profile_path}"
     fi
+    # download profile
     local profile
     config_get      profile                 "config" "profile"
     curl -o "${run_profile_path}" -s "${profile}"
     # download ui
-    local ui_url
-    config_get      ui_url                  "mixin" "ui_url"
-    if [ ! -d "${run_ui_dir}" ]; then
-        curl -o "${run_ui_path}" -s "${ui_url}"
-        unzip -q "${run_ui_path}"
-        mv "${run_dir}/metacubexd-gh-pages" "${run_ui_dir}"
-    fi
+    local ui_razord ui_razord_url ui_yacd ui_yacd_url ui_metacubexd ui_metacubexd_url
+    config_get_bool ui_razord               "mixin" "ui_razord"             0
+    config_get      ui_razord_url           "mixin" "ui_razord_url"
+    config_get_bool ui_yacd                 "mixin" "ui_yacd"               0
+    config_get      ui_yacd_url             "mixin" "ui_yacd_url"
+    config_get_bool ui_metacubexd           "mixin" "ui_metacubexd"         0
+    config_get      ui_metacubexd_url       "mixin" "ui_metacubexd_url"
+    download_ui "${ui_razord}"      "${ui_razord_url}"      "${run_ui_razord_path}"     "${run_ui_dir}" "${run_ui_razord_src_dir}"      "${run_ui_razord_dir}"
+    download_ui "${ui_yacd}"        "${ui_yacd_url}"        "${run_ui_yacd_path}"       "${run_ui_dir}" "${run_ui_yacd_src_dir}"        "${run_ui_yacd_dir}"
+    download_ui "${ui_metacubexd}"  "${ui_metacubexd_url}"  "${run_ui_metacubexd_path}" "${run_ui_dir}" "${run_ui_metacubexd_src_dir}"  "${run_ui_metacubexd_dir}"
     # download geox files
     local geoip_mmdb_url geoip_dat_url geosite_url
     config_get      geoip_mmdb_url          "mixin" "geoip_mmdb_url"
@@ -64,9 +76,7 @@ start_service() {
     config_get_bool unify_delay             "mixin" "unify_delay"           0
     config_get_bool tcp_concurrent          "mixin" "tcp_concurrent"        0
     # api
-    local ui_path ui_url api_port api_secret selection_cache
-    ui_path="ui"
-    config_get      ui_url                  "mixin" "ui_url"
+    local api_port api_secret selection_cache
     config_get      api_port                "mixin" "api_port"
     config_get      api_secret              "mixin" "api_secret"
     config_get_bool selection_cache         "mixin" "selection_cache"       0
@@ -100,8 +110,7 @@ start_service() {
     unify_delay="${unify_delay}"                    yq e '.unified-delay = env(unify_delay) == 1'               -i "${run_profile_path}"
     tcp_concurrent="${tcp_concurrent}"              yq e '.tcp-concurrent = env(tcp_concurrent) == 1'           -i "${run_profile_path}"
     # api
-    ui_path="${ui_path}"                            yq e '.external-ui = env(ui_path)'                          -i "${run_profile_path}"
-    ui_url="${ui_url}"                              yq e '.external-ui-url = env(ui_url)'                       -i "${run_profile_path}"
+    ui_path="ui"                                    yq e '.external-ui = env(ui_path)'                          -i "${run_profile_path}"
     api_listen="0.0.0.0:${api_port}"                yq e '.external-controller = env(api_listen)'               -i "${run_profile_path}"
     api_secret="${api_secret}"                      yq e '.secret = env(api_secret)'                            -i "${run_profile_path}"
     selection_cache="${selection_cache}"            yq e '.profile.store-selected = env(selection_cache) == 1'  -i "${run_profile_path}"
@@ -188,6 +197,27 @@ reload_service() {
 
 service_triggers() {
     procd_add_reload_trigger "mihomo"
+}
+
+download_ui() {
+    local enabled=$1
+    local url=$2
+    local file_path=$3
+    local file_dir=$4
+    local src_dir=$5
+    local dest_dir=$6
+    if [ "${enabled}" == 1 ]; then
+        if [ ! -d "${dest_dir}" ]; then
+            curl -o "${file_path}" -s "${url}"
+            unzip -q "${file_path}" -d "${file_dir}"
+            rm -f "${file_path}"
+            mv "${src_dir}" "${dest_dir}"
+        fi
+    else
+        if [ -d "${dest_dir}" ]; then
+            rm -rf "${dest_dir}"
+        fi
+    fi
 }
 
 add_acl_ip() {

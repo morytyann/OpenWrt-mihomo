@@ -40,6 +40,7 @@ define Package/mihomo/install
 	$(INSTALL_DIR) $(1)/etc/mihomo
 	$(INSTALL_DIR) $(1)/etc/mihomo/profiles
 	$(INSTALL_DIR) $(1)/etc/mihomo/run
+	$(INSTALL_DIR) $(1)/etc/mihomo/run/ui
 
 	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
 

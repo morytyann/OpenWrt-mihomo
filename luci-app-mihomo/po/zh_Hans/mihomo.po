@@ -91,8 +91,14 @@ msgstr "TCP并发"
 msgid "External Control Config"
 msgstr "外部控制配置"
 
-msgid "UI Url"
-msgstr "UI 下载地址"
+msgid "Use Razord"
+msgstr "使用 Razord 面板"
+
+msgid "Use YACD"
+msgstr "使用 YACD 面板"
+
+msgid "Use MetaCubeXD"
+msgstr "使用 MetaCubeXD 面板"
 
 msgid "API Port"
 msgstr "API 端口"
