@@ -27,21 +27,32 @@ table ip mihomo {
         flags interval
     }
 
+    set firewall_rule_exclusion {
+        type inet_proto . inet_service
+        flags interval
+    }
+
+    set firewall_redirect_exclusion {
+        type inet_proto . ipv4_addr . inet_service
+        flags interval
+    }
+
+    set upnp_exclusion {
+        type inet_proto . ipv4_addr . inet_service
+        flags interval
+    }
+
     chain dns_hijack {
-        tcp dport 53 counter redirect to :$DNS_PORT
-        udp dport 53 counter redirect to :$DNS_PORT
+        meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
     }
 
     chain allow_dns_hijack {
-        ip saddr @acl_ip tcp dport 53 counter redirect to :$DNS_PORT
-        ether saddr @acl_mac tcp dport 53 counter redirect to :$DNS_PORT
-        ip saddr @acl_ip udp dport 53 counter redirect to :$DNS_PORT
-        ether saddr @acl_mac udp dport 53 counter redirect to :$DNS_PORT
+        ip saddr @acl_ip meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+        ip saddr @acl_ip meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
     }
 
     chain block_dns_hijack {
-        ip saddr != @acl_ip ether saddr != @acl_mac tcp dport 53 counter redirect to :$DNS_PORT
-        ip saddr != @acl_ip ether saddr != @acl_mac udp dport 53 counter redirect to :$DNS_PORT
+        ip saddr != @acl_ip ether saddr != @acl_mac meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
     }
 
     chain proxy {
@@ -64,15 +75,16 @@ table ip mihomo {
 
     chain nat_output {
         type nat hook output priority filter; policy accept;
-        ip daddr 127.0.0.1 tcp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
-        ip daddr 127.0.0.1 udp dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+        ip daddr 127.0.0.1 meta l4proto { tcp, udp } th dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
     }
 
     chain mangle_prerouting {
         type filter hook prerouting priority mangle; policy accept;
         ip daddr @private_ip counter return
-        tcp dport 53 counter return
-        udp dport 53 counter return
+        meta l4proto { tcp, udp } th dport 53 counter return
+        meta l4proto . th sport @firewall_rule_exclusion return
+        meta l4proto . ip saddr . th sport @firewall_redirect_exclusion return
+        meta l4proto . ip saddr . th sport @upnp_exclusion return
         meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
         jump proxy
     }
@@ -80,8 +92,7 @@ table ip mihomo {
     chain mangle_output {
         type route hook output priority mangle; policy accept;
         ip daddr @private_ip counter return
-        tcp dport 53 counter return
-        udp dport 53 counter return
+        meta l4proto { tcp, udp } th dport 53 counter return
         meta mark $MIHOMO_MARK counter return
         meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
     }

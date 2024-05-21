@@ -147,15 +147,18 @@ start_service() {
     local transparent_proxy
     config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
     if [ "${transparent_proxy}" == 1 ]; then
+        # transparent proxy
         ip rule add fwmark "${FW_MARK}" table "${FW_TABLE}"
         ip route add local default dev lo table "${FW_TABLE}"
         nft -f "${home_dir}/hijack.nft" -D FW_MARK="${FW_MARK}" -D DNS_MARK="${DNS_MARK}" -D MIHOMO_MARK="${mihomo_mark}" -D TPROXY_PORT="${tproxy_port}" -D DNS_PORT="${dns_port}"
+        # router proxy
         local router_proxy
         config_get_bool router_proxy "proxy" "router_proxy" 0
         if [ "${router_proxy}" == 0 ]; then
             nft delete chain ip mihomo nat_output
             nft delete chain ip mihomo mangle_output
         fi
+        # access control
         local access_control_mode
         config_get access_control_mode "proxy" "access_control_mode"
         config_list_foreach "proxy" "acl_ip" add_acl_ip
@@ -171,6 +174,12 @@ start_service() {
             nft flush chain ip mihomo proxy
             nft add rule ip mihomo proxy jump block_proxy
         fi
+        # firewall exclusion
+        add_firewall_exclusion
+        # upnp exclusion
+        add_upnp_exclusion
+        # reload config
+        config_load mihomo
     fi
     # cron
     local scheduled_restart cron_exp
@@ -226,4 +235,93 @@ add_acl_ip() {
 
 add_acl_mac() {
     nft add element ip mihomo acl_mac { "$1" }
+}
+
+add_firewall_exclusion() {
+    config_load firewall
+    config_foreach add_firewall_rule_exclusion "rule"
+    config_foreach add_firewall_redirect_exclusion "redirect"
+}
+
+add_firewall_rule_exclusion() {
+    local section="$1"
+
+    local enabled name proto dest dest_ip dest_port target family
+    config_get enabled      "${section}" "enabled"
+    config_get name         "${section}" "name"
+    config_get proto        "${section}" "proto"
+    config_get dest         "${section}" "dest"
+    config_get dest_ip      "${section}" "dest_ip"
+    config_get dest_port    "${section}" "dest_port"
+    config_get target       "${section}" "target"
+    config_get family       "${section}" "family"
+
+    if [[ "${enabled}" == 0 || "${target}" != "ACCEPT" || -n "${dest}" || -z "${dest_port}" || "${family}" == "ipv6" ]]; then
+        return 0
+    fi
+
+    local tcp=0
+    local udp=0
+    if [ "${proto}" == "all" ]; then
+        tcp=1
+        udp=1
+    else
+        for p in $proto; do
+            [ "${p}" == "tcp" ] && tcp=1
+            [ "${p}" == "udp" ] && udp=1
+        done
+    fi
+
+    if [ "${tcp}" == 1 ]; then
+        nft add element ip mihomo firewall_rule_exclusion { tcp . "${dest_port}" }
+    fi
+    if [ "${udp}" == 1 ]; then
+        nft add element ip mihomo firewall_rule_exclusion { udp . "${dest_port}" }
+    fi
+}
+
+add_firewall_redirect_exclusion() {
+    local section="$1"
+
+    local enabled name dest dest_ip dest_port
+    config_get enabled      "${section}" "enabled"
+    config_get name         "${section}" "name"
+    config_get dest         "${section}" "dest"
+    config_get dest_ip      "${section}" "dest_ip"
+    config_get dest_port    "${section}" "dest_port"
+
+    if [ "${enabled}" == 0 ]; then
+        return 0
+    fi
+
+    local tcp=0
+    local udp=0
+    if [ "${proto}" == "all" ]; then
+        tcp=1
+        udp=1
+    else
+        for p in $proto; do
+            [ "${p}" == "tcp" ] && tcp=1
+            [ "${p}" == "udp" ] && udp=1
+        done
+    fi
+
+    if [ "${tcp}" == 1 ]; then
+        nft add element ip mihomo firewall_redirect_exclusion { tcp . "${dest_ip}" . "${dest_port}" }
+    fi
+    if [ "${udp}" == 1 ]; then
+        nft add element ip mihomo firewall_redirect_exclusion { udp . "${dest_ip}" . "${dest_port}" }
+    fi
+}
+
+add_upnp_exclusion() {
+    config_load upnpd
+
+    local enabled upnp_lease_file
+    config_get enabled          "config" "enabled"          0
+    config_get upnp_lease_file  "config" "upnp_lease_file"
+
+    if [ "${enabled}" == 0 || ! -s "${upnp_lease_file}"]; then
+        return 0
+    fi
 }
