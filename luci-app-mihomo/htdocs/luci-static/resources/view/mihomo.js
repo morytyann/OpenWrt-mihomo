@@ -7,14 +7,16 @@
 return view.extend({
     load: function () {
         return Promise.all([
+            uci.load('mihomo'),
             fs.list('/etc/mihomo/profiles'),
-            uci.load('mihomo')
         ]);
     },
     render: function (data) {
-        var profiles = data[0];
+        const profiles = data[1];
+        const subscriptions = uci.sections('mihomo', 'subscription');
+        const api_port = uci.get('mihomo', 'mixin', 'api_port');
 
-        var m, s, o;
+        let m, s, o;
 
         m = new form.Map('mihomo', _('mihomo'), _('mihomo is a rule based proxy in Go.'));
 
@@ -36,7 +38,7 @@ return view.extend({
             o.value('file:/etc/mihomo/profiles/' + profile.name, _('File:') + profile.name);
         }
 
-        for (const subscription of uci.sections('mihomo', 'subscription')) {
+        for (const subscription of subscriptions) {
             o.value(subscription.url, _('Subscription:') + subscription.name);
         }
 
@@ -108,17 +110,36 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
         o.rmempty = false;
 
+        o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
+        o.click = function () {
+            window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'razord', '_blank');
+        }
+        o.depends('ui_razord', '1');
+
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
 
+        o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
+        o.click = function () {
+            window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'yacd', '_blank');
+        }
+        o.depends('ui_yacd', '1');
+
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
+
+        o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
+        o.click = function () {
+            window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'metacubexd', '_blank');
+        }
+        o.depends('ui_metacubexd', '1');
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
         o.placeholder = '9090';
 
         o = s.taboption('external_control', form.Value, 'api_secret', _('API Secret'));
+        o.placeholder = '666666';
 
         o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
         o.rmempty = false;

@@ -77,8 +77,8 @@ start_service() {
     config_get_bool tcp_concurrent          "mixin" "tcp_concurrent"        0
     # api
     local api_port api_secret selection_cache
-    config_get      api_port                "mixin" "api_port"
-    config_get      api_secret              "mixin" "api_secret"
+    config_get      api_port                "mixin" "api_port"              "9090"
+    config_get      api_secret              "mixin" "api_secret"            "666666"
     config_get_bool selection_cache         "mixin" "selection_cache"       0
     # inbound
     local allow_lan http_port socks_port mixed_port redir_port tproxy_port
