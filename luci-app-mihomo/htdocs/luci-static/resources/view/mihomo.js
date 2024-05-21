@@ -111,7 +111,8 @@ return view.extend({
         o.rmempty = false;
 
         o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
-        o.click = function () {
+        o.inputtile = ''
+        o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'razord', '_blank');
         }
         o.depends('ui_razord', '1');
@@ -120,7 +121,8 @@ return view.extend({
         o.rmempty = false;
 
         o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
-        o.click = function () {
+        o.inputtile = ''
+        o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'yacd', '_blank');
         }
         o.depends('ui_yacd', '1');
@@ -129,7 +131,8 @@ return view.extend({
         o.rmempty = false;
 
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
-        o.click = function () {
+        o.inputtile = ''
+        o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/' + 'metacubexd', '_blank');
         }
         o.depends('ui_metacubexd', '1');

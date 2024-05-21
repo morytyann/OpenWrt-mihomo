@@ -94,11 +94,20 @@ msgstr "外部控制配置"
 msgid "Use Razord"
 msgstr "使用 Razord 面板"
 
+msgid "Open Razord"
+msgstr "打开 Razord 面板"
+
 msgid "Use YACD"
 msgstr "使用 YACD 面板"
 
+msgid "Open YACD"
+msgstr "打开 YACD 面板"
+
 msgid "Use MetaCubeXD"
 msgstr "使用 MetaCubeXD 面板"
+
+msgid "Open MetaCubeXD"
+msgstr "打开 MetaCubeXD 面板"
 
 msgid "API Port"
 msgstr "API 端口"
