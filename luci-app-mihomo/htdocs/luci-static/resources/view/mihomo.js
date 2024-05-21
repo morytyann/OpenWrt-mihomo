@@ -14,7 +14,8 @@ return view.extend({
     render: function (data) {
         const profiles = data[1];
         const subscriptions = uci.sections('mihomo', 'subscription');
-        const api_port = uci.get('mihomo', 'mixin', 'api_port');
+        const api_port = uci.get('mihomo', 'mixin', 'api_port') || '9090';
+        const api_secret = uci.get('mihomo', 'mixin', 'api_secret') || '666666';
 
         let m, s, o;
 
@@ -113,7 +114,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
         o.inputtitle = ''
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui' + '/razord', '_blank');
+            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
         }
         o.depends('ui_razord', '1');
 
@@ -123,7 +124,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
         o.inputtitle = ''
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui' + '/yacd', '_blank');
+            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/#/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
         }
         o.depends('ui_yacd', '1');
 
@@ -133,7 +134,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
         o.inputtitle = ''
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui' + '/metacubexd', '_blank');
+            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
         }
         o.depends('ui_metacubexd', '1');
 
