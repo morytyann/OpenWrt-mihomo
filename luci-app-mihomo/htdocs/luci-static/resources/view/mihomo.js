@@ -134,7 +134,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
         o.inputtitle = ''
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
+            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
         }
         o.depends('ui_metacubexd', '1');
 
