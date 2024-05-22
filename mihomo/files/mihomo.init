@@ -23,13 +23,13 @@ start_service() {
     run_dir="${home_dir}/run"
     run_profile_path="${run_dir}/config.yaml"
     run_ui_dir="${run_dir}/ui"
-    run_ui_razord_path="${run_ui_dir}/razord.zip"
+    run_ui_razord_path="${run_ui_dir}/razord.tar.gz"
     run_ui_razord_src_dir="${run_ui_dir}/Razord-meta-gh-pages"
     run_ui_razord_dir="${run_ui_dir}/razord"
-    run_ui_yacd_path="${run_ui_dir}/yacd.zip"
+    run_ui_yacd_path="${run_ui_dir}/yacd.tar.gz"
     run_ui_yacd_src_dir="${run_ui_dir}/Yacd-meta-gh-pages"
     run_ui_yacd_dir="${run_ui_dir}/yacd"
-    run_ui_metacubexd_path="${run_ui_dir}/metacubexd.zip"
+    run_ui_metacubexd_path="${run_ui_dir}/metacubexd.tar.gz"
     run_ui_metacubexd_src_dir="${run_ui_dir}/metacubexd-gh-pages"
     run_ui_metacubexd_dir="${run_ui_dir}/metacubexd"
     geoip_mmdb_path="${run_dir}/Country.mmdb"
@@ -42,7 +42,7 @@ start_service() {
     # download profile
     local profile
     config_get      profile                 "config" "profile"
-    curl -o "${run_profile_path}" -s "${profile}"
+    curl -s -L -o "${run_profile_path}" "${profile}"
     # download ui
     local ui_razord ui_razord_url ui_yacd ui_yacd_url ui_metacubexd ui_metacubexd_url
     config_get_bool ui_razord               "mixin" "ui_razord"             0
@@ -60,13 +60,13 @@ start_service() {
     config_get      geoip_dat_url           "mixin" "geoip_dat_url"
     config_get      geosite_url             "mixin" "geosite_url"
     if [ ! -f "${geoip_mmdb_path}" ]; then
-        curl -o "${geoip_mmdb_path}" -s "${geoip_mmdb_url}"
+        curl -s -L -o "${geoip_mmdb_path}" "${geoip_mmdb_url}"
     fi
     if [ ! -f "${geoip_dat_path}" ]; then
-        curl -o "${geoip_dat_path}" -s "${geoip_dat_url}"
+        curl -s -L -o "${geoip_dat_path}" "${geoip_dat_url}"
     fi
     if [ ! -f "${geosite_path}" ]; then
-        curl -o "${geosite_path}" -s "${geosite_url}"
+        curl -s -L -o "${geosite_path}" "${geosite_url}"
     fi
     # load mixin
     # global
@@ -216,8 +216,8 @@ download_ui() {
     local dest_dir=$6
     if [ "${enabled}" == 1 ]; then
         if [ ! -d "${dest_dir}" ]; then
-            curl -o "${file_path}" -s "${url}"
-            unzip -q "${file_path}" -d "${file_dir}"
+            curl -s -L -o "${file_path}" "${url}"
+            tar -x -z -f "${file_path}" -C "${file_dir}"
             rm -f "${file_path}"
             mv "${src_dir}" "${dest_dir}"
         fi
@@ -338,7 +338,7 @@ add_upnp_exclusion() {
     config_get enabled          "config" "enabled"          0
     config_get upnp_lease_file  "config" "upnp_lease_file"
 
-    if [ "${enabled}" == 0 || ! -s "${upnp_lease_file}"]; then
+    if [[ "${enabled}" == 0 || ! -s "${upnp_lease_file}"]]; then
         return 0
     fi
 
