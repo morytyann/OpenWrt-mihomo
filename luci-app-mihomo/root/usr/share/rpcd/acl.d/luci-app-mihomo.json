@@ -4,7 +4,6 @@
 		"read": {
 			"uci": [ "mihomo" ],
 			"file": {
-				"/etc/mihomo/run/config.yaml": ["read"],
 				"/etc/mihomo/profiles/*.yaml": ["read"],
 				"/etc/mihomo/profiles/*.yml": ["read"]
 			}
@@ -12,7 +11,6 @@
 		"write": {
 			"uci": [ "mihomo" ],
 			"file": {
-				"/etc/mihomo/run/config.yaml": ["write"],
 				"/etc/mihomo/profiles/*.yaml": ["write"],
 				"/etc/mihomo/profiles/*.yml": ["write"]
 			}

@@ -77,7 +77,7 @@ table ip mihomo {
         type filter hook prerouting priority mangle; policy accept;
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
-        meta l4proto . ip saddr . th sport @exclusion return
+        meta l4proto . ip saddr . th sport @exclusion counter return
         meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
         jump proxy
     }
@@ -87,7 +87,7 @@ table ip mihomo {
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
         meta mark $MIHOMO_MARK counter return
-        meta l4proto . th sport @router_exclusion return
+        meta l4proto . th sport @router_exclusion counter return
         meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
     }
 }
