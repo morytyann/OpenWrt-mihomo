@@ -264,7 +264,7 @@ add_firewall_rule_exclusion() {
         tcp=1
         udp=1
     else
-        for p in $proto; do
+        for p in "${proto}"; do
             [ "${p}" == "tcp" ] && tcp=1
             [ "${p}" == "udp" ] && udp=1
         done
@@ -304,7 +304,7 @@ add_firewall_redirect_exclusion() {
         tcp=1
         udp=1
     else
-        for p in $proto; do
+        for p in "${proto}"; do
             [ "${p}" == "tcp" ] && tcp=1
             [ "${p}" == "udp" ] && udp=1
         done
@@ -338,13 +338,13 @@ add_upnp_exclusion() {
     config_get enabled          "config" "enabled"          0
     config_get upnp_lease_file  "config" "upnp_lease_file"
 
-    if [[ "${enabled}" == 0 || ! -s "${upnp_lease_file}"]]; then
+    if [[ "${enabled}" == 0 || ! -s "${upnp_lease_file}" ]]; then
         return 0
     fi
 
     local lease lease_proto lease_src_ip lease_src_port
 
-    cat "$upnp_lease_file" | while read line
+    cat "${upnp_lease_file}" | while read line
     do
         lease_proto=$(echo "${line}" | cut -d ':' -f 0)
         lease_src_ip=$(echo "${line}" | cut -d ':' -f 2)
