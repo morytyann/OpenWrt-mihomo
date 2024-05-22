@@ -35,10 +35,6 @@ start_service() {
     geoip_mmdb_path="${run_dir}/Country.mmdb"
     geoip_dat_path="${run_dir}/GeoIP.dat"
     geosite_path="${run_dir}/GeoSite.dat"
-    # init dir/file
-    if [ -f "${run_profile_path}" ]; then
-        rm -f "${run_profile_path}"
-    fi
     # download profile
     local profile
     config_get      profile                 "config" "profile"
