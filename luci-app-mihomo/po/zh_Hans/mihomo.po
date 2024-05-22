@@ -91,6 +91,9 @@ msgstr "TCP并发"
 msgid "External Control Config"
 msgstr "外部控制配置"
 
+msgid "Open"
+msgstr "打开"
+
 msgid "Use Razord"
 msgstr "使用 Razord 面板"
 
