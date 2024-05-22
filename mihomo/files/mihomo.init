@@ -14,7 +14,7 @@ start_service() {
     config_get_bool enabled "config" "enabled" 0
 
     if [ "${enabled}" == 0 ]; then
-        return 1
+        return 0
     fi
 
     # paths
@@ -174,9 +174,8 @@ start_service() {
             nft flush chain ip mihomo proxy
             nft add rule ip mihomo proxy jump block_proxy
         fi
-        # firewall exclusion
+        # exclusion
         add_firewall_exclusion
-        # upnp exclusion
         add_upnp_exclusion
         # reload config
         config_load mihomo
@@ -239,11 +238,11 @@ add_acl_mac() {
 
 add_firewall_exclusion() {
     config_load firewall
-    config_foreach add_router_exclusion "rule"
-    config_foreach add_exclusion "redirect"
+    config_foreach add_firewall_rule_exclusion "rule"
+    config_foreach add_firewall_redirect_exclusion "redirect"
 }
 
-add_router_exclusion() {
+add_firewall_rule_exclusion() {
     local section="$1"
 
     local enabled name proto src dest dest_ip dest_port family
@@ -283,7 +282,7 @@ add_router_exclusion() {
     fi
 }
 
-add_exclusion() {
+add_firewall_redirect_exclusion() {
     local section="$1"
 
     local enabled name proto dest dest_ip dest_port
@@ -350,6 +349,6 @@ add_upnp_exclusion() {
         lease_proto=$(echo "${line}" | cut -d ':' -f 0)
         lease_src_ip=$(echo "${line}" | cut -d ':' -f 2)
         lease_src_port=$(echo "${line}" | cut -d ':' -f 3)
-        nft add element ip mihomo upnp_exclusion { "${lease_proto,,}" . "${lease_src_ip}" . "${lease_src_port}" }
+        nft add element ip mihomo exclusion { "${lease_proto,,}" . "${lease_src_ip}" . "${lease_src_port}" }
     done
 }
