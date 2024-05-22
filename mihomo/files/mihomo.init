@@ -1,4 +1,4 @@
-#!/bin/sh /etc/rc.common
+#!/bin/bash /etc/rc.common
 
 START=99
 USE_PROCD=1
@@ -239,30 +239,29 @@ add_acl_mac() {
 
 add_firewall_exclusion() {
     config_load firewall
-    config_foreach add_firewall_rule_exclusion "rule"
-    config_foreach add_firewall_redirect_exclusion "redirect"
+    config_foreach add_router_exclusion "rule"
+    config_foreach add_exclusion "redirect"
 }
 
-add_firewall_rule_exclusion() {
+add_router_exclusion() {
     local section="$1"
 
-    local enabled name proto dest dest_ip dest_port target family
+    local enabled name proto src dest dest_ip dest_port family
     config_get enabled      "${section}" "enabled"
     config_get name         "${section}" "name"
     config_get proto        "${section}" "proto"
+    config_get src          "${section}" "src"
     config_get dest         "${section}" "dest"
-    config_get dest_ip      "${section}" "dest_ip"
     config_get dest_port    "${section}" "dest_port"
-    config_get target       "${section}" "target"
     config_get family       "${section}" "family"
 
-    if [[ "${enabled}" == 0 || "${target}" != "ACCEPT" || -n "${dest}" || -z "${dest_port}" || "${family}" == "ipv6" ]]; then
+    if [[ "${enabled}" == 0 || -z "${src}" || -n "${dest}" || -z "${dest_port}" || "${family}" == "ipv6" ]]; then
         return 0
     fi
 
     local tcp=0
     local udp=0
-    if [ "${proto}" == "all" ]; then
+    if [[ -z  "${proto}" || "${proto}" == "all" ]]; then
         tcp=1
         udp=1
     else
@@ -273,19 +272,25 @@ add_firewall_rule_exclusion() {
     fi
 
     if [ "${tcp}" == 1 ]; then
-        nft add element ip mihomo firewall_rule_exclusion { tcp . "${dest_port}" }
+        for port in "${dest_port}"; do
+            nft add element ip mihomo router_exclusion { tcp . "${port}" }
+        done
     fi
     if [ "${udp}" == 1 ]; then
-        nft add element ip mihomo firewall_rule_exclusion { udp . "${dest_port}" }
+        for port in "${dest_port}"; do
+            nft add element ip mihomo router_exclusion { udp . "${port}" }
+        done
     fi
 }
 
-add_firewall_redirect_exclusion() {
+add_exclusion() {
     local section="$1"
 
-    local enabled name dest dest_ip dest_port
+    local enabled name proto dest dest_ip dest_port
     config_get enabled      "${section}" "enabled"
     config_get name         "${section}" "name"
+    config_get proto        "${section}" "proto"
+    config_get src_dport    "${section}" "src_dport"
     config_get dest         "${section}" "dest"
     config_get dest_ip      "${section}" "dest_ip"
     config_get dest_port    "${section}" "dest_port"
@@ -296,7 +301,7 @@ add_firewall_redirect_exclusion() {
 
     local tcp=0
     local udp=0
-    if [ "${proto}" == "all" ]; then
+    if [[ -z  "${proto}" || "${proto}" == "all" ]]; then
         tcp=1
         udp=1
     else
@@ -306,11 +311,24 @@ add_firewall_redirect_exclusion() {
         done
     fi
 
-    if [ "${tcp}" == 1 ]; then
-        nft add element ip mihomo firewall_redirect_exclusion { tcp . "${dest_ip}" . "${dest_port}" }
+    if [ -z "${dest_port}" ]; then
+        dest_port="${src_dport}"
     fi
-    if [ "${udp}" == 1 ]; then
-        nft add element ip mihomo firewall_redirect_exclusion { udp . "${dest_ip}" . "${dest_port}" }
+
+    if [[ -z "${dest}" || -z "${dest_ip}" ]]; then
+        if [ "${tcp}" == 1 ]; then
+            nft add element ip mihomo router_exclusion { tcp . "${dest_port}" }
+        fi
+        if [ "${udp}" == 1 ]; then
+            nft add element ip mihomo router_exclusion { udp . "${dest_port}" }
+        fi
+    else
+        if [ "${tcp}" == 1 ]; then
+            nft add element ip mihomo exclusion { tcp . "${dest_ip}" . "${dest_port}" }
+        fi
+        if [ "${udp}" == 1 ]; then
+            nft add element ip mihomo exclusion { udp . "${dest_ip}" . "${dest_port}" }
+        fi
     fi
 }
 
@@ -324,4 +342,14 @@ add_upnp_exclusion() {
     if [ "${enabled}" == 0 || ! -s "${upnp_lease_file}"]; then
         return 0
     fi
+
+    local lease lease_proto lease_src_ip lease_src_port
+
+    cat "$upnp_lease_file" | while read line
+    do
+        lease_proto=$(echo "${line}" | cut -d ':' -f 0)
+        lease_src_ip=$(echo "${line}" | cut -d ':' -f 2)
+        lease_src_port=$(echo "${line}" | cut -d ':' -f 3)
+        nft add element ip mihomo upnp_exclusion { "${lease_proto,,}" . "${lease_src_ip}" . "${lease_src_port}" }
+    done
 }

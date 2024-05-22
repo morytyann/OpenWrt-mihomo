@@ -27,17 +27,12 @@ table ip mihomo {
         flags interval
     }
 
-    set firewall_rule_exclusion {
+    set router_exclusion {
         type inet_proto . inet_service
         flags interval
     }
 
-    set firewall_redirect_exclusion {
-        type inet_proto . ipv4_addr . inet_service
-        flags interval
-    }
-
-    set upnp_exclusion {
+    set exclusion {
         type inet_proto . ipv4_addr . inet_service
         flags interval
     }
@@ -82,9 +77,7 @@ table ip mihomo {
         type filter hook prerouting priority mangle; policy accept;
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
-        meta l4proto . th sport @firewall_rule_exclusion return
-        meta l4proto . ip saddr . th sport @firewall_redirect_exclusion return
-        meta l4proto . ip saddr . th sport @upnp_exclusion return
+        meta l4proto . ip saddr . th sport @exclusion return
         meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
         jump proxy
     }
@@ -94,6 +87,7 @@ table ip mihomo {
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
         meta mark $MIHOMO_MARK counter return
+        meta l4proto . th sport @router_exclusion return
         meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
     }
 }
