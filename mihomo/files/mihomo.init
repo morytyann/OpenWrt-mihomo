@@ -1,5 +1,7 @@
 #!/bin/sh /etc/rc.common
 
+. /lib/functions/network.sh
+
 START=99
 USE_PROCD=1
 
@@ -18,20 +20,24 @@ start_service() {
     fi
 
     # paths
-    local home_dir run_dir run_profile_path run_ui_path run_ui_dir
+    local home_dir run_dir run_profile_path run_ui_dir
     home_dir="/etc/mihomo"
     run_dir="${home_dir}/run"
     run_profile_path="${run_dir}/config.yaml"
+    local run_ui_razord_path run_ui_razord_src_dir run_ui_razord_dir 
     run_ui_dir="${run_dir}/ui"
     run_ui_razord_path="${run_ui_dir}/razord.tar.gz"
     run_ui_razord_src_dir="${run_ui_dir}/Razord-meta-gh-pages"
     run_ui_razord_dir="${run_ui_dir}/razord"
+    local run_ui_yacd_path run_ui_yacd_src_dir run_ui_yacd_dir
     run_ui_yacd_path="${run_ui_dir}/yacd.tar.gz"
     run_ui_yacd_src_dir="${run_ui_dir}/Yacd-meta-gh-pages"
     run_ui_yacd_dir="${run_ui_dir}/yacd"
+    local run_ui_metacubexd_path run_ui_metacubexd_src_dir run_ui_metacubexd_dir
     run_ui_metacubexd_path="${run_ui_dir}/metacubexd.tar.gz"
     run_ui_metacubexd_src_dir="${run_ui_dir}/metacubexd-gh-pages"
     run_ui_metacubexd_dir="${run_ui_dir}/metacubexd"
+    local geoip_mmdb_path geoip_dat_path geosite_path
     geoip_mmdb_path="${run_dir}/Country.mmdb"
     geoip_dat_path="${run_dir}/GeoIP.dat"
     geosite_path="${run_dir}/GeoSite.dat"
@@ -171,6 +177,7 @@ start_service() {
             nft add rule ip mihomo proxy jump block_proxy
         fi
         # exclusion
+        add_wan_inbound_exclusion
         add_firewall_exclusion
         add_upnp_exclusion
         # reload config
@@ -230,6 +237,13 @@ add_acl_ip() {
 
 add_acl_mac() {
     nft add element ip mihomo acl_mac { "$1" }
+}
+
+add_wan_inbound_exclusion() {
+    local wan_dev wan_ip
+    network_find_wan $wan_dev
+    network_get_ipaddr $ip $wan_dev
+    nft add element ip mihomo private_ip { "${wan_ip}" }
 }
 
 add_firewall_exclusion() {
