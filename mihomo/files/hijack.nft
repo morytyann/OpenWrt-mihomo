@@ -43,7 +43,7 @@ table ip mihomo {
 
     chain allow_dns_hijack {
         ip saddr @acl_ip meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-        ip saddr @acl_ip meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+        ether saddr @acl_mac meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
     }
 
     chain block_dns_hijack {

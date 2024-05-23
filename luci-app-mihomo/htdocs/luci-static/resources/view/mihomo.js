@@ -124,7 +124,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/#/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
+            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
         }
         o.depends('ui_yacd', '1');
 
