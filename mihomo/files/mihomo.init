@@ -241,8 +241,8 @@ add_acl_mac() {
 
 add_wan_inbound_exclusion() {
     local wan_dev wan_ip
-    network_find_wan $wan_dev
-    network_get_ipaddr $ip $wan_dev
+    network_find_wan wan_dev
+    network_get_ipaddr wan_ip $wan_dev
     nft add element ip mihomo private_ip { "${wan_ip}" }
 }
 
