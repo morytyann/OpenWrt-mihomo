@@ -14,7 +14,7 @@ A project contains mihomo packages for OpenWrt.
 
 See [wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki) (Under construction).
 
-## how does it work
+## How does it work
 
 1. Download dependency files if need.
 2. Get mixin config.
