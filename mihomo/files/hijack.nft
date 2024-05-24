@@ -4,6 +4,7 @@ table ip mihomo {
     set private_ip {
         type ipv4_addr
         flags interval
+        auto-merge
         elements = {
             0.0.0.0/8,
             10.0.0.0/8,
@@ -20,21 +21,25 @@ table ip mihomo {
     set acl_ip {
         type ipv4_addr
         flags interval
+        auto-merge
     }
 
     set acl_mac {
         type ether_addr
         flags interval
+        auto-merge
     }
 
     set router_exclusion {
         type inet_proto . inet_service
         flags interval
+        auto-merge
     }
 
     set exclusion {
         type inet_proto . ipv4_addr . inet_service
         flags interval
+        auto-merge
     }
 
     chain dns_hijack {
