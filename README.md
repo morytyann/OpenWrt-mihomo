@@ -12,7 +12,7 @@ A project contains mihomo packages for OpenWrt.
 
 ## Usage
 
-See [wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki) (Under construction).
+See [WiKi](https://github.com/morytyann/OpenWrt-mihomo/wiki) (Under construction).
 
 ## How does it work
 
