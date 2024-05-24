@@ -12,10 +12,11 @@ return view.extend({
         ]);
     },
     render: function (data) {
-        const profiles = data[1];
+        const enabled = uci.get('mihomo', 'config', 'enabled') === '1';
         const subscriptions = uci.sections('mihomo', 'subscription');
         const api_port = uci.get('mihomo', 'mixin', 'api_port') || '9090';
         const api_secret = uci.get('mihomo', 'mixin', 'api_secret') || '666666';
+        const profiles = data[1];
 
         let m, s, o;
 
@@ -115,7 +116,7 @@ return view.extend({
         o.inputtitle = _('Open');
         o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        }
+        };
         o.depends('ui_razord', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
@@ -125,7 +126,7 @@ return view.extend({
         o.inputtitle = _('Open');
         o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        }
+        };
         o.depends('ui_yacd', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
@@ -135,7 +136,7 @@ return view.extend({
         o.inputtitle = _('Open');
         o.onclick = function () {
             window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        }
+        };
         o.depends('ui_metacubexd', '1');
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
@@ -218,6 +219,16 @@ return view.extend({
         o.placeholder = '24';
         o.retain = true;
         o.depends('geox_auto_update', '1');
+
+        s.tab('mixin_file_content', _('Mixin File Content'));
+
+        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', _('Mixin File Content'), _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
+        o.cfgvalue = function(section_id) {
+            return fs.read('/etc/mihomo/mixin.yaml');
+        };
+        o.write = function(section_id, formvalue) {
+			return fs.write('/etc/mihomo/mixin.yaml', formvalue.trim());
+        };
 
         return m.render();
     }

@@ -43,6 +43,7 @@ define Package/mihomo/install
 	$(INSTALL_DIR) $(1)/etc/mihomo/run/ui
 
 	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
+	$(INSTALL_BIN) $(CURDIR)/files/mixin.yaml $(1)/etc/mihomo/mixin.yaml
 
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) $(CURDIR)/files/mihomo.conf $(1)/etc/config/mihomo

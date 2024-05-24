@@ -195,3 +195,9 @@ msgstr "GeoX 文件更新间隔"
 
 msgid "Hour"
 msgstr "小时"
+
+msgid "Mixin File Content"
+msgstr "混入文件内容"
+
+msgid "The file's content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile."
+msgstr "上方文件内容将会在其他混入配置之前合并到配置文件（意味着更低的优先级），并且将重写配置文件中相同的字段。"
