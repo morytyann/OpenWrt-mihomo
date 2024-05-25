@@ -356,13 +356,18 @@ add_upnp_exclusion() {
         return 0
     fi
 
-    local lease lease_proto lease_src_ip lease_src_port
+    local timestamp=$(date +%s) 
+    local lease_expire_at lease_proto lease_src_ip lease_src_port
 
     cat "${upnp_lease_file}" | while read line
     do
-        lease_proto=$(echo "${line}" | cut -d ':' -f 0)
-        lease_src_ip=$(echo "${line}" | cut -d ':' -f 2)
-        lease_src_port=$(echo "${line}" | cut -d ':' -f 3)
-        nft add element ip mihomo exclusion { "${lease_proto,,}" . "${lease_src_ip}" . "${lease_src_port}" }
+        lease_expire_at=$(echo "${line}" | awk -F ':' '{print $5}')
+        if [ "${lease_expire_at}" -lt "${timestamp}" ]; then
+            continue
+        fi
+        lease_proto=$(echo "${line}" | awk -F ':' '{print tolower($1)}')
+        lease_src_ip=$(echo "${line}" | awk -F ':' '{print $3}')
+        lease_src_port=$(echo "${line}" | awk -F ':' '{print $4}')
+        nft add element ip mihomo exclusion { "${lease_proto}" . "${lease_src_ip}" . "${lease_src_port}" }
     done
 }
