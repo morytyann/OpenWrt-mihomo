@@ -33,6 +33,5 @@ dns:
     geosite:
       - gfw
   fake-ip-filter:
-    - "*"
     - "+.lan"
     - "+.local"

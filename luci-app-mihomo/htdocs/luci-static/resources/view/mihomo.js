@@ -223,6 +223,8 @@ return view.extend({
         s.tab('mixin_file_content', _('Mixin File Content'));
 
         o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', _('Mixin File Content'), _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
+        o.width = '100%';
+        o.rows = 20;
         o.cfgvalue = function(section_id) {
             return fs.read('/etc/mihomo/mixin.yaml');
         };

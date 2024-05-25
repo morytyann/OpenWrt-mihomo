@@ -188,11 +188,11 @@ start_service() {
         config_load mihomo
     fi
     # cron
-    local scheduled_restart cron_exp
+    local scheduled_restart cron_expression
     config_get scheduled_restart "config" "scheduled_restart"
-    config_get cron_exp "config" "cron_exp"
-    if [[ "${scheduled_restart}" == 1 && -n "${cron_exp}" ]]; then
-        echo "${cron_exp} /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+    config_get cron_expression "config" "cron_expression"
+    if [[ "${scheduled_restart}" == 1 && -n "${cron_expression}" ]]; then
+        echo "${cron_expression} /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
     fi
 }
 
