@@ -372,7 +372,7 @@ return view.extend({
             return fs.read('/etc/mihomo/mixin.yaml');
         };
         o.write = function(section_id, formvalue) {
-			return fs.write('/etc/mihomo/mixin.yaml', formvalue.trim());
+			return fs.write('/etc/mihomo/mixin.yaml', formvalue);
         };
 
         return m.render();

@@ -135,7 +135,7 @@ start_service() {
     ' "${run_profile_path}"
 
     if [ "${fake_ip_filter}" == 1 ]; then
-        yq -i 'del(.dns.fake-ip-filter.[*])' "${run_profile_path}"
+        yq -i 'del(.dns.fake-ip-filter)' "${run_profile_path}"
         config_list_foreach "mixin" "fake_ip_filters" mixin_fake_ip_filter
     fi
     if [ "${dns_hosts}" == 1 ]; then
@@ -273,7 +273,7 @@ mixin_host() {
 }
 
 do_mixin_host() {
-    ip="$1" domain_name="${$2}" yq -i '.hosts.[env(domain_name)] += [env(ip)]' ${run_profile_path}
+    ip="$1" domain_name="$2" yq -i '.hosts.[env(domain_name)] += [env(ip)]' "${run_profile_path}"
 }
 
 mixin_nameserver() {
@@ -351,7 +351,7 @@ mixin_sniff() {
 }
 
 do_mixin_sniff() {
-    port=$1 protocol=$2 yq -i '.sniffer.sniff.[env(protocol)].ports += env(port)' "${run_profile_path}"
+    port=$1 protocol=$2 yq -i '.sniffer.sniff.[env(protocol)].ports += [env(port)]' "${run_profile_path}"
 }
 
 add_acl_ip() {
