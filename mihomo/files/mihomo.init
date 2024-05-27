@@ -255,7 +255,7 @@ download_ui() {
 }
 
 mixin_fake_ip_filter() {
-    domain_name="$1" yq -i '.dns.fake-ip-filter += env(domain_name)' "${run_profile_path}"
+    domain_name="$1" yq -i '.dns.fake-ip-filter += [env(domain_name)]' "${run_profile_path}"
 }
 
 mixin_host() {
@@ -273,7 +273,7 @@ mixin_host() {
 }
 
 do_mixin_host() {
-    ip="$1" domain_name="${$2}" yq -i '.hosts.env(domain_name) += env(ip)' ${run_profile_path}
+    ip="$1" domain_name="${$2}" yq -i '.hosts.[env(domain_name)] += [env(ip)]' ${run_profile_path}
 }
 
 mixin_nameserver() {
@@ -291,7 +291,7 @@ mixin_nameserver() {
 }
 
 do_mixin_nameserver() {
-    nameserver=$1 type=$2 yq -i '.dns.env(type) += env(nameserver)' "${run_profile_path}"
+    nameserver=$1 type=$2 yq -i '.dns.[env(type)] += [env(nameserver)]' "${run_profile_path}"
 }
 
 mixin_fallback_filter() {
@@ -309,7 +309,7 @@ mixin_fallback_filter() {
 }
 
 do_mixin_fallback_filter() {
-    value=$1 type=$2 yq -i '.dns.fallback-filter.env(type) += env(value)' "${run_profile_path}"
+    value=$1 type=$2 yq -i '.dns.fallback-filter.[env(type)] += [env(value)]' "${run_profile_path}"
 }
 
 mixin_nameserver_policy() {
@@ -327,11 +327,11 @@ mixin_nameserver_policy() {
 }
 
 do_mixin_nameserver_policy() {
-    nameserver=$1 matcher=$2 yq -i '.dns.nameserver-policy.env(matcher) += env(nameserver)' "${run_profile_path}"
+    nameserver=$1 matcher=$2 yq -i '.dns.nameserver-policy.[env(matcher)] += [env(nameserver)]' "${run_profile_path}"
 }
 
 mixin_sniffer_domain_name() {
-    domain_name=$1 type=$2 yq -i '.sniffer.env(type) += env(domain_name)'
+    domain_name=$1 type=$2 yq -i '.sniffer.[env(type)] += [env(domain_name)]' "${run_profile_path}"
 }
 
 mixin_sniff() {
@@ -346,12 +346,12 @@ mixin_sniff() {
         return
     fi
 
-    protocol="${protocol}" yq -i '.sniffer.sniff.env(protocol).override-destination = env(overwrite_dest) == 1' "${run_profile_path}"
+    protocol="${protocol}" overwrite_dest="${overwrite_dest}" yq -i '.sniffer.sniff.[env(protocol)].override-destination = env(overwrite_dest) == 1' "${run_profile_path}"
     config_list_foreach "${section}" "port" do_mixin_sniff "${protocol}"
 }
 
 do_mixin_sniff() {
-    port=$1 protocol=$2 yq -i '.sniffer.sniff.env(protocol).ports += env(port)' "${run_profile_path}"
+    port=$1 protocol=$2 yq -i '.sniffer.sniff.[env(protocol)].ports += env(port)' "${run_profile_path}"
 }
 
 add_acl_ip() {

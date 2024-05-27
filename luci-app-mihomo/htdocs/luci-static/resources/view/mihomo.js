@@ -241,10 +241,10 @@ return view.extend({
         so.rmempty = false;
         
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('default-nameserver', _('Nameserver of Nameserver'));
-        so.value('proxy-server-nameserver', _('Nameserver of Proxy Server'));
-        so.value('nameserver', _('Nameserver'));
-        so.value('fallback', _('Fallback Nameserver'));
+        so.value('default-nameserver');
+        so.value('proxy-server-nameserver');
+        so.value('nameserver');
+        so.value('fallback');
         so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
