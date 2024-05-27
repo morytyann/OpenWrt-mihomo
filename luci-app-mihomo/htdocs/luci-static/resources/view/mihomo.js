@@ -18,7 +18,7 @@ return view.extend({
         const api_secret = uci.get('mihomo', 'mixin', 'api_secret') || '666666';
         const profiles = data[1];
 
-        let m, s, o;
+        let m, s, o, so;
 
         m = new form.Map('mihomo', _('mihomo'), _('mihomo is a rule based proxy in Go.'));
 
@@ -85,7 +85,6 @@ return view.extend({
         o = s.option(form.Value, 'name', _('Subscription Name'));
 
         o = s.option(form.Value, 'url', _('Subscription Url'));
-        o.datatype = 'url';
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
@@ -106,6 +105,10 @@ return view.extend({
 
         o = s.taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
         o.rmempty = false;
+
+        o = s.taboption('global', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
+        o.datatype = 'integer';
+        o.placeholder = '600';
 
         s.tab('external_control', _('External Control Config'));
 
@@ -190,10 +193,143 @@ return view.extend({
         o.retain = true;
         o.depends('dns_mode', 'fake-ip');
 
+        o = s.taboption('dns', form.DynamicList, 'fake_ip_filter', _('Fake-IP Filter'));
+        o.retain = true;
+        o.depends('dns_mode', 'fake-ip');
+
         o = s.taboption('dns', form.Flag, 'fake_ip_cache', _('Fake-IP Cache'));
         o.retain = true;
         o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
+
+        o = s.taboption('dns', form.Flag, 'dns_hosts', _('Use Hosts'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.SectionValue, 'hosts', form.TableSection, 'host', _('Edit Hosts'));
+        o.retain = true;
+        o.depends('dns_hosts', '1');
+
+        o.subsection.anonymous = true;
+        o.subsection.addremove = true;
+    
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+    
+        so = o.subsection.option(form.Value, 'domain_name', _('Domain Name'));
+    
+        so = o.subsection.option(form.DynamicList, 'ip', _('IP'));
+
+        o = s.taboption('dns', form.Flag, 'dns_system_hosts', _('Use System Hosts'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.Flag, 'dns_nameserver', _('Overwrite Nameserver'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.SectionValue, 'nameservers', form.TableSection, 'nameserver', _('Edit Nameservers'));
+        o.retain = true;
+        o.depends('dns_nameserver', '1');
+
+        o.subsection.anonymous = true;
+        o.subsection.addremove = false;
+
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+        
+        so = o.subsection.option(form.ListValue, 'type', _('Type'));
+        so.value('default', _('Default Nameserver'));
+        so.value('proxy-server', _('Proxy Server Nameserver'));
+        so.value('nameserver', _('Nameserver'));
+        so.value('fallback', _('Fallback Nameserver'));
+        so.readonly = true;
+
+        so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
+
+        o = s.taboption('dns', form.Flag, 'fallback_filter', _('Overwrite Fallback Filter'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.DynamicList, 'fallback_filter_geoip', _('Fallback GeoIP Filter'));
+        o.retain = true;
+        o.depends('fallback_filter', '1');
+
+        o = s.taboption('dns', form.DynamicList, 'fallback_filter_geosite', _('Fallback GeoSite Filter'));
+        o.retain = true;
+        o.depends('fallback_filter', '1');
+
+        o = s.taboption('dns', form.DynamicList, 'fallback_filter_ipcidr', _('Fallback IPCIDR Filter'));
+        o.datatype = 'cidr4';
+        o.retain = true;
+        o.depends('fallback_filter', '1');
+
+        o = s.taboption('dns', form.DynamicList, 'fallback_filter_domain', _('Fallback Domain Name Filter'));
+        o.retain = true;
+        o.depends('fallback_filter', '1');
+
+        o = s.taboption('dns', form.Flag, 'dns_nameserver_policy', _('Overwrite Nameserver Policy'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.SectionValue, 'nameserver_policies', form.TableSection, 'nameserver_policy', _('Edit Nameserver Policies'));
+        o.retain = true;
+        o.depends('dns_nameserver_policy', '1');
+
+        o.subsection.anonymous = true;
+        o.subsection.addremove = true;
+
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+        
+        so = o.subsection.option(form.Value, 'matcher', _('Matcher'));
+
+        so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
+
+        s.tab('sniffer', _('Sniffer Config'));
+
+        s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
+        s.rmempty = false;
+
+        o = s.taboption('sniffer', form.Flag, 'sniff_dns_mapping', _('Sniff Redir-Host'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('sniffer', '1');
+
+        o = s.taboption('sniffer', form.Flag, 'sniff_pure_ip', _('Sniff Pure IP'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('sniffer', '1');
+
+        o = s.taboption('sniffer', form.Flag, 'sniffer_overwrite_dest', _('Overwrite Destination'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('sniffer', '1');
+
+        o = s.taboption('sniffer', form.DynamicList, 'sniffer_force_domain', _('Force Sniff Domain'));
+        o.retain = true;
+        o.depends('sniffer', '1');
+
+        o = s.taboption('sniffer', form.DynamicList, 'sniffer_ignore_domain', _('Ignore Sniff Domain'));
+        o.retain = true;
+        o.depends('sniffer', '1');
+
+        o = s.taboption('sniffer', form.SectionValue, 'sniffs', form.TableSection, 'sniff');
+        o.retain = true;
+        o.depends('sniffer', '1');
+
+        o.subsection.anonymous = true;
+        o.subsection.addremove = false;
+
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+        
+        so = o.subsection.option(form.ListValue, 'protocol', _('Protocol'));
+        so.value('HTTP');
+        so.value('TLS');
+        so.value('QUIC');
+        so.readonly = true;
+
+        so = o.subsection.option(form.DynamicList, 'port', _('Port'));
+        so.datatype = 'port';
+
+        so = o.subsection.option(form.Flag, 'overwrite_dest', _('Overwrite Destination'));
+        so.rmempty = false;
 
         s.tab('geox', _('GeoX Config'));
 

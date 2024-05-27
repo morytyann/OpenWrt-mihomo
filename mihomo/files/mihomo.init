@@ -108,39 +108,20 @@ start_service() {
     local mihomo_mark
     config_get      mihomo_mark             "proxy" "routing_mark"          "255"
     # mixin config
-    # global
-    $(mode="${mode}"                                  yq e '.mode = env(mode)'                                    -i "${run_profile_path}")
-    $(match_process="${match_process}"                yq e '.find-process-mode = env(match_process)'              -i "${run_profile_path}")
-    $(unify_delay="${unify_delay}"                    yq e '.unified-delay = env(unify_delay) == 1'               -i "${run_profile_path}")
-    $(tcp_concurrent="${tcp_concurrent}"              yq e '.tcp-concurrent = env(tcp_concurrent) == 1'           -i "${run_profile_path}")
-    # api
-    $(ui_path="ui"                                    yq e '.external-ui = env(ui_path)'                          -i "${run_profile_path}")
-    $(api_listen="0.0.0.0:${api_port}"                yq e '.external-controller = env(api_listen)'               -i "${run_profile_path}")
-    $(api_secret="${api_secret}"                      yq e '.secret = env(api_secret)'                            -i "${run_profile_path}")
-    $(selection_cache="${selection_cache}"            yq e '.profile.store-selected = env(selection_cache) == 1'  -i "${run_profile_path}")
-    # inbound
-    $(allow_lan="${allow_lan}"                        yq e '.allow-lan = env(allow_lan) == 1'                     -i "${run_profile_path}")
-    $(http_port="${http_port}"                        yq e '.port = env(http_port)'                               -i "${run_profile_path}")
-    $(socks_port="${socks_port}"                      yq e '.socks-port = env(socks_port)'                        -i "${run_profile_path}")
-    $(mixed_port="${mixed_port}"                      yq e '.mixed-port = env(mixed_port)'                        -i "${run_profile_path}")
-    $(redir_port="${redir_port}"                      yq e '.redir-port = env(redir_port)'                        -i "${run_profile_path}")
-    $(tproxy_port="${tproxy_port}"                    yq e '.tproxy-port = env(tproxy_port)'                      -i "${run_profile_path}")
-    # dns
-    $(dns_enable="true"                               yq e '.dns.enable = env(dns_enable)'                        -i "${run_profile_path}")
-    $(dns_listen="0.0.0.0:${dns_port}"                yq e '.dns.listen = env(dns_listen)'                        -i "${run_profile_path}")
-    $(dns_mode="${dns_mode}"                          yq e '.dns.enhanced-mode = env(dns_mode)'                   -i "${run_profile_path}")
-    $(fake_ip_range="${fake_ip_range}"                yq e '.dns.fake-ip-range = env(fake_ip_range)'              -i "${run_profile_path}")
-    $(fake_ip_cache="${fake_ip_cache}"                yq e '.profile.store-fake-ip = env(fake_ip_cache) == 1'     -i "${run_profile_path}")
-    # geox
-    $(geoip_format="${geoip_format}"                  yq e '.geodata-mode = env(geoip_format) == "dat"'           -i "${run_profile_path}")
-    $(geodata_loader="${geodata_loader}"              yq e '.geodata-loader = env(geodata_loader)'                -i "${run_profile_path}")
-    $(geoip_mmdb_url="${geoip_mmdb_url}"              yq e '.geox-url.mmdb = env(geoip_mmdb_url)'                 -i "${run_profile_path}")
-    $(geoip_dat_url="${geoip_dat_url}"                yq e '.geox-url.geoip = env(geoip_dat_url)'                 -i "${run_profile_path}")
-    $(geosite_url="${geosite_url}"                    yq e '.geox-url.geosite = env(geosite_url)'                 -i "${run_profile_path}")
-    $(geox_auto_update="${geox_auto_update}"          yq e '.geo-auto-update = env(geox_auto_update) == 1'        -i "${run_profile_path}")
-    $(geox_update_interval="${geox_update_interval}"  yq e '.geo-update-interval = env(geox_update_interval)'     -i "${run_profile_path}")
-    # mark
-    $(mihomo_mark="${mihomo_mark}"                    yq e '.routing-mark = env(mihomo_mark)'                     -i "${run_profile_path}")
+    mode="${mode}" match_process="${match_process}" unify_delay="${unify_delay}" tcp_concurrent="${tcp_concurrent}" \
+    ui_path="ui" api_listen="0.0.0.0:${api_port}" api_secret="${api_secret}" selection_cache="${selection_cache}" \
+    allow_lan="${allow_lan}" http_port="${http_port}" socks_port="${socks_port}" mixed_port="${mixed_port}" redir_port="${redir_port}" tproxy_port="${tproxy_port}" \
+    dns_enable="true" dns_listen="0.0.0.0:${dns_port}" dns_mode="${dns_mode}" fake_ip_range="${fake_ip_range}" fake_ip_cache="${fake_ip_cache}" \
+    geoip_format="${geoip_format}" geodata_loader="${geodata_loader}" geoip_mmdb_url="${geoip_mmdb_url}" geoip_dat_url="${geoip_dat_url}" geosite_url="${geosite_url}" geox_auto_update="${geox_auto_update}" geox_update_interval="${geox_update_interval}" \
+    mihomo_mark="${mihomo_mark}" \
+    yq -i '
+      .mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 |
+      .external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
+      .allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
+      .dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range) | .profile.store-fake-ip = env(fake_ip_cache) == 1 |
+      .geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.geosite = env(geosite_url) | .geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
+      .routing-mark = env(mihomo_mark)
+    ' "${run_profile_path}"
     # mixin
     $(yq ea -i 'select(fi == 0) * select(fi == 1)' "${run_profile_path}" "${mixin_path}")
     # start process
