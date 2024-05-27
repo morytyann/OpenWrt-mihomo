@@ -193,14 +193,22 @@ return view.extend({
         o.retain = true;
         o.depends('dns_mode', 'fake-ip');
 
-        o = s.taboption('dns', form.DynamicList, 'fake_ip_filter', _('Fake-IP Filter'));
+        o = s.taboption('dns', form.Flag, 'fake_ip_filter', _('Overwrite Fake-IP Filter'));
         o.retain = true;
+        o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
+
+        o = s.taboption('dns', form.DynamicList, 'fake_ip_filters', _('Edit Fake-IP Filters'));
+        o.retain = true;
+        o.depends({'dns_mode': 'fake-ip', 'fake_ip_filter': '1'});
 
         o = s.taboption('dns', form.Flag, 'fake_ip_cache', _('Fake-IP Cache'));
         o.retain = true;
         o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
+
+        o = s.taboption('dns', form.Flag, 'dns_system_hosts', _('Use System Hosts'));
+        o.rmempty = false;
 
         o = s.taboption('dns', form.Flag, 'dns_hosts', _('Use Hosts'));
         o.rmempty = false;
@@ -219,9 +227,6 @@ return view.extend({
     
         so = o.subsection.option(form.DynamicList, 'ip', _('IP'));
 
-        o = s.taboption('dns', form.Flag, 'dns_system_hosts', _('Use System Hosts'));
-        o.rmempty = false;
-
         o = s.taboption('dns', form.Flag, 'dns_nameserver', _('Overwrite Nameserver'));
         o.rmempty = false;
 
@@ -236,10 +241,10 @@ return view.extend({
         so.rmempty = false;
         
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('default');
-        so.value('proxy-server');
-        so.value('nameserver');
-        so.value('fallback');
+        so.value('nameserver_nameserver', _('Nameserver of Nameserver'));
+        so.value('proxy_server_nameserver', _('Nameserver of Proxy Server'));
+        so.value('nameserver', _('Nameserver'));
+        so.value('fallback_nameserver', _('Fallback Nameserver'));
         so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));

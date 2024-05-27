@@ -163,8 +163,11 @@ msgstr "Redir-Host"
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
 
-msgid "Fake-IP Filter"
-msgstr "Fake-IP 过滤列表"
+msgid "Overwrite Fake-IP Filter"
+msgstr "覆盖 Fake-IP 过滤列表"
+
+msgid "Edit Fake-IP Filters"
+msgstr "编辑 Fake-IP 过滤列表"
 
 msgid "Fake-IP Cache"
 msgstr "Fake-IP 缓存"
@@ -190,8 +193,17 @@ msgstr "编辑 DNS 服务器"
 msgid "Type"
 msgstr "类型"
 
+msgid "Nameserver of Nameserver"
+msgstr "解析 DNS 服务器域名的 DNS 服务器"
+
+msgid "Nameserver of Proxy Server"
+msgstr "解析代理服务器域名的 DNS 服务器"
+
 msgid "Nameserver"
 msgstr "DNS 服务器"
+
+msgid "Fallback Nameserver"
+msgstr "Fallback DNS 服务器"
 
 msgid "Overwrite Fallback Filter"
 msgstr "覆盖 Fallback 过滤列表"
