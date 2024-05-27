@@ -262,7 +262,7 @@ mixin_host() {
     local section=$1
 
     local enabled domain_name
-    config_get_bool enabled     "${section}" "enabled"
+    config_get_bool enabled     "${section}" "enabled"      0
     config_get      domain_name "${section}" "domain_name"
 
     if [ "${enabled}" == 0 ]; then
@@ -277,16 +277,17 @@ do_mixin_host() {
 }
 
 mixin_nameserver() {
-    local type=$1
+    local section=$1
 
-    local enabled
-    config_get_bool enabled "${type}" "enabled"
+    local enabled type
+    config_get_bool enabled "${section}" "enabled" 0
+    config_get      type    "${section}" "type"
 
     if [ "${enabled}" == 0 ]; then
         return
     fi
     
-    config_list_foreach "${type}" "nameserver" do_mixin_nameserver "${type}"
+    config_list_foreach "${section}" "nameserver" do_mixin_nameserver "${type}"
 }
 
 do_mixin_nameserver() {
@@ -294,16 +295,17 @@ do_mixin_nameserver() {
 }
 
 mixin_fallback_filter() {
-    local type=$1
+    local section=$1
 
     local enabled
-    config_get_bool enabled "${type}" "enabled"
+    config_get_bool enabled "${section}" "enabled" 0
+    config_get      type    "${section}" "type"
 
     if [ "${enabled}" == 0 ]; then
         return
     fi
     
-    config_list_foreach "${type}" "value" do_mixin_fallback_filter "${type}"
+    config_list_foreach "${section}" "value" do_mixin_fallback_filter "${type}"
 }
 
 do_mixin_fallback_filter() {
@@ -314,7 +316,7 @@ mixin_nameserver_policy() {
     local section=$1
 
     local enabled matcher
-    config_get_bool enabled "${section}" "enabled"
+    config_get_bool enabled "${section}" "enabled" 0
     config_get      matcher "${section}" "matcher"
 
     if [ "${enabled}" == 0 ]; then
@@ -336,7 +338,7 @@ mixin_sniff() {
     local section=$1
 
     local enabled protocol overwrite_dest
-    config_get_bool enabled         "${section}" "enabled"
+    config_get_bool enabled         "${section}" "enabled"          0
     config_get      protocol        "${section}" "protocol"
     config_get_bool overwrite_dest  "${section}" "overwrite_dest"
 

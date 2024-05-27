@@ -241,10 +241,10 @@ return view.extend({
         so.rmempty = false;
         
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('nameserver_nameserver', _('Nameserver of Nameserver'));
-        so.value('proxy_server_nameserver', _('Nameserver of Proxy Server'));
+        so.value('default-nameserver', _('Nameserver of Nameserver'));
+        so.value('proxy-server-nameserver', _('Nameserver of Proxy Server'));
         so.value('nameserver', _('Nameserver'));
-        so.value('fallback_nameserver', _('Fallback Nameserver'));
+        so.value('fallback', _('Fallback Nameserver'));
         so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
@@ -263,7 +263,7 @@ return view.extend({
         so.rmempty = false;
         
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('geoip', _('GeoIP'));
+        so.value('geoip-code', _('GeoIP'));
         so.value('geosite', _('GeoSite'));
         so.value('ipcidr', _('IPCIDR'));
         so.value('domain_name', _('Domain Name'));
