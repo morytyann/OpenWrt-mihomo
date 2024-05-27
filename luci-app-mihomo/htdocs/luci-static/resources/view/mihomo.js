@@ -247,22 +247,24 @@ return view.extend({
         o = s.taboption('dns', form.Flag, 'fallback_filter', _('Overwrite Fallback Filter'));
         o.rmempty = false;
 
-        o = s.taboption('dns', form.DynamicList, 'fallback_filter_geoip', _('Fallback GeoIP Filter'));
+        o = s.taboption('dns', form.SectionValue, 'fallback_filters', form.TableSection, 'fallback_filter', _('Edit Fallback Filters'));
         o.retain = true;
         o.depends('fallback_filter', '1');
 
-        o = s.taboption('dns', form.DynamicList, 'fallback_filter_geosite', _('Fallback GeoSite Filter'));
-        o.retain = true;
-        o.depends('fallback_filter', '1');
+        o.subsection.anonymous = true;
+        o.subsection.addremove = false;
 
-        o = s.taboption('dns', form.DynamicList, 'fallback_filter_ipcidr', _('Fallback IPCIDR Filter'));
-        o.datatype = 'cidr4';
-        o.retain = true;
-        o.depends('fallback_filter', '1');
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+        
+        so = o.subsection.option(form.ListValue, 'type', _('Type'));
+        so.value('geoip', _('GeoIP'));
+        so.value('geosite', _('GeoSite'));
+        so.value('ipcidr', _('IPCIDR'));
+        so.value('domain_name', _('Domain Name'));
+        so.readonly = true;
 
-        o = s.taboption('dns', form.DynamicList, 'fallback_filter_domain_name', _('Fallback Domain Name Filter'));
-        o.retain = true;
-        o.depends('fallback_filter', '1');
+        so = o.subsection.option(form.DynamicList, 'value', _('Value'));
 
         o = s.taboption('dns', form.Flag, 'dns_nameserver_policy', _('Overwrite Nameserver Policy'));
         o.rmempty = false;
@@ -309,7 +311,7 @@ return view.extend({
         o.retain = true;
         o.depends('sniffer', '1');
 
-        o = s.taboption('sniffer', form.SectionValue, 'sniffs', form.TableSection, 'sniff');
+        o = s.taboption('sniffer', form.SectionValue, 'sniffs', form.TableSection, 'sniff', _('Sniff By Protocol'));
         o.retain = true;
         o.depends('sniffer', '1');
 

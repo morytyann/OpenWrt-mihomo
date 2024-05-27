@@ -169,6 +169,9 @@ msgstr "Fake-IP 过滤列表"
 msgid "Fake-IP Cache"
 msgstr "Fake-IP 缓存"
 
+msgid "Use System Hosts"
+msgstr "使用系统的 Hosts"
+
 msgid "Use Hosts"
 msgstr "使用 Hosts"
 
@@ -177,9 +180,6 @@ msgstr "编辑 Hosts"
 
 msgid "Domain Name"
 msgstr "域名"
-
-msgid "Use System Hosts"
-msgstr "使用系统的 Hosts"
 
 msgid "Overwrite Nameserver"
 msgstr "覆盖 DNS 服务器"
@@ -196,17 +196,11 @@ msgstr "DNS 服务器"
 msgid "Overwrite Fallback Filter"
 msgstr "覆盖 Fallback 过滤列表"
 
-msgid "Fallback GeoIP Filter"
-msgstr "Fallback GeoIP 过滤列表"
+msgid "Edit Fallback Filters"
+msgstr "编辑 Fallback 过滤列表"
 
-msgid "Fallback GeoSite Filter"
-msgstr "Fallback GeoSite 过滤列表"
-
-msgid "Fallback IPCIDR Filter"
-msgstr "Fallback IPCIDR 过滤列表"
-
-msgid "Fallback Domain Name Filter"
-msgstr "Fallback 域名过滤列表"
+msgid "Value"
+msgstr "值"
 
 msgid "Overwrite Nameserver Policy"
 msgstr "覆盖 DNS 服务器查询策略"
@@ -234,6 +228,9 @@ msgstr "强制嗅探的域名"
 
 msgid "Ignore Sniff Domain Name"
 msgstr "忽略嗅探的域名"
+
+msgid "Sniff By Protocol"
+msgstr "按协议嗅探"
 
 msgid "GeoX Config"
 msgstr "GeoX 配置"
