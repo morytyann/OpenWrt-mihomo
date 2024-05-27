@@ -236,10 +236,10 @@ return view.extend({
         so.rmempty = false;
         
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('default', _('Default Nameserver'));
-        so.value('proxy-server', _('Proxy Server Nameserver'));
-        so.value('nameserver', _('Nameserver'));
-        so.value('fallback', _('Fallback Nameserver'));
+        so.value('default');
+        so.value('proxy-server');
+        so.value('nameserver');
+        so.value('fallback');
         so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
@@ -260,7 +260,7 @@ return view.extend({
         o.retain = true;
         o.depends('fallback_filter', '1');
 
-        o = s.taboption('dns', form.DynamicList, 'fallback_filter_domain', _('Fallback Domain Name Filter'));
+        o = s.taboption('dns', form.DynamicList, 'fallback_filter_domain_name', _('Fallback Domain Name Filter'));
         o.retain = true;
         o.depends('fallback_filter', '1');
 
@@ -301,11 +301,11 @@ return view.extend({
         o.rmempty = false;
         o.depends('sniffer', '1');
 
-        o = s.taboption('sniffer', form.DynamicList, 'sniffer_force_domain', _('Force Sniff Domain'));
+        o = s.taboption('sniffer', form.DynamicList, 'sniffer_force_domain_name', _('Force Sniff Domain Name'));
         o.retain = true;
         o.depends('sniffer', '1');
 
-        o = s.taboption('sniffer', form.DynamicList, 'sniffer_ignore_domain', _('Ignore Sniff Domain'));
+        o = s.taboption('sniffer', form.DynamicList, 'sniffer_ignore_domain_name', _('Ignore Sniff Domain Name'));
         o.retain = true;
         o.depends('sniffer', '1');
 

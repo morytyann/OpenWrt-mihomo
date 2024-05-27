@@ -175,6 +175,9 @@ msgstr "使用 Hosts"
 msgid "Edit Hosts"
 msgstr "编辑 Hosts"
 
+msgid "Domain Name"
+msgstr "域名"
+
 msgid "Use System Hosts"
 msgstr "使用系统的 Hosts"
 
@@ -203,7 +206,7 @@ msgid "Fallback IPCIDR Filter"
 msgstr "Fallback IPCIDR 过滤列表"
 
 msgid "Fallback Domain Name Filter"
-msgstr "Fallback Domain Name 过滤列表"
+msgstr "Fallback 域名过滤列表"
 
 msgid "Overwrite Nameserver Policy"
 msgstr "覆盖 DNS 服务器查询策略"
@@ -226,10 +229,10 @@ msgstr "嗅探纯IP连接"
 msgid "Overwrite Destination"
 msgstr "将嗅探结果作为连接的目标"
 
-msgid "Force Sniff Domain"
+msgid "Force Sniff Domain Name"
 msgstr "强制嗅探的域名"
 
-msgid "Ignore Sniff Domain"
+msgid "Ignore Sniff Domain Name"
 msgstr "忽略嗅探的域名"
 
 msgid "GeoX Config"
