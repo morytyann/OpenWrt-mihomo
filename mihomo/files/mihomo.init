@@ -270,7 +270,7 @@ mixin_host() {
     if [ "${enabled}" == 0 ]; then
         return
     fi
-
+    
     config_list_foreach "${section}" "ip" do_mixin_host "${domain_name}"
 }
 
@@ -288,7 +288,7 @@ mixin_nameserver() {
     if [ "${enabled}" == 0 ]; then
         return
     fi
-
+    
     config_list_foreach "${section}" "nameserver" do_mixin_nameserver "${type}"
 }
 
@@ -306,7 +306,7 @@ mixin_fallback_filter() {
     if [ "${enabled}" == 0 ]; then
         return
     fi
-
+    
     config_list_foreach "${section}" "value" do_mixin_fallback_filter "${type}"
 }
 
@@ -324,7 +324,7 @@ mixin_nameserver_policy() {
     if [ "${enabled}" == 0 ]; then
         return
     fi
-
+    
     config_list_foreach "${section}" "nameserver" do_mixin_nameserver_policy "${matcher}"
 }
 
@@ -357,18 +357,18 @@ do_mixin_sniff() {
 }
 
 add_acl_ip() {
-    nft "add element ip mihomo acl_ip { $1 }"
+    nft add element ip mihomo acl_ip { "$1" }
 }
 
 add_acl_mac() {
-    nft "add element ip mihomo acl_mac { $1 }"
+    nft add element ip mihomo acl_mac { "$1" }
 }
 
 add_wan_inbound_exclusion() {
     local wan_dev wan_ip
     network_find_wan wan_dev
     network_get_ipaddr wan_ip $wan_dev
-    nft "add element ip mihomo private_ip { ${wan_ip} }"
+    nft add element ip mihomo private_ip { "${wan_ip}" }
 }
 
 add_firewall_exclusion() {
@@ -451,17 +451,17 @@ add_firewall_redirect_exclusion() {
 
     if [[ -z "${dest}" || -z "${dest_ip}" ]]; then
         if [ "${tcp}" == 1 ]; then
-            nft "add element ip mihomo router_exclusion { tcp . ${dest_port} }"
+            nft add element ip mihomo router_exclusion { tcp . "${dest_port}" }
         fi
         if [ "${udp}" == 1 ]; then
-            nft "add element ip mihomo router_exclusion { udp . ${dest_port} }"
+            nft add element ip mihomo router_exclusion { udp . "${dest_port}" }
         fi
     else
         if [ "${tcp}" == 1 ]; then
-            nft "add element ip mihomo exclusion { tcp . ${dest_ip} . ${dest_port} }"
+            nft add element ip mihomo exclusion { tcp . "${dest_ip}" . "${dest_port}" }
         fi
         if [ "${udp}" == 1 ]; then
-            nft "add element ip mihomo exclusion { udp . ${dest_ip} . ${dest_port} }"
+            nft add element ip mihomo exclusion { udp . "${dest_ip}" . "${dest_port}" }
         fi
     fi
 }
@@ -489,6 +489,6 @@ add_upnp_exclusion() {
         lease_proto=$(echo "${line}" | awk -F ':' '{print tolower($1)}')
         lease_src_ip=$(echo "${line}" | awk -F ':' '{print $3}')
         lease_src_port=$(echo "${line}" | awk -F ':' '{print $4}')
-        nft "add element ip mihomo exclusion { ${lease_proto} . ${lease_src_ip} . ${lease_src_port} }"
+        nft add element ip mihomo exclusion { "${lease_proto}" . "${lease_src_ip}" . "${lease_src_port}" }
     done
 }
