@@ -381,7 +381,7 @@ add_firewall_rule_exclusion() {
     local section="$1"
 
     local enabled name proto src dest dest_ip dest_port family
-    config_get_bool enabled     "${section}" "enabled"     0
+    config_get_bool enabled     "${section}" "enabled"     1
     config_get      name        "${section}" "name"
     config_get      proto       "${section}" "proto"
     config_get      src         "${section}" "src"
@@ -399,19 +399,19 @@ add_firewall_rule_exclusion() {
         tcp=1
         udp=1
     else
-        for p in "${proto}"; do
+        for p in ${proto}; do
             [ "${p}" == "tcp" ] && tcp=1
             [ "${p}" == "udp" ] && udp=1
         done
     fi
 
     if [ "${tcp}" == 1 ]; then
-        for port in "${dest_port}"; do
+        for port in ${dest_port}; do
             nft add element ip mihomo router_exclusion { tcp . "${port}" }
         done
     fi
     if [ "${udp}" == 1 ]; then
-        for port in "${dest_port}"; do
+        for port in ${dest_port}; do
             nft add element ip mihomo router_exclusion { udp . "${port}" }
         done
     fi
@@ -421,7 +421,7 @@ add_firewall_redirect_exclusion() {
     local section="$1"
 
     local enabled name proto dest dest_ip dest_port
-    config_get_bool enabled     "${section}" "enabled"     0
+    config_get_bool enabled     "${section}" "enabled"     1
     config_get      name        "${section}" "name"
     config_get      proto       "${section}" "proto"
     config_get      src_dport   "${section}" "src_dport"
@@ -439,7 +439,7 @@ add_firewall_redirect_exclusion() {
         tcp=1
         udp=1
     else
-        for p in "${proto}"; do
+        for p in ${proto}; do
             [ "${p}" == "tcp" ] && tcp=1
             [ "${p}" == "udp" ] && udp=1
         done
