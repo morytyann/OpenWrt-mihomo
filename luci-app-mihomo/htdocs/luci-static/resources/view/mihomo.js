@@ -52,7 +52,7 @@ return view.extend({
         o.rmempty = true;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
-        
+
         o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
         o.rmempty = false;
 
@@ -219,12 +219,12 @@ return view.extend({
 
         o.subsection.anonymous = true;
         o.subsection.addremove = true;
-    
+
         so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
         so.rmempty = false;
-    
+
         so = o.subsection.option(form.Value, 'domain_name', _('Domain Name'));
-    
+
         so = o.subsection.option(form.DynamicList, 'ip', _('IP'));
 
         o = s.taboption('dns', form.Flag, 'dns_nameserver', _('Overwrite Nameserver'));
@@ -239,7 +239,7 @@ return view.extend({
 
         so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
         so.rmempty = false;
-        
+
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
         so.value('default-nameserver');
         so.value('proxy-server-nameserver');
@@ -249,19 +249,19 @@ return view.extend({
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
 
-        o = s.taboption('dns', form.Flag, 'fallback_filter', _('Overwrite Fallback Filter'));
+        o = s.taboption('dns', form.Flag, 'dns_fallback_filter', _('Overwrite Fallback Filter'));
         o.rmempty = false;
 
         o = s.taboption('dns', form.SectionValue, 'fallback_filters', form.TableSection, 'fallback_filter', _('Edit Fallback Filters'));
         o.retain = true;
-        o.depends('fallback_filter', '1');
+        o.depends('dns_fallback_filter', '1');
 
         o.subsection.anonymous = true;
         o.subsection.addremove = false;
 
         so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
         so.rmempty = false;
-        
+
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
         so.value('geoip-code', _('GeoIP'));
         so.value('geosite', _('GeoSite'));
@@ -283,7 +283,7 @@ return view.extend({
 
         so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
         so.rmempty = false;
-        
+
         so = o.subsection.option(form.Value, 'matcher', _('Matcher'));
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
@@ -325,7 +325,7 @@ return view.extend({
 
         so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
         so.rmempty = false;
-        
+
         so = o.subsection.option(form.ListValue, 'protocol', _('Protocol'));
         so.value('HTTP');
         so.value('TLS');
