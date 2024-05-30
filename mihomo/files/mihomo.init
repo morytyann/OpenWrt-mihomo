@@ -178,7 +178,7 @@ start_service() {
 		# transparent proxy
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
-		nft -f "$home_dir}/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_MARK="$mihomo_mark" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_MARK="$mihomo_mark" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# router proxy
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
