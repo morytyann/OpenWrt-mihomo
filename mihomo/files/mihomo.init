@@ -11,22 +11,22 @@ fw_mark=80
 
 # paths
 home_dir="/etc/mihomo"
-run_dir="${home_dir}/run"
-run_profile_path="${run_dir}/config.yaml"
-run_ui_dir="${run_dir}/ui"
-run_ui_razord_path="${run_ui_dir}/razord.tar.gz"
-run_ui_razord_src_dir="${run_ui_dir}/Razord-meta-gh-pages"
-run_ui_razord_dir="${run_ui_dir}/razord"
-run_ui_yacd_path="${run_ui_dir}/yacd.tar.gz"
-run_ui_yacd_src_dir="${run_ui_dir}/Yacd-meta-gh-pages"
-run_ui_yacd_dir="${run_ui_dir}/yacd"
-run_ui_metacubexd_path="${run_ui_dir}/metacubexd.tar.gz"
-run_ui_metacubexd_src_dir="${run_ui_dir}/metacubexd-gh-pages"
-run_ui_metacubexd_dir="${run_ui_dir}/metacubexd"
-geoip_mmdb_path="${run_dir}/Country.mmdb"
-geoip_dat_path="${run_dir}/GeoIP.dat"
-geosite_path="${run_dir}/GeoSite.dat"
-mixin_path="${home_dir}/mixin.yaml"
+run_dir="$home_dir/run"
+run_profile_path="$run_dir/config.yaml"
+run_ui_dir="$run_dir/ui"
+run_ui_razord_path="$run_ui_dir/razord.tar.gz"
+run_ui_razord_src_dir="$run_ui_dir/Razord-meta-gh-pages"
+run_ui_razord_dir="$run_ui_dir/razord"
+run_ui_yacd_path="$run_ui_dir/yacd.tar.gz"
+run_ui_yacd_src_dir="$run_ui_dir/Yacd-meta-gh-pages"
+run_ui_yacd_dir="$run_ui_dir/yacd"
+run_ui_metacubexd_path="$run_ui_dir/metacubexd.tar.gz"
+run_ui_metacubexd_src_dir="$run_ui_dir/metacubexd-gh-pages"
+run_ui_metacubexd_dir="$run_ui_dir/metacubexd"
+geoip_mmdb_path="$run_dir/Country.mmdb"
+geoip_dat_path="$run_dir/GeoIP.dat"
+geosite_path="$run_dir/GeoSite.dat"
+mixin_path="$home_dir/mixin.yaml"
 
 start_service() {
 	config_load mihomo
@@ -118,9 +118,9 @@ start_service() {
 	# mixin config
 	$(
 	mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" \
-	ui_path="ui" api_listen="0.0.0.0:${api_port}" api_secret="$api_secret" selection_cache="$selection_cache" \
+	ui_path="ui" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" selection_cache="$selection_cache" \
 	allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
-	dns_enable="true" dns_listen="0.0.0.0:${dns_port}" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" fake_ip_cache="$fake_ip_cache" \
+	dns_enable="true" dns_listen="0.0.0.0:$dns_port" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" fake_ip_cache="$fake_ip_cache" \
 	dns_system_hosts="$dns_system_hosts" dns_hosts="$dns_hosts" dns_fallback_filter="$dns_fallback_filter" \
 	sniffer="$sniffer" sniff_dns_mapping="$sniff_dns_mapping" sniff_pure_ip="$sniff_pure_ip" sniffer_overwrite_dest="$sniffer_overwrite_dest" \
 	geoip_format="$geoip_format" geodata_loader="$geodata_loader" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geosite_url="$geosite_url" geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
@@ -214,7 +214,7 @@ start_service() {
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
-		echo "${cron_expression} /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
 	fi
 }
 
@@ -369,7 +369,7 @@ add_wan_inbound_exclusion() {
 	local wan_dev wan_ip
 	network_find_wan wan_dev
 	network_get_ipaddr wan_ip "$wan_dev"
-	nft add element ip mihomo private_ip \{ "${wan_ip}" \}
+	nft add element ip mihomo private_ip \{ "$wan_ip" \}
 }
 
 add_firewall_exclusion() {
@@ -400,19 +400,19 @@ add_firewall_rule_exclusion() {
 		tcp=1
 		udp=1
 	else
-		for p in ${proto}; do
+		for p in $proto; do
 			[ "$p" == "tcp" ] && tcp=1
 			[ "$p" == "udp" ] && udp=1
 		done
 	fi
 
 	if [ "$tcp" == 1 ]; then
-		for port in ${dest_port}; do
+		for port in $dest_port; do
 			nft add element ip mihomo router_exclusion \{ tcp . "$port" \}
 		done
 	fi
 	if [ "$udp" == 1 ]; then
-		for port in ${dest_port}; do
+		for port in $dest_port; do
 			nft add element ip mihomo router_exclusion \{ udp . "$port" \}
 		done
 	fi
@@ -440,7 +440,7 @@ add_firewall_redirect_exclusion() {
 		tcp=1
 		udp=1
 	else
-		for p in ${proto}; do
+		for p in $proto; do
 			[ "$p" == "tcp" ] && tcp=1
 			[ "$p" == "udp" ] && udp=1
 		done
