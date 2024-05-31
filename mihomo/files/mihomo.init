@@ -122,17 +122,19 @@ start_service() {
 	dns_enable="true" dns_listen="0.0.0.0:$dns_port" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" fake_ip_cache="$fake_ip_cache" \
 	dns_system_hosts="$dns_system_hosts" dns_hosts="$dns_hosts" dns_fallback_filter="$dns_fallback_filter" \
 	sniffer="$sniffer" sniff_dns_mapping="$sniff_dns_mapping" sniff_pure_ip="$sniff_pure_ip" sniffer_overwrite_dest="$sniffer_overwrite_dest" \
-	geoip_format="$geoip_format" geodata_loader="$geodata_loader" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geosite_url="$geosite_url" geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
+	geoip_format="$geoip_format" geodata_loader="$geodata_loader" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geosite_url="$geosite_url" \
+	geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
 	mihomo_mark="$mihomo_mark" \
 	yq -M -i '
-	 .mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) |
-	 .external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
-	 .allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
-	 .dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range) | .profile.store-fake-ip = env(fake_ip_cache) == 1 |
-	 .dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 | .dns.fallback-filter.geoip = env(dns_fallback_filter) == 1 |
-	 .sniffer.enable = env(sniffer) == 1 | .sniffer.force-dns-mapping = env(sniff_dns_mapping) == 1 | .sniffer.parse-pure-ip = env(sniff_pure_ip) == 1 | .sniffer.override-destination = env(sniffer_overwrite_dest) == 1 |
-	 .geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.geosite = env(geosite_url) | .geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
-	 .routing-mark = env(mihomo_mark)
+	.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) |
+	.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
+	.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
+	.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range) | .profile.store-fake-ip = env(fake_ip_cache) == 1 |
+	.dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 | .dns.fallback-filter.geoip = env(dns_fallback_filter) == 1 |
+	.sniffer.enable = env(sniffer) == 1 | .sniffer.force-dns-mapping = env(sniff_dns_mapping) == 1 | .sniffer.parse-pure-ip = env(sniff_pure_ip) == 1 | .sniffer.override-destination = env(sniffer_overwrite_dest) == 1 |
+	.geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.geosite = env(geosite_url) |
+	 geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
+	.routing-mark = env(mihomo_mark)
 	' "$run_profile_path"
 
 	if [ "$fake_ip_filter" == 1 ]; then
