@@ -133,7 +133,7 @@ start_service() {
 	.dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 | .dns.fallback-filter.geoip = env(dns_fallback_filter) == 1 |
 	.sniffer.enable = env(sniffer) == 1 | .sniffer.force-dns-mapping = env(sniff_dns_mapping) == 1 | .sniffer.parse-pure-ip = env(sniff_pure_ip) == 1 | .sniffer.override-destination = env(sniffer_overwrite_dest) == 1 |
 	.geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.geosite = env(geosite_url) |
-	 geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
+	.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
 	.routing-mark = env(mihomo_mark)
 	' "$run_profile_path"
 
