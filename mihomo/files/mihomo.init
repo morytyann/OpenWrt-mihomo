@@ -180,7 +180,6 @@ start_service() {
 	else
 		procd_open_instance
 		procd_set_param command /usr/bin/mihomo -d "$run_dir"
-		procd_set_param file "$run_profile_path"
 		procd_set_param respawn
 		procd_close_instance
 	fi
