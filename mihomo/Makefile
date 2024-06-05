@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
 PKG_VERSION:=1.18.5
-PKG_RELEASE:=1717549413
+PKG_RELEASE:=1717572730
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/metacubex/mihomo/tar.gz/v$(PKG_VERSION)?
@@ -23,7 +23,7 @@ define Package/mihomo
   CATEGORY:=Network
   TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
-  DEPENDS:=+bash +curl +yq +kmod-nft-tproxy
+  DEPENDS:=+curl +yq +kmod-nft-tproxy
 endef
 
 define Package/mihomo/description
