@@ -1,8 +1,8 @@
-msgid "mihomo"
-msgstr "mihomo"
+msgid "Mihomo"
+msgstr "Mihomo"
 
-msgid "mihomo is a rule based proxy in Go."
-msgstr "mihomo 是一个Go语言编写的基于规则的代理工具。"
+msgid "Mihomo is a rule based proxy in Go."
+msgstr "Mihomo 是一个Go语言编写的基于规则的代理工具。"
 
 msgid "Basic Config"
 msgstr "基础配置"

@@ -1,6 +1,6 @@
 {
 	"admin/services/mihomo": {
-		"title": "mihomo",
+		"title": "Mihomo",
 		"action": {
 			"type": "view",
 			"path": "mihomo"

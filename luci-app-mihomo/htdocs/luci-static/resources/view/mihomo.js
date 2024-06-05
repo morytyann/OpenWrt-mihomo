@@ -20,7 +20,7 @@ return view.extend({
 
         let m, s, o, so;
 
-        m = new form.Map('mihomo', _('mihomo'), _('mihomo is a rule based proxy in Go.'));
+        m = new form.Map('mihomo', _('Mihomo'), _('Mihomo is a rule based proxy in Go.'));
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
@@ -115,32 +115,38 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
-        o.inputtitle = _('Open');
-        o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        };
-        o.depends('ui_razord', '1');
+        if (enabled) {
+            o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
+            o.inputtitle = _('Open');
+            o.onclick = function () {
+                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
+            };
+            o.depends('ui_razord', '1');
+        }
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
-        o.inputtitle = _('Open');
-        o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        };
-        o.depends('ui_yacd', '1');
+        if (enabled) {
+            o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
+            o.inputtitle = _('Open');
+            o.onclick = function () {
+                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
+            };
+            o.depends('ui_yacd', '1');
+        }
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
-        o.inputtitle = _('Open');
-        o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-        };
-        o.depends('ui_metacubexd', '1');
+        if (enabled) {
+            o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
+            o.inputtitle = _('Open');
+            o.onclick = function () {
+                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
+            };
+            o.depends('ui_metacubexd', '1');
+        }
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
