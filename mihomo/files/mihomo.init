@@ -31,14 +31,9 @@ mixin_path="$home_dir/mixin.yaml"
 start_service() {
 	config_load mihomo
 
-	procd_running mihomo
-	local running=$?
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
-		if [ "$running" == 0 ]; then
-		    procd_kill mihomo
-		fi
 		return
 	fi
 	# download profile
