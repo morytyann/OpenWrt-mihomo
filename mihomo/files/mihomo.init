@@ -186,7 +186,7 @@ start_service() {
 		procd_open_instance upnp_reload_file_trigger
 		procd_set_param command "$reload_file_trigger" "$upnp_lease_file" "mihomo"
 		procd_set_param file "$upnp_lease_file"
-		procd_set_param respawn
+		procd_set_param respawn 5 1 0
 		procd_close_instance
 	fi
 	# hijack
