@@ -23,7 +23,7 @@ define Package/mihomo
   CATEGORY:=Network
   TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
-  DEPENDS:=+curl +yq +kmod-nft-tproxy
+  DEPENDS:=+curl +inotifywait +yq +kmod-nft-tproxy
 endef
 
 define Package/mihomo/description
