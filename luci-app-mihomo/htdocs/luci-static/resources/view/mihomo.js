@@ -1,8 +1,39 @@
 'use strict';
 'require form';
+'require poll';
+'require rpc';
 'require view';
 'require uci';
 'require fs';
+
+var callServiceList = rpc.declare({
+    object: 'service',
+    method: 'list',
+    params: ['name'],
+    expect: { '': {} }
+});
+
+function getServiceStatus() {
+    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (res) {
+        var isRunning = false;
+        try {
+            isRunning = res['mihomo']['instances']['core']['running'];
+        } catch (e) { }
+        return isRunning;
+    });
+}
+
+function renderStatus(isRunning) {
+    var spanTemp = '<em><span style="color:%s"><strong>%s %s</strong></span></em>';
+    var renderHTML;
+    if (isRunning) {
+        renderHTML = String.format(spanTemp, 'green', _('Mihomo'), _('RUNNING'));
+    } else {
+        renderHTML = String.format(spanTemp, 'red', _('Mihomo'), _('NOT RUNNING'));
+    }
+
+    return renderHTML;
+}
 
 return view.extend({
     load: function () {
@@ -21,6 +52,23 @@ return view.extend({
         let m, s, o, so;
 
         m = new form.Map('mihomo', _('Mihomo'), _('Mihomo is a rule based proxy in Go.'));
+
+        s = m.section(form.TypedSection);
+        s.render = function () {
+            const section = E('div', { class: 'cbi-section', id: 'status_bar' }, [
+                E('p', { id: 'service_status' }, _('Collecting data ...'))
+            ]);
+            document.body.appendChild(section);
+            poll.add(function () {
+                return L.resolveDefault(getServiceStatus()).then(function (res) {
+                    var view = section.querySelector("#service_status");
+                    if (view) {
+                        view.innerHTML = renderStatus(res);
+                    }
+                });
+            });
+            return section;
+        }
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
