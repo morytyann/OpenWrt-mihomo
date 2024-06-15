@@ -3,6 +3,9 @@
 		"description": "Grant access to mihomo procedures",
 		"read": {
 			"uci": [ "mihomo" ],
+			"ubus": {
+				"service": [ "list" ]
+			},
 			"file": {
 				"/etc/mihomo/mixin.yaml": ["read"],
 				"/etc/mihomo/profiles/*.yaml": ["read"],

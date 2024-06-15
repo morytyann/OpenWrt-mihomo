@@ -1,12 +1,12 @@
 'use strict';
 'require form';
-'require poll';
-'require rpc';
 'require view';
 'require uci';
 'require fs';
+'require rpc';
+'require poll';
 
-var callServiceList = rpc.declare({
+const callServiceList = rpc.declare({
     object: 'service',
     method: 'list',
     params: ['name'],
@@ -14,24 +14,23 @@ var callServiceList = rpc.declare({
 });
 
 function getServiceStatus() {
-    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (res) {
-        var isRunning = false;
+    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (service) {
+        let isRunning = false;
         try {
-            isRunning = res['mihomo']['instances']['core']['running'];
-        } catch (e) { }
+            isRunning = service['mihomo']['instances']['core']['running'];
+        } catch (ignored) {}
         return isRunning;
     });
 }
 
 function renderStatus(isRunning) {
-    var spanTemp = '<em><span style="color:%s"><strong>%s %s</strong></span></em>';
-    var renderHTML;
+    const template = '<span style="color: %s; font-style: italic; font-weight: bold">%s</span>';
+    let renderHTML;
     if (isRunning) {
-        renderHTML = String.format(spanTemp, 'green', _('Mihomo'), _('RUNNING'));
+        renderHTML = String.format(template, 'green', _('Running'));
     } else {
-        renderHTML = String.format(spanTemp, 'red', _('Mihomo'), _('NOT RUNNING'));
+        renderHTML = String.format(template, 'red', _('Not Running'));
     }
-
     return renderHTML;
 }
 
@@ -40,6 +39,7 @@ return view.extend({
         return Promise.all([
             uci.load('mihomo'),
             fs.list('/etc/mihomo/profiles'),
+            getServiceStatus(),
         ]);
     },
     render: function (data) {
@@ -48,29 +48,27 @@ return view.extend({
         const api_port = uci.get('mihomo', 'mixin', 'api_port') || '9090';
         const api_secret = uci.get('mihomo', 'mixin', 'api_secret') || '666666';
         const profiles = data[1];
+        let isRunning = data[2];
 
         let m, s, o, so;
 
         m = new form.Map('mihomo', _('Mihomo'), _('Mihomo is a rule based proxy in Go.'));
 
-        s = m.section(form.TypedSection);
-        s.render = function () {
-            const section = E('div', { class: 'cbi-section', id: 'status_bar' }, [
-                E('p', { id: 'service_status' }, _('Collecting data ...'))
-            ]);
-            document.body.appendChild(section);
-            poll.add(function () {
-                return L.resolveDefault(getServiceStatus()).then(function (res) {
-                    var view = section.querySelector("#service_status");
-                    if (view) {
-                        view.innerHTML = renderStatus(res);
-                    }
-                });
-            });
-            return section;
-        }
-
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
+
+		o = s.option(form.DummyValue, '_status', _('Status'));
+		o.rawhtml = true;
+		o.cfgvalue = function(section_id) {
+			return '<div id="core_status">' + renderStatus(isRunning) + '</div>';
+		};
+        poll.add(function () {
+            return L.resolveDefault(getServiceStatus()).then(function (isRunning) {
+                const element = document.getElementById("core_status");
+                if (element) {
+                    element.innerHTML = renderStatus(isRunning);
+                }
+            });
+        });
 
         o = s.option(form.Flag, 'enabled', _('Enable'));
         o.rmempty = false;

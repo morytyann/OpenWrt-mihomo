@@ -36,7 +36,7 @@ network_get_ipaddr wan_ip "$wan_dev"
 # upnp
 config_load upnpd
 config_get upnp_enabled "config" "enabled" 0
-config_get upnp_lease_file "config" "upnp_lease_file"
+config_get upnp_lease_file "config" "upnp_lease_file" "/var/run/miniupnpd.leases"
 
 start_service() {
 	config_load mihomo
