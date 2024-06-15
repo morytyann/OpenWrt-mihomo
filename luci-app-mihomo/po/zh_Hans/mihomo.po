@@ -7,6 +7,15 @@ msgstr "Mihomo 是一个Go语言编写的基于规则的代理工具。"
 msgid "Basic Config"
 msgstr "基础配置"
 
+msgid "Status"
+msgstr "状态"
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Not Running"
+msgstr "未在运行"
+
 msgid "Enable"
 msgstr "启用"
 

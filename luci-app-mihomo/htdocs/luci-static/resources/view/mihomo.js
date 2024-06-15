@@ -59,11 +59,11 @@ return view.extend({
 		o = s.option(form.DummyValue, '_status', _('Status'));
 		o.rawhtml = true;
 		o.cfgvalue = function(section_id) {
-			return '<div id="core_status">' + renderStatus(isRunning) + '</div>';
+			return '<div id="status">' + renderStatus(isRunning) + '</div>';
 		};
         poll.add(function () {
             return L.resolveDefault(getServiceStatus()).then(function (isRunning) {
-                const element = document.getElementById("core_status");
+                const element = document.getElementById("status");
                 if (element) {
                     element.innerHTML = renderStatus(isRunning);
                 }
