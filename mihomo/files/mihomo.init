@@ -203,6 +203,8 @@ start_service() {
 		add_wan_inbound_exclusion
 		add_firewall_exclusion
 		add_upnp_exclusion
+		# reload config
+		config_load mihomo
 		# router proxy
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
@@ -225,8 +227,6 @@ start_service() {
 			nft add rule ip mihomo dns_hijack jump block_dns_hijack
 			nft add rule ip mihomo proxy jump block_proxy
 		fi
-		# reload config
-		config_load mihomo
 	fi
 	# cron
 	local scheduled_restart cron_expression
