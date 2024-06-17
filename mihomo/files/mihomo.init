@@ -172,7 +172,9 @@ start_service() {
 		config_foreach mixin_sniff "sniff"
 	fi
 	# mixin file
-	yq ea -M -i 'select(fi == 0) * select(fi == 1)' "$run_profile_path" "$mixin_path"
+	if [ -s "$mixin_path" ]; then
+		yq ea -M -i 'select(fi == 0) * select(fi == 1)' "$run_profile_path" "$mixin_path"
+	fi
 	# start core
 	procd_open_instance core
 	procd_set_param command /usr/bin/mihomo -d "$run_dir"
