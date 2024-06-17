@@ -182,7 +182,7 @@ start_service() {
 	procd_set_param respawn
 	procd_close_instance
 	# add reload file trigger
-	if [ "$upnp_enabled" == 1 ]; then
+	if [[ "$upnp_enabled" == 1 && -s "$upnp_lease_file" ]]; then
 		procd_open_instance upnp_reload_file_trigger
 		procd_set_param command "$reload_file_trigger" "$upnp_lease_file" "mihomo"
 		procd_set_param file "$upnp_lease_file"
@@ -197,34 +197,31 @@ start_service() {
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
 		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_MARK="$mihomo_mark" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		# exclusion
+		add_wan_inbound_exclusion
+		add_firewall_exclusion
+		add_upnp_exclusion
 		# router proxy
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
-		if [ "$router_proxy" == 0 ]; then
-			nft delete chain ip mihomo nat_output
-			nft delete chain ip mihomo mangle_output
+		if [ "$router_proxy" == 1 ]; then
+			nft add rule ip mihomo nat_output jump router_dns_hijack
+			nft add rule ip mihomo mangle_output jump router_proxy
 		fi
 		# access control
 		local access_control_mode
 		config_get access_control_mode "proxy" "access_control_mode"
 		config_list_foreach "proxy" "acl_ip" add_acl_ip
 		config_list_foreach "proxy" "acl_mac" add_acl_mac
-		if [ "$access_control_mode" == "allow" ]; then
-			nft flush chain ip mihomo dns_hijack
+		if [ -z "$access_control_mode" ]; then
+			nft add rule ip mihomo dns_hijack jump all_dns_hijack
+			nft add rule ip mihomo proxy jump all_proxy
+		elif [ "$access_control_mode" == "allow" ]; then
 			nft add rule ip mihomo dns_hijack jump allow_dns_hijack
-			nft flush chain ip mihomo proxy
 			nft add rule ip mihomo proxy jump allow_proxy
 		elif [ "$access_control_mode" == "block" ]; then
-			nft flush chain ip mihomo dns_hijack
 			nft add rule ip mihomo dns_hijack jump block_dns_hijack
-			nft flush chain ip mihomo proxy
 			nft add rule ip mihomo proxy jump block_proxy
-		fi
-		# exclusion
-		add_wan_inbound_exclusion
-		add_firewall_exclusion
-		if [ "$upnp_enabled" == 1 ]; then
-			add_upnp_exclusion
 		fi
 		# reload config
 		config_load mihomo
@@ -490,7 +487,7 @@ add_firewall_redirect_exclusion() {
 }
 
 add_upnp_exclusion() {
-	if [ ! -s "$upnp_lease_file" ]; then
+	if [[ "$upnp_enabled" == 0 || ! -s "$upnp_lease_file" ]]; then
 		return
 	fi
 

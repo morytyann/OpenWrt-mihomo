@@ -110,19 +110,21 @@ return view.extend({
         o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
         o.optional = true;
         o.retain = true;
-        o.value('block', _('Block Mode'));
         o.value('allow', _('Allow Mode'));
+        o.value('block', _('Block Mode'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
         o.retain = true;
-        o.depends('transparent_proxy', '1');
+        o.depends({'transparent_proxy': '1', 'access_control_mode': 'allow'});
+        o.depends({'transparent_proxy': '1', 'access_control_mode': 'block'});
 
         o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
         o.retain = true;
-        o.depends('transparent_proxy', '1');
+        o.depends({'transparent_proxy': '1', 'access_control_mode': 'allow'});
+        o.depends({'transparent_proxy': '1', 'access_control_mode': 'block'});
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
@@ -418,10 +420,11 @@ return view.extend({
         s.tab('mixin_file_content', _('Mixin File Content'));
 
         o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', _('Mixin File Content'), _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
+        o.optional = true;
         o.width = '100%';
         o.rows = 20;
         o.cfgvalue = function(section_id) {
-            return fs.read('/etc/mihomo/mixin.yaml');
+            return L.resolveDefault(fs.read('/etc/mihomo/mixin.yaml'));
         };
         o.write = function(section_id, formvalue) {
 			return fs.write('/etc/mihomo/mixin.yaml', formvalue);
