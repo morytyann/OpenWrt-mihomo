@@ -499,7 +499,7 @@ add_upnp_exclusion() {
 	while read -r line
 	do
 		lease_expire_at=$(echo "$line" | awk -F ':' '{print $5}')
-		local timeout; timeout="$lease_expire_at"-"$timestamp"
+		local timeout; timeout=$(( lease_expire_at - timestamp ))
 		if [ "$timeout" -le 0 ]; then
 			continue
 		fi
