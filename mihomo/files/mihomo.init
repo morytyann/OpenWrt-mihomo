@@ -480,10 +480,10 @@ add_firewall_redirect_exclusion() {
 		fi
 	else
 		if [ "$tcp" == 1 ]; then
-			nft add element ip mihomo exclusion \{ tcp . "$dest_ip" . "$dest_port" \}
+			nft add element ip mihomo redirect_exclusion \{ tcp . "$dest_ip" . "$dest_port" \}
 		fi
 		if [ "$udp" == 1 ]; then
-			nft add element ip mihomo exclusion \{ udp . "$dest_ip" . "$dest_port" \}
+			nft add element ip mihomo redirect_exclusion \{ udp . "$dest_ip" . "$dest_port" \}
 		fi
 	fi
 }
@@ -499,12 +499,13 @@ add_upnp_exclusion() {
 	while read -r line
 	do
 		lease_expire_at=$(echo "$line" | awk -F ':' '{print $5}')
-		if [ "$lease_expire_at" -le "$timestamp" ]; then
+		local timeout; timeout="$lease_expire_at"-"$timestamp"
+		if [ "$timeout" -le 0 ]; then
 			continue
 		fi
 		lease_proto=$(echo "$line" | awk -F ':' '{print tolower($1)}')
 		lease_src_ip=$(echo "$line" | awk -F ':' '{print $3}')
 		lease_src_port=$(echo "$line" | awk -F ':' '{print $4}')
-		nft add element ip mihomo exclusion \{ "$lease_proto" . "$lease_src_ip" . "$lease_src_port" \}
+		nft add element ip mihomo upnp_exclusion \{ "$lease_proto" . "$lease_src_ip" . "$lease_src_port" timeout "${timeout}s" \}
 	done < "$upnp_lease_file"
 }

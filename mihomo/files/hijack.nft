@@ -30,14 +30,20 @@ table ip mihomo {
         auto-merge
     }
 
-    set router_exclusion {
-        type inet_proto . inet_service
+    set redirect_exclusion {
+        type inet_proto . ipv4_addr . inet_service
         flags interval
         auto-merge
     }
 
-    set exclusion {
+    set upnp_exclusion {
         type inet_proto . ipv4_addr . inet_service
+        flags interval, timeout
+        auto-merge
+    }
+
+    set router_exclusion {
+        type inet_proto . inet_service
         flags interval
         auto-merge
     }
@@ -97,7 +103,8 @@ table ip mihomo {
         type filter hook prerouting priority mangle; policy accept;
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
-        meta l4proto . ip saddr . th sport @exclusion counter return
+        meta l4proto . ip saddr . th sport @redirect_exclusion counter return
+        meta l4proto . ip saddr . th sport @upnp_exclusion counter return
         meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
         jump proxy
     }
