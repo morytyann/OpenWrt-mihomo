@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
 PKG_VERSION:=1.18.5
-PKG_RELEASE:=1718703183
+PKG_RELEASE:=1718787195
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/metacubex/mihomo/tar.gz/v$(PKG_VERSION)?
@@ -43,7 +43,7 @@ define Package/mihomo/install
 	$(INSTALL_DIR) $(1)/etc/mihomo/run
 	$(INSTALL_DIR) $(1)/etc/mihomo/run/ui
 
-	$(INSTALL_BIN) $(CURDIR)/files/reload_file_trigger.sh $(1)/etc/mihomo/reload_file_trigger.sh
+	$(INSTALL_BIN) $(CURDIR)/files/upnp_lease_watcher.sh $(1)/etc/mihomo/upnp_lease_watcher.sh
 	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
 	$(INSTALL_DATA) $(CURDIR)/files/mixin.yaml $(1)/etc/mihomo/mixin.yaml
 
