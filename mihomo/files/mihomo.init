@@ -27,16 +27,11 @@ geoip_mmdb_path="$run_dir/Country.mmdb"
 geoip_dat_path="$run_dir/GeoIP.dat"
 geosite_path="$run_dir/GeoSite.dat"
 mixin_path="$home_dir/mixin.yaml"
-reload_file_trigger="$home_dir/reload_file_trigger.sh"
+upnp_lease_watcher="$home_dir/upnp_lease_watcher.sh"
 
 # wan
 network_find_wan wan_dev
 network_get_ipaddr wan_ip "$wan_dev"
-
-# upnp
-config_load upnpd
-config_get upnp_enabled "config" "enabled" 0
-config_get upnp_lease_file "config" "upnp_lease_file" "/var/run/miniupnpd.leases"
 
 start_service() {
 	config_load mihomo
@@ -183,14 +178,6 @@ start_service() {
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
 	procd_close_instance
-	# add reload file trigger
-	if [ "$upnp_enabled" == 1 ]; then
-		procd_open_instance upnp_reload_file_trigger
-		procd_set_param command "$reload_file_trigger" "$upnp_lease_file" "mihomo"
-		procd_set_param file "$upnp_lease_file"
-		procd_set_param respawn 0 60 0
-		procd_close_instance
-	fi
 	# hijack
 	local transparent_proxy
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
@@ -489,23 +476,9 @@ add_firewall_redirect_exclusion() {
 }
 
 add_upnp_exclusion() {
-	if [[ "$upnp_enabled" == 0 || ! -s "$upnp_lease_file" ]]; then
-		return
-	fi
-
-	local timestamp; timestamp=$(date +%s)
-	local lease_expire_at lease_proto lease_src_ip lease_src_port
-
-	while read -r line
-	do
-		lease_expire_at=$(echo "$line" | awk -F ':' '{print $5}')
-		local timeout; timeout=$(( lease_expire_at - timestamp ))
-		if [ "$timeout" -le 0 ]; then
-			continue
-		fi
-		lease_proto=$(echo "$line" | awk -F ':' '{print tolower($1)}')
-		lease_src_ip=$(echo "$line" | awk -F ':' '{print $3}')
-		lease_src_port=$(echo "$line" | awk -F ':' '{print $4}')
-		nft add element ip mihomo upnp_exclusion \{ "$lease_proto" . "$lease_src_ip" . "$lease_src_port" timeout "${timeout}s" \}
-	done < "$upnp_lease_file"
+  procd_kill mihomo upnp_lease_watcher
+  procd_open_instance upnp_lease_watcher
+  procd_set_param command "$upnp_lease_watcher"
+  procd_set_param respawn 3600 5 0
+  procd_close_instance
 }
