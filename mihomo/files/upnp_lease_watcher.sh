@@ -26,10 +26,11 @@ add_upnp_exclusion() {
 }
 
 load_config
-if [ "$upnp_enabled" == 0 ]; then return fi
+if [ "$upnp_enabled" == 0 ]; then
+  return
+fi
 
 while true; do
-  load_config
   add_upnp_exclusion
   inotifywait -e create,modify --include $(basename "$upnp_lease_file") $(dirname "$upnp_lease_file")
 done

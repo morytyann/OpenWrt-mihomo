@@ -476,7 +476,10 @@ add_firewall_redirect_exclusion() {
 }
 
 add_upnp_exclusion() {
-  procd_kill mihomo upnp_lease_watcher
+  local running; procd_running mihomo upnp_lease_watcher; running=$?
+  if [ "$running" == 0 ]; then
+    procd_kill mihomo upnp_lease_watcher
+  fi
   procd_open_instance upnp_lease_watcher
   procd_set_param command "$upnp_lease_watcher"
   procd_set_param respawn 3600 5 0
