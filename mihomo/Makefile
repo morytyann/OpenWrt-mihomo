@@ -2,7 +2,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
 PKG_VERSION:=1.18.5
-PKG_RELEASE:=1718787195
+PKG_RELEASE:=$(shell date +%s)
+PKG_BUILD_TIME=$(shell date -u -Iseconds)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/metacubex/mihomo/tar.gz/v$(PKG_VERSION)?
@@ -13,7 +14,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/metacubex/mihomo
-GO_PKG_LDFLAGS_X:=$(GO_PKG)/cmd.Version=$(PKG_VERSION)
+GO_PKG_LDFLAGS_X:=$(GO_PKG)/constant.Version=$(PKG_VERSION) $(GO_PKG)/constant.BuildTime=$(PKG_BUILD_TIME)
 GO_PKG_TAGS:=with_gvisor
 
 include $(INCLUDE_DIR)/package.mk
@@ -24,7 +25,7 @@ define Package/mihomo
   CATEGORY:=Network
   TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
-  DEPENDS:=+curl +inotifywait +yq +kmod-nft-tproxy
+  DEPENDS:=+curl +inotifywait +yq firewall4 +kmod-nft-tproxy
 endef
 
 define Package/mihomo/description
