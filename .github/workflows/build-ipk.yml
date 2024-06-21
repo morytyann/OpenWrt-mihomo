@@ -1,0 +1,46 @@
+name: Build Packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.**'
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - aarch64_generic
+          - x86_64
+        tag:
+          - openwrt-23.05
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get commit hash
+        run: |
+          COMMIT_HASH=$(git log -1 --pretty=format:%s)
+
+      - name: Building packages
+        uses: sbwml/openwrt-gh-action-sdk@go1.22
+        env:
+          ARCH: ${{ matrix.arch }}-${{ matrix.tag }}
+          FEEDNAME: packages_ci
+          PACKAGES: luci-app-mihomo
+          NO_REFRESH_CHECK: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.arch }}
+          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
