@@ -6,7 +6,7 @@ A project contains mihomo packages for OpenWrt.
  - Switch for Transparent Proxy
  - Switch for Router Proxy
  - Support Access Control
- - Support Profile Mixin (Not completed yet)
+ - Support Profile Mixin
  - Support Subscribe and File
  - Support Scheduled Restart
 
