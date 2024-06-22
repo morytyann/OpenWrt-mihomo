@@ -9,7 +9,8 @@
 			"file": {
 				"/etc/mihomo/mixin.yaml": ["read"],
 				"/etc/mihomo/profiles/*.yaml": ["read"],
-				"/etc/mihomo/profiles/*.yml": ["read"]
+				"/etc/mihomo/profiles/*.yml": ["read"],
+				"/usr/bin/yq": ["exec"]
 			}
 		},
 		"write": {

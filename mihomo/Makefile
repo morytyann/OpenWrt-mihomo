@@ -55,7 +55,7 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/mihomo.init $(1)/etc/init.d/mihomo
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) $(CURDIR)/files/migrate.sh $(1)/etc/uci-defaults/99_migrate-mihomo.sh
+	$(INSTALL_BIN) $(CURDIR)/files/migrate.sh $(1)/etc/uci-defaults/99_migrate-mihomo
 endef
 
 define Build/Prepare

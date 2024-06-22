@@ -37,6 +37,12 @@ msgstr "订阅："
 msgid "Upload Profile"
 msgstr "上传配置文件"
 
+msgid "Mixin"
+msgstr "混入"
+
+msgid "If you disable this and your profile does not have certain config, the transparent proxy will not work"
+msgstr "如果你禁用此功能并且你的配置文件没有某些关键配置时，透明代理将无法工作"
+
 msgid "Proxy Config"
 msgstr "代理配置"
 

@@ -29,8 +29,12 @@ function getProfile() {
 }
 
 function getServiceStatus() {
-    return L.resolveDefault(callServiceList('mihomo'), { mihomo: { instances: { core: { running: false } } } }).then(function (service) {
-        return service['mihomo']['instances']['core']['running'];
+    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (service) {
+        let isRunning = false;
+        try {
+            isRunning = service['mihomo']['instances']['core']['running'];
+        } catch (ignored) {}
+        return isRunning;
     });
 }
 
@@ -109,7 +113,7 @@ return view.extend({
         o.enable_upload = true;
         o.rmempty = true;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin Config'));
+        o = s.option(form.Flag, 'mixin', _('Mixin'), _('If you disable this and your profile does not have certain config, the transparent proxy will not work'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
@@ -181,7 +185,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+            window.open(`http://${window.location.hostname}:${apiPort}/ui/razord/#/?host=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
         };
         o.depends({'mihomo.config.enabled': '1', 'ui_razord': '1'});
 
@@ -191,7 +195,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+            window.open(`http://${window.location.hostname}:${apiPort}/ui/yacd/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
         };
         o.depends({'mihomo.config.enabled': '1', 'ui_yacd': '1'});
 
@@ -201,7 +205,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+            window.open(`http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
         };
         o.depends({'mihomo.config.enabled': '1', 'ui_metacubexd': '1'});
 
