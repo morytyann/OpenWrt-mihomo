@@ -63,8 +63,8 @@ return view.extend({
         const profiles = data[1];
         const profile = data[2];
         const running = data[3];
-        const apiPort = (profile['external-controller'] || ':').split(':')[1];
-        const apiSecret = (profile['secret'] || '');
+        const apiPort = profile['external-controller'].split(':')[1];
+        const apiSecret = profile['secret'] || '';
 
         let m, s, o, so;
 
@@ -113,7 +113,7 @@ return view.extend({
         o.enable_upload = true;
         o.rmempty = true;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin'), _('If you disable this and your profile does not have certain config, the transparent proxy will not work'));
+        o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
