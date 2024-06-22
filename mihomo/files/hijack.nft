@@ -74,16 +74,16 @@ table ip mihomo {
     }
 
     chain all_proxy {
-        meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
     }
 
     chain allow_proxy {
-        meta l4proto { tcp, udp } ip saddr @acl_ip meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
-        meta l4proto { tcp, udp } ether saddr @acl_mac meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } ip saddr @acl_ip meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } ether saddr @acl_mac meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
     }
 
     chain block_proxy {
-        meta l4proto { tcp, udp } ip saddr != @acl_ip ether saddr != @acl_mac meta mark set $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } ip saddr != @acl_ip ether saddr != @acl_mac meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
     }
 
     chain router_proxy {
@@ -105,7 +105,7 @@ table ip mihomo {
         meta l4proto { tcp, udp } th dport 53 counter return
         meta l4proto . ip saddr . th sport @redirect_exclusion counter return
         meta l4proto . ip saddr . th sport @upnp_exclusion counter return
-        meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to :$TPROXY_PORT counter accept
+        meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
         jump proxy
     }
 
