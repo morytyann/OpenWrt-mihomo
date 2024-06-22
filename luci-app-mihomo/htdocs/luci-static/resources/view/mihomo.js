@@ -6,6 +6,9 @@
 'require rpc';
 'require poll';
 
+const profilesDir = '/etc/mihomo/profiles';
+const runProfilePath = '/etc/mihomo/run/config.yaml';
+
 const callServiceList = rpc.declare({
     object: 'service',
     method: 'list',
@@ -13,20 +16,28 @@ const callServiceList = rpc.declare({
     expect: { '': {} }
 });
 
+function loadConfig() {
+    return uci.load('mihomo');
+}
+
+function listProfiles() {
+    return L.resolveDefault(fs.list(profilesDir), []);
+}
+
+function getProfile() {
+    return L.resolveDefault(fs.exec_direct('yq', ['-M', '-o', 'json', runProfilePath], 'json'), {});
+}
+
 function getServiceStatus() {
-    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (service) {
-        let isRunning = false;
-        try {
-            isRunning = service['mihomo']['instances']['core']['running'];
-        } catch (ignored) {}
-        return isRunning;
+    return L.resolveDefault(callServiceList('mihomo'), { mihomo: { instances: { core: { running: false } } } }).then(function (service) {
+        return service['mihomo']['instances']['core']['running'];
     });
 }
 
-function renderStatus(isRunning) {
+function renderStatus(running) {
     const template = '<span style="color: %s; font-style: italic; font-weight: bold">%s</span>';
     let renderHTML;
-    if (isRunning) {
+    if (running) {
         renderHTML = String.format(template, 'green', _('Running'));
     } else {
         renderHTML = String.format(template, 'red', _('Not Running'));
@@ -37,18 +48,19 @@ function renderStatus(isRunning) {
 return view.extend({
     load: function () {
         return Promise.all([
-            uci.load('mihomo'),
-            fs.list('/etc/mihomo/profiles'),
+            loadConfig(),
+            listProfiles(),
+            getProfile(),
             getServiceStatus(),
         ]);
     },
     render: function (data) {
-        const enabled = uci.get('mihomo', 'config', 'enabled') === '1';
         const subscriptions = uci.sections('mihomo', 'subscription');
-        const api_port = uci.get('mihomo', 'mixin', 'api_port') || '9090';
-        const api_secret = uci.get('mihomo', 'mixin', 'api_secret') || '666666';
         const profiles = data[1];
-        let isRunning = data[2];
+        const profile = data[2];
+        const running = data[3];
+        const apiPort = (profile['external-controller'] || ':').split(':')[1];
+        const apiSecret = (profile['secret'] || '');
 
         let m, s, o, so;
 
@@ -59,13 +71,13 @@ return view.extend({
 		o = s.option(form.DummyValue, '_status', _('Status'));
 		o.rawhtml = true;
 		o.cfgvalue = function(section_id) {
-			return '<div id="status">' + renderStatus(isRunning) + '</div>';
+			return '<div id="service_status">' + renderStatus(running) + '</div>';
 		};
         poll.add(function () {
-            return L.resolveDefault(getServiceStatus()).then(function (isRunning) {
-                const element = document.getElementById("status");
+            return L.resolveDefault(getServiceStatus()).then(function (running) {
+                const element = document.getElementById("service_status");
                 if (element) {
-                    element.innerHTML = renderStatus(isRunning);
+                    element.innerHTML = renderStatus(running);
                 }
             });
         });
@@ -96,6 +108,9 @@ return view.extend({
         o.enable_delete = true;
         o.enable_upload = true;
         o.rmempty = true;
+
+        o = s.option(form.Flag, 'mixin', _('Mixin Config'));
+        o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
 
@@ -163,38 +178,32 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
         o.rmempty = false;
 
-        if (enabled) {
-            o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
-            o.inputtitle = _('Open');
-            o.onclick = function () {
-                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-            };
-            o.depends('ui_razord', '1');
-        }
+        o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
+        o.inputtitle = _('Open');
+        o.onclick = function () {
+            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/razord/#/?host=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+        };
+        o.depends({'mihomo.config.enabled': '1', 'ui_razord': '1'});
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
 
-        if (enabled) {
-            o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
-            o.inputtitle = _('Open');
-            o.onclick = function () {
-                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-            };
-            o.depends('ui_yacd', '1');
-        }
+        o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
+        o.inputtitle = _('Open');
+        o.onclick = function () {
+            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/yacd/?hostname=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+        };
+        o.depends({'mihomo.config.enabled': '1', 'ui_yacd': '1'});
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
 
-        if (enabled) {
-            o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
-            o.inputtitle = _('Open');
-            o.onclick = function () {
-                window.open('http://' + window.location.hostname + ':' + api_port + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + api_port + '&secret=' + api_secret, '_blank');
-            };
-            o.depends('ui_metacubexd', '1');
-        }
+        o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
+        o.inputtitle = _('Open');
+        o.onclick = function () {
+            window.open('http://' + window.location.hostname + ':' + apiPort + '/ui/metacubexd/#/setup?hostname=' + window.location.hostname + '&port=' + apiPort + '&secret=' + apiSecret, '_blank');
+        };
+        o.depends({'mihomo.config.enabled': '1', 'ui_metacubexd': '1'});
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
