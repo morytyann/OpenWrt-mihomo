@@ -63,8 +63,8 @@ return view.extend({
         const profiles = data[1];
         const profile = data[2];
         const running = data[3];
-        const apiPort = profile['external-controller'].split(':')[1];
-        const apiSecret = profile['secret'] || '';
+        const apiPort = (profile['external-controller'] || ':').split(':')[1];
+        const apiSecret = (profile['secret'] || '');
 
         let m, s, o, so;
 
