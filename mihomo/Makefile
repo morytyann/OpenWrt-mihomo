@@ -43,6 +43,7 @@ define Package/mihomo/install
 	$(INSTALL_DIR) $(1)/etc/mihomo
 	$(INSTALL_DIR) $(1)/etc/mihomo/profiles
 	$(INSTALL_DIR) $(1)/etc/mihomo/run
+	$(INSTALL_DIR) $(1)/etc/mihomo/run/rules
 	$(INSTALL_DIR) $(1)/etc/mihomo/run/ui
 
 	$(INSTALL_BIN) $(CURDIR)/files/upnp_lease_watcher.sh $(1)/etc/mihomo/upnp_lease_watcher.sh
@@ -59,7 +60,7 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/migrate.sh $(1)/etc/uci-defaults/99_migrate-mihomo
 
 	$(INSTALL_DIR) $(1)/etc/capabilities
-	$(INSTALL_BIN) $(CURDIR)/files/capabilities.json $(1)/etc/capabilities/mihomo.json
+	$(INSTALL_DATA) $(CURDIR)/files/capabilities.json $(1)/etc/capabilities/mihomo.json
 endef
 
 define Build/Prepare

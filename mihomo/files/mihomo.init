@@ -187,15 +187,18 @@ start_service() {
 		fi
 	fi
 	# start core
-	chown -R "$mihomo_user:$mihomo_group" "$run_dir"
 	procd_open_instance core
 	procd_set_param command /usr/bin/mihomo -d "$run_dir"
 	procd_set_param file "$run_profile_path"
 	procd_set_param netdev "$wan_dev"
 	procd_set_param reload_signal HUP
+    procd_add_jail core
+    procd_add_jail_mount_rw /etc/ssl/certs /etc/hosts
+    procd_add_jail_mount_rw "$run_dir"
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param user "$mihomo_user"
 	procd_set_param group "$mihomo_group"
+    procd_set_param no_new_privs 1
 	procd_set_param respawn
 	procd_close_instance
 	# hijack
