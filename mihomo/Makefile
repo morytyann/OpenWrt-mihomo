@@ -26,6 +26,7 @@ define Package/mihomo
   TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
   DEPENDS:=+curl +inotifywait +yq firewall4 +kmod-nft-tproxy
+  USERID:=mihomo=7890:mihomo=7890
 endef
 
 define Package/mihomo/description

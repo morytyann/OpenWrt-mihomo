@@ -66,7 +66,7 @@ table ip mihomo {
     }
 
     chain router_dns_hijack {
-        ip daddr 127.0.0.1 meta l4proto { tcp, udp } th dport 53 meta mark != $MIHOMO_MARK counter redirect to :$DNS_PORT
+        ip daddr 127.0.0.1 meta l4proto { tcp, udp } th dport 53 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
     }
 
     chain proxy {
@@ -113,7 +113,7 @@ table ip mihomo {
         type route hook output priority mangle; policy accept;
         ip daddr @private_ip counter return
         meta l4proto { tcp, udp } th dport 53 counter return
-        meta mark $MIHOMO_MARK counter return
+        meta skuid $MIHOMO_USER counter return
         meta l4proto . th sport @router_exclusion counter return
     }
 }
