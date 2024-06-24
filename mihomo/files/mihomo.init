@@ -5,6 +5,10 @@
 START=99
 USE_PROCD=1
 
+# permission
+mihomo_group="mihomo"
+mihomo_user="mihomo"
+
 # routing
 fw_table=80
 fw_mark=80
@@ -56,20 +60,6 @@ start_service() {
 	download_ui "$ui_razord" "$ui_razord_url" "$run_ui_razord_path" "$run_ui_dir" "$run_ui_razord_src_dir" "$run_ui_razord_dir"
 	download_ui "$ui_yacd" "$ui_yacd_url" "$run_ui_yacd_path" "$run_ui_dir" "$run_ui_yacd_src_dir" "$run_ui_yacd_dir"
 	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$run_ui_metacubexd_path" "$run_ui_dir" "$run_ui_metacubexd_src_dir" "$run_ui_metacubexd_dir"
-	# download geox files
-	local geoip_mmdb_url geoip_dat_url geosite_url
-	config_get geoip_mmdb_url "mixin" "geoip_mmdb_url"
-	config_get geoip_dat_url "mixin" "geoip_dat_url"
-	config_get geosite_url "mixin" "geosite_url"
-	if [ ! -f "$geoip_mmdb_path" ]; then
-		curl -s -L -o "$geoip_mmdb_path" "$geoip_mmdb_url"
-	fi
-	if [ ! -f "$geoip_dat_path" ]; then
-		curl -s -L -o "$geoip_dat_path" "$geoip_dat_url"
-	fi
-	if [ ! -f "$geosite_path" ]; then
-		curl -s -L -o "$geosite_path" "$geosite_url"
-	fi
 	# mixin
 	local mixin
 	config_get_bool mixin "config" "mixin" 1
@@ -88,19 +78,14 @@ start_service() {
 		# dns
 		local dns_port
 		config_get dns_port "mixin" "dns_port" "1053"
-		# mark
-		local mihomo_mark
-		config_get mihomo_mark "proxy" "routing_mark" "255"
 		# do mixin
 		ui_path="ui" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
 		http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
-		mihomo_mark="$mihomo_mark" \
 		yq -M -i '
 		.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) |
-		.routing-mark = env(mihomo_mark)
 		' "$run_profile_path"
 	else
 		# global
@@ -142,14 +127,14 @@ start_service() {
 		config_get_bool sniff_pure_ip "mixin" "sniff_pure_ip" 0
 		config_get_bool sniffer_overwrite_dest "mixin" "sniffer_overwrite_dest" 0
 		# geox
-		local geoip_format geodata_loader geox_auto_update geox_update_interval
+		local geoip_format geodata_loader geoip_mmdb_url geoip_dat_url geosite_url geox_auto_update geox_update_interval
 		config_get geoip_format "mixin" "geoip_format"
 		config_get geodata_loader "mixin" "geodata_loader"
+		config_get geoip_mmdb_url "mixin" "geoip_mmdb_url"
+		config_get geoip_dat_url "mixin" "geoip_dat_url"
+		config_get geosite_url "mixin" "geosite_url"
 		config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 		config_get geox_update_interval "mixin" "geox_update_interval" "24"
-		# mark
-		local mihomo_mark
-		config_get mihomo_mark "proxy" "routing_mark" "255"
 		# do mixin
 		mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" \
 		ui_path="ui" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" selection_cache="$selection_cache" \
@@ -159,7 +144,6 @@ start_service() {
 		sniffer="$sniffer" sniff_dns_mapping="$sniff_dns_mapping" sniff_pure_ip="$sniff_pure_ip" sniffer_overwrite_dest="$sniffer_overwrite_dest" \
 		geoip_format="$geoip_format" geodata_loader="$geodata_loader" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geosite_url="$geosite_url" \
 		geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
-		mihomo_mark="$mihomo_mark" \
 		yq -M -i '
 		.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) |
 		.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
@@ -168,8 +152,7 @@ start_service() {
 		.dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 |
 		.sniffer.enable = env(sniffer) == 1 | .sniffer.force-dns-mapping = env(sniff_dns_mapping) == 1 | .sniffer.parse-pure-ip = env(sniff_pure_ip) == 1 | .sniffer.override-destination = env(sniffer_overwrite_dest) == 1 |
 		.geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.geosite = env(geosite_url) |
-		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval) |
-		.routing-mark = env(mihomo_mark)
+		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval)
 		' "$run_profile_path"
 
 		if [ "$fake_ip_filter" == 1 ]; then
@@ -205,11 +188,20 @@ start_service() {
 	fi
 	# start core
 	procd_open_instance core
+
 	procd_set_param command /usr/bin/mihomo -d "$run_dir"
 	procd_set_param file "$run_profile_path"
-	procd_set_param netdev "$wan_dev"
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
+
+	procd_add_jail core
+	procd_add_jail_mount_rw /etc/ssl/certs /etc/hosts
+	procd_add_jail_mount_rw "$run_dir"
+	procd_set_param capabilities /etc/capabilities/mihomo.json
+	procd_set_param user "$mihomo_user"
+	procd_set_param group "$mihomo_group"
+	procd_set_param no_new_privs 1
+
 	procd_close_instance
 	# hijack
 	local transparent_proxy
@@ -218,7 +210,7 @@ start_service() {
 		# transparent proxy
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
-		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_MARK="$mihomo_mark" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# exclusion
 		add_wan_inbound_exclusion
 		add_firewall_exclusion
