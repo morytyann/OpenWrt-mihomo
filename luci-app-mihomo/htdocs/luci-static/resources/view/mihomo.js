@@ -205,7 +205,7 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open(`http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
+            window.open(`http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
         };
         o.depends({'mihomo.config.enabled': '1', 'ui_metacubexd': '1'});
 
