@@ -188,10 +188,12 @@ start_service() {
 	fi
 	# start core
 	procd_open_instance core
+
 	procd_set_param command /usr/bin/mihomo -d "$run_dir"
 	procd_set_param file "$run_profile_path"
-	procd_set_param netdev "$wan_dev"
 	procd_set_param reload_signal HUP
+	procd_set_param respawn
+
     procd_add_jail core
     procd_add_jail_mount_rw /etc/ssl/certs /etc/hosts
     procd_add_jail_mount_rw "$run_dir"
@@ -199,7 +201,7 @@ start_service() {
 	procd_set_param user "$mihomo_user"
 	procd_set_param group "$mihomo_group"
     procd_set_param no_new_privs 1
-	procd_set_param respawn
+
 	procd_close_instance
 	# hijack
 	local transparent_proxy
