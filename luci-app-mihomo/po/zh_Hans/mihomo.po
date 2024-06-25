@@ -136,6 +136,12 @@ msgstr "使用 MetaCubeXD 面板"
 msgid "Open MetaCubeXD"
 msgstr "打开 MetaCubeXD 面板"
 
+msgid "Service is not running."
+msgstr "服务未在运行。"
+
+msgid "External Control is not configured."
+msgstr "未配置外部控制。"
+
 msgid "API Port"
 msgstr "API 端口"
 

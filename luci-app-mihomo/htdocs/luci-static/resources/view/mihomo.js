@@ -213,7 +213,7 @@ return view.extend({
         o.onclick = function () {
             openDashboard('razord');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_razord': '1'});
+        o.depends('ui_razord', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
@@ -223,7 +223,7 @@ return view.extend({
         o.onclick = function () {
             openDashboard('yacd');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_yacd': '1'});
+        o.depends('ui_yacd', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
@@ -233,7 +233,7 @@ return view.extend({
         o.onclick = function () {
             openDashboard('metacubexd');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_metacubexd': '1'});
+        o.depends('ui_metacubexd', '1');
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
