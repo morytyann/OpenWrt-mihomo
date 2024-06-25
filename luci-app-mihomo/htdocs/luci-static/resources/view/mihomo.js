@@ -28,14 +28,39 @@ function getProfile() {
     return L.resolveDefault(fs.exec_direct('yq', ['-M', '-o', 'json', runProfilePath], 'json'), {});
 }
 
-function getServiceStatus() {
-    return L.resolveDefault(callServiceList('mihomo'), {}).then(function (service) {
-        let isRunning = false;
-        try {
-            isRunning = service['mihomo']['instances']['core']['running'];
-        } catch (ignored) {}
-        return isRunning;
-    });
+async function getServiceStatus() {
+    try {
+        return (await callServiceList('mihomo'))['mihomo']['instances']['core']['running'];
+    } catch (ignored) {
+        return false;
+    }
+}
+
+async function openDashboard(type) {
+    const running = await getServiceStatus();
+    if (running) {
+        const profile = await getProfile();
+        const apiListen = profile['external-controller'];
+        if (apiListen) {
+            const apiPort = apiListen.split(':')[1];
+            const apiSecret = profile['secret'] || '';
+            let url;
+            if (type === 'razord') {
+                url = `http://${window.location.hostname}:${apiPort}/ui/razord/#/?host=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
+            } else if (type === 'yacd') {
+                url = `http://${window.location.hostname}:${apiPort}/ui/yacd/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
+            } else if (type === 'metacubexd') {
+                url = `http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
+            } else {
+                return;
+            }
+            window.open(url, '_blank');
+        } else {
+            alert(_('External Control is not configured.'));
+        }
+    } else {
+        alert(_('Service is not running.'));
+    }
 }
 
 function renderStatus(running) {
@@ -54,17 +79,13 @@ return view.extend({
         return Promise.all([
             loadConfig(),
             listProfiles(),
-            getProfile(),
             getServiceStatus(),
         ]);
     },
     render: function (data) {
         const subscriptions = uci.sections('mihomo', 'subscription');
         const profiles = data[1];
-        const profile = data[2];
-        const running = data[3];
-        const apiPort = (profile['external-controller'] || ':').split(':')[1];
-        const apiSecret = (profile['secret'] || '');
+        const running = data[2];
 
         let m, s, o, so;
 
@@ -190,9 +211,9 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open(`http://${window.location.hostname}:${apiPort}/ui/razord/#/?host=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
+            openDashboard('razord');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_razord': '1'});
+        o.depends('ui_razord', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
@@ -200,9 +221,9 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open(`http://${window.location.hostname}:${apiPort}/ui/yacd/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
+            openDashboard('yacd');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_yacd': '1'});
+        o.depends('ui_yacd', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
@@ -210,9 +231,9 @@ return view.extend({
         o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
         o.inputtitle = _('Open');
         o.onclick = function () {
-            window.open(`http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`, '_blank');
+            openDashboard('metacubexd');
         };
-        o.depends({'mihomo.config.enabled': '1', 'ui_metacubexd': '1'});
+        o.depends('ui_metacubexd', '1');
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
@@ -260,7 +281,7 @@ return view.extend({
         o.value('redir-host', _('Redir-Host'));
 
         o = s.taboption('dns', form.Value, 'fake_ip_range', _('Fake-IP Range'));
-        o.datatype = 'ipcidr';
+        o.datatype = 'cidr4';
         o.placeholder = '198.18.0.1/16';
         o.retain = true;
         o.depends('dns_mode', 'fake-ip');
