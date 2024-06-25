@@ -204,8 +204,9 @@ start_service() {
 
 	procd_close_instance
 	# hijack
-	local transparent_proxy
+	local transparent_proxy dns_hijack
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
+	config_get_bool dns_hijack "proxy" "dns_hijack" 0
 	if [ "$transparent_proxy" == 1 ]; then
 		# transparent proxy
 		ip rule add fwmark "$fw_mark" table "$fw_table"
@@ -221,7 +222,9 @@ start_service() {
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
 		if [ "$router_proxy" == 1 ]; then
-			nft add rule ip mihomo nat_output jump router_dns_hijack
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip mihomo nat_output jump router_dns_hijack
+			fi
 			nft add rule ip mihomo mangle_output jump router_proxy
 		fi
 		# access control
@@ -230,13 +233,19 @@ start_service() {
 		config_list_foreach "proxy" "acl_ip" add_acl_ip
 		config_list_foreach "proxy" "acl_mac" add_acl_mac
 		if [ -z "$access_control_mode" ]; then
-			nft add rule ip mihomo dns_hijack jump all_dns_hijack
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip mihomo dns_hijack jump all_dns_hijack
+			fi
 			nft add rule ip mihomo proxy jump all_proxy
 		elif [ "$access_control_mode" == "allow" ]; then
-			nft add rule ip mihomo dns_hijack jump allow_dns_hijack
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip mihomo dns_hijack jump allow_dns_hijack
+			fi
 			nft add rule ip mihomo proxy jump allow_proxy
 		elif [ "$access_control_mode" == "block" ]; then
-			nft add rule ip mihomo dns_hijack jump block_dns_hijack
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip mihomo dns_hijack jump block_dns_hijack
+			fi
 			nft add rule ip mihomo proxy jump block_proxy
 		fi
 	fi
