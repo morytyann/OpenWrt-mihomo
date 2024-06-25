@@ -12,7 +12,7 @@ A project contains mihomo packages for OpenWrt.
 
 ## Usage
 
-See [WiKi](https://github.com/morytyann/OpenWrt-mihomo/wiki) (Under construction).
+See [Wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki)
 
 ## How does it work
 
@@ -20,14 +20,13 @@ See [WiKi](https://github.com/morytyann/OpenWrt-mihomo/wiki) (Under construction
 2. Get mixin config.
 3. Mixin and Update profile.
 4. Run mihomo.
-5. Hijack dns packet to mihomo (router and lan, use redirect).
-6. Hijack tcp/udp packet to mihomo (router and lan, both tcp and udp are use tproxy).
-7. Skip wan ip inbound
-8. Skip firewall rule/redirect config
-9. Skip upnp leases if you enabled upnp
-10. Add cron for scheduled restart
+5. Run hijack prepare script.
+6. Add exclusions. (wan inbound, firewall rule/redirect, UPnP)
+7. Add router hijack.
+8. Add lan hijack with access control.
+9. Add cron for scheduled restart.
 
-Note that the steps above will change or not execute if some config/condition are not satisfied.
+Note that the steps above may change base on config.
 
 ## Compilation
 
@@ -41,3 +40,16 @@ echo "src-git mihomo https://github.com/morytyann/OpenWrt-mihomo.git;main" >> "f
 make package/luci-app-mihomo/compile
 ```
 The ipk file will be found under `bin/packages/your_architecture/mihomo`.
+
+## Dependencies
+
+- curl
+- inotifywait
+- yq
+- firewall4
+- kmod-nft-tproxy
+
+## Warning
+
+- Only support firewall4 and will never support firewall3
+- Will only support ipv4 for a long time
