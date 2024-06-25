@@ -85,7 +85,7 @@ start_service() {
 		yq -M -i '
 		.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
-		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) |
+		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
 		' "$run_profile_path"
 	else
 		# global
