@@ -67,6 +67,12 @@ msgstr "访问控制 IP"
 msgid "Access Control MAC"
 msgstr "访问控制 MAC"
 
+msgid "DNS Hijack"
+msgstr "DNS 劫持"
+
+msgid "When disabled, DNS request will not redirect to core, you need handle this by yourself!"
+msgstr "当禁用此选项时，DNS请求将不再重定向到核心，你需要自行处理！"
+
 msgid "Subscription Config"
 msgstr "订阅配置"
 

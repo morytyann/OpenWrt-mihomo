@@ -145,6 +145,11 @@ return view.extend({
         o.depends({'transparent_proxy': '1', 'access_control_mode': 'allow'});
         o.depends({'transparent_proxy': '1', 'access_control_mode': 'block'});
 
+        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When disabled, DNS request will not redirect to core, you need handle this by yourself!'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('transparent_proxy', '1');
+
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
         s.anonymous = true;
