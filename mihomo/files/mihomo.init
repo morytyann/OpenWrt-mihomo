@@ -45,15 +45,19 @@ start_service() {
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
-		log 'App is disabled, exiting...'
+		log "App is disabled."
+		log "Exiting..."
 		return
 	fi
-	log 'App is enabled, starting...'
+	log "App is enabled."
+	log "Starting..."
 	# download profile
+	log "Download profile."
 	local profile
 	config_get profile "config" "profile"
 	curl -s -L -o "$run_profile_path" "$profile"
 	# download ui
+	log "Download UI."
 	local ui_razord ui_razord_url ui_yacd ui_yacd_url ui_metacubexd ui_metacubexd_url
 	config_get_bool ui_razord "mixin" "ui_razord" 0
 	config_get ui_razord_url "mixin" "ui_razord_url"
@@ -68,7 +72,7 @@ start_service() {
 	local mixin
 	config_get_bool mixin "config" "mixin" 1
 	if [ "$mixin" == 0 ]; then
-		log 'Mixin is disabled, only mixin neccesary config.'
+		log "Mixin is disabled, only mixin neccesary config."
 		# api
 		local api_port api_secret
 		config_get api_port "mixin" "api_port" "9090"
@@ -93,7 +97,7 @@ start_service() {
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
 		' "$run_profile_path"
 	else
-		log 'Mixin is enabled, mixin all config.'
+		log "Mixin is enabled, mixin all config."
 		# global
 		local mode match_process unify_delay tcp_concurrent tcp_keep_alive_interval
 		config_get mode "mixin" "mode"
@@ -193,8 +197,10 @@ start_service() {
 		fi
 	fi
 	# test profile
-	if !(/usr/bin/mihomo -d "$run_dir" -t > /dev/null 2>&1); then
-		log 'Profile test is failed! exiting...'
+	if (/usr/bin/mihomo -d "$run_dir" -t > /dev/null 2>&1); then
+		log "Profile test passed!"
+	else
+		log "Profile test failed! Exiting..."
 		return
 	fi
 	# start core
@@ -220,17 +226,17 @@ start_service() {
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
 	config_get_bool dns_hijack "proxy" "dns_hijack" 0
 	if [ "$transparent_proxy" == 1 ]; then
-		log 'Transparent Proxy is enabled.'
+		log "Transparent Proxy is enabled."
 		if [ "$dns_hijack" == 0 ]; then
-			log 'DNS Hijack is disabled, dns request will not redirect to core.'
+			log "DNS Hijack is disabled, dns request will not redirect to the core."
 		fi
 		# transparent proxy
-		log 'Start hijack.'
+		log "Transparent Proxy: Start hijack."
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
 		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# exclusion
-		log 'Add exclusions.'
+		log "Transparent Proxy: Add exclusions."
 		add_wan_inbound_exclusion
 		add_firewall_exclusion
 		add_upnp_exclusion
@@ -240,7 +246,7 @@ start_service() {
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
 		if [ "$router_proxy" == 1 ]; then
-			log 'Router Proxy is enabled.'
+			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo nat_output jump router_dns_hijack
 			fi
@@ -252,19 +258,19 @@ start_service() {
 		config_list_foreach "proxy" "acl_ip" add_acl_ip
 		config_list_foreach "proxy" "acl_mac" add_acl_mac
 		if [ -z "$access_control_mode" ]; then
-			log 'Access Control is disabled, proxy all client.'
+			log "Transparent Proxy: Access Control is disabled, set proxy for all client."
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump all_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump all_proxy
 		elif [ "$access_control_mode" == "allow" ]; then
-			log 'Access Control is using allow mode, only proxy client which in acl.'
+			log "Transparent Proxy: Access Control is using allow mode, set proxy for client which is in acl."
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump allow_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump allow_proxy
 		elif [ "$access_control_mode" == "block" ]; then
-			log 'Access Control is using block mode, only proxy client which not in acl.'
+			log "Transparent Proxy: Access Control is using block mode, set proxy for client which is not in acl."
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump block_dns_hijack
 			fi
@@ -276,9 +282,10 @@ start_service() {
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
-		log 'Add crontab for scheduled restart.'
+		log "Add crontab for scheduled restart."
 		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
 	fi
+	log "Start Successful!"
 }
 
 stop_service() {
