@@ -198,6 +198,7 @@ start_service() {
 			yq ea -M -i 'select(fi == 0) * select(fi == 1)' "$run_profile_path" "$mixin_path"
 		fi
 	fi
+	yq -M -i 'del(.tun)' "$run_profile_path"
 	# test profile
 	if (/usr/bin/mihomo -d "$run_dir" -t > /dev/null 2>&1); then
 		log "Profile test passed!"
