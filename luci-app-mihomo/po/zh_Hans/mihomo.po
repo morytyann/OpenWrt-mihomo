@@ -307,5 +307,8 @@ msgstr "上方文件内容将会在其他混入配置之前合并到配置文件
 msgid "Log"
 msgstr "日志"
 
+msgid "App Log"
+msgstr "应用日志"
+
 msgid "Core Log"
 msgstr "核心日志"
