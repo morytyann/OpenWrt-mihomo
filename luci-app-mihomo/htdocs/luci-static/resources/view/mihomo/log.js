@@ -7,13 +7,13 @@
 const coreLogPath = "/etc/mihomo/run/core.log";
 
 function getCoreLog() {
-    return L.resolveDefault(fs.lines(coreLogPath));
+    return L.resolveDefault(fs.read(coreLogPath));
 }
 
 return view.extend({
     load: function () {
         return Promise.all([
-            getCoreLog
+            getCoreLog()
         ]);
     },
     render: function (data) {
@@ -21,11 +21,13 @@ return view.extend({
 
         let m, s, o;
 
-        m = new form.Map('mihomo', _('Mihomo'), _('Mihomo is a rule based proxy in Go.'));
+        m = new form.Map('mihomo', _('Log'));
 
-        s = m.section(form.NamedSection, 'log', 'log');
+        s = m.section(form.NamedSection, 'config', 'config');
 
-        o = s.option(form.DummyValue, '_core_log', _('Core Log'));
+        s.tab('core_log', _('Core Log'))
+
+        o = s.taboption('core_log', form.DummyValue, '_core_log');
         o.render = function() {
             return E('textarea', { 'id' : 'core_log', 'style': 'width: 100%', 'rows': 20, 'readonly' : 'readonly', }, coreLog);
         };
@@ -37,5 +39,10 @@ return view.extend({
                 }
             });
         });
-    }
+
+        return m.render();
+    },
+	handleSaveApply: null,
+	handleSave: null,
+    handleReset: null
 })
