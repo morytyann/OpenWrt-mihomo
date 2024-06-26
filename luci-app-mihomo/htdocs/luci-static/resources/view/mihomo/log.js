@@ -5,11 +5,11 @@
 'require poll';
 
 function getAppLog() {
-    return L.resolveDefault(fs.read('/etc/mihomo/run/app.log'));
+    return L.resolveDefault(fs.read_direct('/etc/mihomo/run/app.log'));
 }
 
 function getCoreLog() {
-    return L.resolveDefault(fs.read('/etc/mihomo/run/core.log'));
+    return L.resolveDefault(fs.read_direct('/etc/mihomo/run/core.log'));
 }
 
 return view.extend({
@@ -29,11 +29,11 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'config', 'config');
 
-        s.tab('app_log', _('App Log'))
+        s.tab('app_log', _('App Log'));
 
         o = s.taboption('app_log', form.DummyValue, '_app_log');
         o.render = function() {
-            return E('textarea', { 'id' : 'app_log', 'style': 'width: 100%', 'rows': 20, 'readonly' : 'readonly', }, appLog);
+            return E('textarea', { 'id': 'app_log', 'style': 'width: 100%; padding: 4px', 'rows': 30, 'readonly': 'readonly', }, appLog);
         };
         poll.add(function () {
             return L.resolveDefault(getAppLog()).then(function (appLog) {
@@ -44,11 +44,11 @@ return view.extend({
             });
         });
 
-        s.tab('core_log', _('Core Log'))
+        s.tab('core_log', _('Core Log'));
 
         o = s.taboption('core_log', form.DummyValue, '_core_log');
         o.render = function() {
-            return E('textarea', { 'id' : 'core_log', 'style': 'width: 100%', 'rows': 20, 'readonly' : 'readonly', }, coreLog);
+            return E('textarea', { 'id': 'core_log', 'style': 'width: 100%; padding: 4px', 'rows': 30, 'readonly': 'readonly', }, coreLog);
         };
         poll.add(function () {
             return L.resolveDefault(getCoreLog()).then(function (coreLog) {
