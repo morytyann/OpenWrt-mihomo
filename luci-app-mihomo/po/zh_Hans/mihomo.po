@@ -4,6 +4,9 @@ msgstr "Mihomo"
 msgid "Mihomo is a rule based proxy in Go."
 msgstr "Mihomo 是一个Go语言编写的基于规则的代理工具。"
 
+msgid "Config"
+msgstr "配置"
+
 msgid "Basic Config"
 msgstr "基础配置"
 
@@ -300,3 +303,9 @@ msgstr "混入文件内容"
 
 msgid "The file's content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile."
 msgstr "上方文件内容将会在其他混入配置之前合并到配置文件（意味着更低的优先级），并且将重写配置文件中相同的字段。"
+
+msgid "Log"
+msgstr "日志"
+
+msgid "Core Log"
+msgstr "核心日志"
