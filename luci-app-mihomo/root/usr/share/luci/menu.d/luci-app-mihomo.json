@@ -2,12 +2,26 @@
 	"admin/services/mihomo": {
 		"title": "Mihomo",
 		"action": {
-			"type": "view",
-			"path": "mihomo"
+			"type": "alias",
+			"path": "admin/services/mihomo/config"
 		},
 		"depends": {
 			"acl": [ "luci-app-mihomo" ],
 			"uci": { "mihomo": true }
+		}
+	},
+	"admin/services/mihomo/config": {
+		"title": "Config",
+		"action": {
+			"type": "view",
+			"path": "mihomo/config"
+		}
+	},
+	"admin/services/mihomo/log": {
+		"title": "Log",
+		"action": {
+			"type": "view",
+			"path": "mihomo/log"
 		}
 	}
 }

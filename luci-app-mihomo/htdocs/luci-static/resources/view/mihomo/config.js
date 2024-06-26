@@ -8,6 +8,7 @@
 
 const profilesDir = '/etc/mihomo/profiles';
 const runProfilePath = '/etc/mihomo/run/config.yaml';
+const mixinPath = '/etc/mihomo/mixin.yaml';
 
 const callServiceList = rpc.declare({
     object: 'service',
@@ -463,10 +464,10 @@ return view.extend({
         o.width = '100%';
         o.rows = 20;
         o.cfgvalue = function(section_id) {
-            return L.resolveDefault(fs.read('/etc/mihomo/mixin.yaml'));
+            return L.resolveDefault(fs.read(mixinPath));
         };
         o.write = function(section_id, formvalue) {
-			return fs.write('/etc/mihomo/mixin.yaml', formvalue);
+			return fs.write(mixinPath, formvalue);
         };
 
         return m.render();

@@ -6,8 +6,8 @@ START=99
 USE_PROCD=1
 
 # permission
-mihomo_group="mihomo"
 mihomo_user="mihomo"
+mihomo_group="mihomo"
 
 # routing
 fw_table=80
@@ -17,6 +17,7 @@ fw_mark=80
 home_dir="/etc/mihomo"
 run_dir="$home_dir/run"
 run_profile_path="$run_dir/config.yaml"
+run_core_log_path="$run_dir/core.log"
 run_ui_dir="$run_dir/ui"
 run_ui_razord_path="$run_ui_dir/razord.tar.gz"
 run_ui_razord_src_dir="$run_ui_dir/Razord-meta-gh-pages"
@@ -189,13 +190,14 @@ start_service() {
 	# start core
 	procd_open_instance core
 
-	procd_set_param command /usr/bin/mihomo -d "$run_dir"
+	procd_set_param command /bin/sh -c "/usr/bin/mihomo -d $run_dir > $run_core_log_path 2>&1"
 	procd_set_param file "$run_profile_path"
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
 
 	procd_add_jail core
-	procd_add_jail_mount_rw /etc/ssl/certs /etc/hosts
+	procd_add_jail_mount /usr/bin/mihomo
+	procd_add_jail_mount /etc/ssl/certs /etc/hosts
 	procd_add_jail_mount_rw "$run_dir"
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param user "$mihomo_user"
