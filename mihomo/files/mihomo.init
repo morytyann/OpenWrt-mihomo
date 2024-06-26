@@ -16,8 +16,9 @@ fw_mark=80
 # paths
 home_dir="/etc/mihomo"
 run_dir="$home_dir/run"
-run_profile_path="$run_dir/config.yaml"
+run_app_log_path="$run_dir/app.log"
 run_core_log_path="$run_dir/core.log"
+run_profile_path="$run_dir/config.yaml"
 run_ui_dir="$run_dir/ui"
 run_ui_razord_path="$run_ui_dir/razord.tar.gz"
 run_ui_razord_src_dir="$run_ui_dir/Razord-meta-gh-pages"
@@ -44,8 +45,10 @@ start_service() {
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
+		log 'App is disabled, exiting...'
 		return
 	fi
+	log 'App is enabled, starting...'
 	# download profile
 	local profile
 	config_get profile "config" "profile"
@@ -65,6 +68,7 @@ start_service() {
 	local mixin
 	config_get_bool mixin "config" "mixin" 1
 	if [ "$mixin" == 0 ]; then
+		log 'Mixin is disabled, only mixin neccesary config.'
 		# api
 		local api_port api_secret
 		config_get api_port "mixin" "api_port" "9090"
@@ -89,6 +93,7 @@ start_service() {
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
 		' "$run_profile_path"
 	else
+		log 'Mixin is enabled, mixin all config.'
 		# global
 		local mode match_process unify_delay tcp_concurrent tcp_keep_alive_interval
 		config_get mode "mixin" "mode"
@@ -187,6 +192,11 @@ start_service() {
 			yq ea -M -i 'select(fi == 0) * select(fi == 1)' "$run_profile_path" "$mixin_path"
 		fi
 	fi
+	# test profile
+	if !(/usr/bin/mihomo -d "$run_dir" -t > /dev/null 2>&1); then
+		log 'Profile test is failed! exiting...'
+		return
+	fi
 	# start core
 	procd_open_instance core
 
@@ -195,14 +205,14 @@ start_service() {
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
 
-	procd_add_jail core
-	procd_add_jail_mount /usr/bin/mihomo
-	procd_add_jail_mount /etc/ssl/certs /etc/hosts
-	procd_add_jail_mount_rw "$run_dir"
-	procd_set_param capabilities /etc/capabilities/mihomo.json
-	procd_set_param user "$mihomo_user"
-	procd_set_param group "$mihomo_group"
-	procd_set_param no_new_privs 1
+	# procd_add_jail core
+	# procd_add_jail_mount /usr/bin/mihomo
+	# procd_add_jail_mount /etc/ssl/certs /etc/hosts
+	# procd_add_jail_mount_rw "$run_dir"
+	# procd_set_param capabilities /etc/capabilities/mihomo.json
+	# procd_set_param user "$mihomo_user"
+	# procd_set_param group "$mihomo_group"
+	# procd_set_param no_new_privs 1
 
 	procd_close_instance
 	# hijack
@@ -210,11 +220,17 @@ start_service() {
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
 	config_get_bool dns_hijack "proxy" "dns_hijack" 0
 	if [ "$transparent_proxy" == 1 ]; then
+		log 'Transparent Proxy is enabled.'
+		if [ "$dns_hijack" == 0 ]; then
+			log 'DNS Hijack is disabled, dns request will not redirect to core.'
+		fi
 		# transparent proxy
+		log 'Start hijack.'
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
 		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# exclusion
+		log 'Add exclusions.'
 		add_wan_inbound_exclusion
 		add_firewall_exclusion
 		add_upnp_exclusion
@@ -224,6 +240,7 @@ start_service() {
 		local router_proxy
 		config_get_bool router_proxy "proxy" "router_proxy" 0
 		if [ "$router_proxy" == 1 ]; then
+			log 'Router Proxy is enabled.'
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo nat_output jump router_dns_hijack
 			fi
@@ -235,16 +252,19 @@ start_service() {
 		config_list_foreach "proxy" "acl_ip" add_acl_ip
 		config_list_foreach "proxy" "acl_mac" add_acl_mac
 		if [ -z "$access_control_mode" ]; then
+			log 'Access Control is disabled, proxy all client.'
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump all_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump all_proxy
 		elif [ "$access_control_mode" == "allow" ]; then
+			log 'Access Control is using allow mode, only proxy client which in acl.'
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump allow_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump allow_proxy
 		elif [ "$access_control_mode" == "block" ]; then
+			log 'Access Control is using block mode, only proxy client which not in acl.'
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump block_dns_hijack
 			fi
@@ -256,6 +276,7 @@ start_service() {
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
+		log 'Add crontab for scheduled restart.'
 		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
 	fi
 }
@@ -281,6 +302,9 @@ cleanup () {
 	nft delete table ip mihomo >/dev/null 2>&1
 	# delete cron
 	sed -i '/#mihomo/d' "/etc/crontabs/root" >/dev/null 2>&1
+	# clear log
+	rm -f "$run_app_log_path"
+	rm -f "$run_core_log_path"
 }
 
 download_ui() {
@@ -516,4 +540,8 @@ add_upnp_exclusion() {
 	procd_set_param command "$upnp_lease_watcher" "-t" $(date +%s)
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
+}
+
+log () {
+	echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$run_app_log_path"
 }
