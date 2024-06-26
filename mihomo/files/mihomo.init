@@ -322,8 +322,8 @@ log() {
 }
 
 clear_all_log() {
-    clear_app_log
-    clear_core_log
+	clear_app_log
+	clear_core_log
 }
 
 clear_app_log() {
