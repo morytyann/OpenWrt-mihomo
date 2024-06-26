@@ -25,7 +25,7 @@ return view.extend({
 
         let m, s, o;
 
-        m = new form.Map('mihomo', _('Log'));
+        m = new form.Map('mihomo');
 
         s = m.section(form.NamedSection, 'config', 'config');
 
