@@ -45,10 +45,12 @@ start_service() {
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
+		clear_all_log
 		log "App is disabled."
 		log "Exiting..."
 		return
 	fi
+	clear_app_log
 	log "App is enabled."
 	log "Starting..."
 	# download profile
@@ -211,14 +213,14 @@ start_service() {
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
 
-	# procd_add_jail core
-	# procd_add_jail_mount /usr/bin/mihomo
-	# procd_add_jail_mount /etc/ssl/certs /etc/hosts
-	# procd_add_jail_mount_rw "$run_dir"
-	# procd_set_param capabilities /etc/capabilities/mihomo.json
-	# procd_set_param user "$mihomo_user"
-	# procd_set_param group "$mihomo_group"
-	# procd_set_param no_new_privs 1
+	procd_add_jail core
+	procd_add_jail_mount /usr/bin/mihomo
+	procd_add_jail_mount /etc/ssl/certs /etc/hosts
+	procd_add_jail_mount_rw "$run_dir"
+	procd_set_param capabilities /etc/capabilities/mihomo.json
+	procd_set_param user "$mihomo_user"
+	procd_set_param group "$mihomo_group"
+	procd_set_param no_new_privs 1
 
 	procd_close_instance
 	# hijack
@@ -292,6 +294,10 @@ stop_service() {
 	cleanup
 }
 
+service_stopped() {
+	clear_all_log
+}
+
 reload_service() {
 	cleanup
 	start
@@ -302,16 +308,30 @@ service_triggers() {
 	procd_add_reload_interface_trigger "$wan_dev"
 }
 
-cleanup () {
+cleanup() {
 	# delete hijack
-	ip rule del table $fw_table >/dev/null 2>&1
-	ip route del local default dev lo table "$fw_table" >/dev/null 2>&1
-	nft delete table ip mihomo >/dev/null 2>&1
+	ip rule del table $fw_table > /dev/null 2>&1
+	ip route del local default dev lo table "$fw_table" > /dev/null 2>&1
+	nft delete table ip mihomo > /dev/null 2>&1
 	# delete cron
-	sed -i '/#mihomo/d' "/etc/crontabs/root" >/dev/null 2>&1
-	# clear log
-	rm -f "$run_app_log_path"
-	rm -f "$run_core_log_path"
+	sed -i '/#mihomo/d' "/etc/crontabs/root" > /dev/null 2>&1
+}
+
+log() {
+	echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$run_app_log_path"
+}
+
+clear_all_log() {
+    clear_app_log
+    clear_core_log
+}
+
+clear_app_log() {
+	> "$run_app_log_path"
+}
+
+clear_core_log() {
+	> "$run_core_log_path"
 }
 
 download_ui() {
@@ -547,8 +567,4 @@ add_upnp_exclusion() {
 	procd_set_param command "$upnp_lease_watcher" "-t" $(date +%s)
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
-}
-
-log () {
-	echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$run_app_log_path"
 }
