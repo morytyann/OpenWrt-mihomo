@@ -216,7 +216,7 @@ start_service() {
 
 	procd_add_jail core
 	procd_add_jail_mount /usr/bin/mihomo
-	procd_add_jail_mount /etc/ssl/certs /etc/hosts
+	procd_add_jail_mount /etc/TZ /etc/hosts /etc/ssl/certs
 	procd_add_jail_mount_rw "$run_dir"
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param user "$mihomo_user"
