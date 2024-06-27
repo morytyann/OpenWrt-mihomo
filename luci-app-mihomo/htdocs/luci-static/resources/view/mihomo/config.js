@@ -65,14 +65,11 @@ async function openDashboard(type) {
 }
 
 function renderStatus(running) {
-    const template = '<span style="color: %s; font-style: italic; font-weight: bold">%s</span>';
-    let renderHTML;
     if (running) {
-        renderHTML = String.format(template, 'green', _('Running'));
+        return E('span', { style: 'color: green; font-style: italic; font-weight: bold' }, _('Running'));
     } else {
-        renderHTML = String.format(template, 'red', _('Not Running'));
+        return E('span', { style: 'color: red; font-style: italic; font-weight: bold' }, _('Not Running'));
     }
-    return renderHTML;
 }
 
 return view.extend({
@@ -95,15 +92,14 @@ return view.extend({
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
         o = s.option(form.DummyValue, '_status', _('Status'));
-        o.rawhtml = true;
         o.cfgvalue = function (section_id) {
-            return '<div id="service_status">' + renderStatus(running) + '</div>';
+            return E('div', { id: 'status' }, [renderStatus(running)]);
         };
         poll.add(function () {
             return L.resolveDefault(getServiceStatus()).then(function (running) {
-                const element = document.getElementById("service_status");
+                const element = document.getElementById("status");
                 if (element) {
-                    element.innerHTML = renderStatus(running);
+                    element.replaceChildren(renderStatus(running));
                 }
             });
         });
