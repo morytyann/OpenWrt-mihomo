@@ -94,11 +94,11 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
-		o = s.option(form.DummyValue, '_status', _('Status'));
-		o.rawhtml = true;
-		o.cfgvalue = function(section_id) {
-			return '<div id="service_status">' + renderStatus(running) + '</div>';
-		};
+        o = s.option(form.DummyValue, '_status', _('Status'));
+        o.rawhtml = true;
+        o.cfgvalue = function (section_id) {
+            return '<div id="service_status">' + renderStatus(running) + '</div>';
+        };
         poll.add(function () {
             return L.resolveDefault(getServiceStatus()).then(function (running) {
                 const element = document.getElementById("service_status");
@@ -128,7 +128,7 @@ return view.extend({
             o.value(subscription.url, _('Subscription:') + subscription.name);
         }
 
-		o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
+        o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = '/etc/mihomo/profiles';
         o.browser = true;
         o.enable_delete = true;
@@ -158,14 +158,14 @@ return view.extend({
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipaddr';
         o.retain = true;
-        o.depends({'transparent_proxy': '1', 'access_control_mode': 'allow'});
-        o.depends({'transparent_proxy': '1', 'access_control_mode': 'block'});
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
 
         o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
         o.datatype = 'macaddr';
         o.retain = true;
-        o.depends({'transparent_proxy': '1', 'access_control_mode': 'allow'});
-        o.depends({'transparent_proxy': '1', 'access_control_mode': 'block'});
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
 
         o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When disabled, DNS request will not redirect to core, you need handle this by yourself!'));
         o.retain = true;
@@ -294,7 +294,7 @@ return view.extend({
 
         o = s.taboption('dns', form.DynamicList, 'fake_ip_filters', _('Edit Fake-IP Filters'));
         o.retain = true;
-        o.depends({'dns_mode': 'fake-ip', 'fake_ip_filter': '1'});
+        o.depends({ 'dns_mode': 'fake-ip', 'fake_ip_filter': '1' });
 
         o = s.taboption('dns', form.Flag, 'fake_ip_cache', _('Fake-IP Cache'));
         o.retain = true;
@@ -459,15 +459,13 @@ return view.extend({
 
         s.tab('mixin_file_content', _('Mixin File Content'));
 
-        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', _('Mixin File Content'), _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
-        o.optional = true;
-        o.width = '100%';
+        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', null, _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
         o.rows = 20;
-        o.cfgvalue = function(section_id) {
+        o.cfgvalue = function (section_id) {
             return L.resolveDefault(fs.read(mixinPath));
         };
-        o.write = function(section_id, formvalue) {
-			return fs.write(mixinPath, formvalue);
+        o.write = function (section_id, formvalue) {
+            return fs.write(mixinPath, formvalue);
         };
 
         return m.render();

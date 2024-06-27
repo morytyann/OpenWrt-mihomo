@@ -312,3 +312,6 @@ msgstr "应用日志"
 
 msgid "Core Log"
 msgstr "核心日志"
+
+msgid "Scroll To Bottom"
+msgstr "滚动到底部"

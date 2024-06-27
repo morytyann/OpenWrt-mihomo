@@ -52,4 +52,4 @@ The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 ## Warning
 
 - Only support firewall4 and will never support firewall3
-- Will only support ipv4 for a long time
+- Will only support IPv4 for a long time

@@ -1,26 +1,26 @@
 {
-	"luci-app-mihomo": {
-		"description": "Grant access to mihomo procedures",
-		"read": {
-			"uci": [ "mihomo" ],
-			"ubus": {
-				"service": [ "list" ]
-			},
-			"file": {
-				"/etc/mihomo/mixin.yaml": ["read"],
-				"/etc/mihomo/profiles/*.yaml": ["read"],
-				"/etc/mihomo/profiles/*.yml": ["read"],
-				"/etc/mihomo/run/*.log": ["read"],
-				"/usr/bin/yq": ["exec"]
-			}
-		},
-		"write": {
-			"uci": [ "mihomo" ],
-			"file": {
-				"/etc/mihomo/mixin.yaml": ["write"],
-				"/etc/mihomo/profiles/*.yaml": ["write"],
-				"/etc/mihomo/profiles/*.yml": ["write"]
-			}
-		}
-	}
+    "luci-app-mihomo": {
+        "description": "Grant access to mihomo procedures",
+        "read": {
+            "uci": [ "mihomo" ],
+            "ubus": {
+                "service": [ "list" ]
+            },
+            "file": {
+                "/etc/mihomo/mixin.yaml": ["read"],
+                "/etc/mihomo/profiles/*.yaml": ["read"],
+                "/etc/mihomo/profiles/*.yml": ["read"],
+                "/etc/mihomo/run/*.log": ["read"],
+                "/usr/bin/yq": ["exec"]
+            }
+        },
+        "write": {
+            "uci": [ "mihomo" ],
+            "file": {
+                "/etc/mihomo/mixin.yaml": ["write"],
+                "/etc/mihomo/profiles/*.yaml": ["write"],
+                "/etc/mihomo/profiles/*.yml": ["write"]
+            }
+        }
+    }
 }

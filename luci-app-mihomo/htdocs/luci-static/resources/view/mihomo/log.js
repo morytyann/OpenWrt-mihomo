@@ -24,6 +24,7 @@ return view.extend({
         const coreLog = data[1];
 
         let m, s, o;
+        let appLogScrollToBottom, coreLogScrollToBottom;
 
         m = new form.Map('mihomo');
 
@@ -31,37 +32,61 @@ return view.extend({
 
         s.tab('app_log', _('App Log'));
 
-        o = s.taboption('app_log', form.DummyValue, '_app_log');
-        o.render = function() {
-            return E('textarea', { 'id': 'app_log', 'style': 'width: 100%; padding: 4px', 'rows': 30, 'readonly': 'readonly', }, appLog);
+        o = s.taboption('app_log', form.Button, 'scroll_to_bottom');
+        o.inputtitle = _('Scroll To Bottom');
+        o.onclick = function () {
+            if (appLogScrollToBottom) appLogScrollToBottom();
         };
-        poll.add(function () {
-            return L.resolveDefault(getAppLog()).then(function (appLog) {
-                const element = document.getElementById("app_log");
-                if (element) {
-                    element.textContent = appLog;
-                }
+
+        o = s.taboption('app_log', form.TextValue, '_app_log');
+        o.rows = 30;
+        o.cfgvalue = function (section_id) {
+            return appLog;
+        };
+        o.write = function (section_id, formvalue) {
+            return true;
+        };
+        poll.add(L.bind(function () {
+            const option = this;
+            return L.resolveDefault(getAppLog()).then(function (log) {
+                option.getUIElement("config").setValue(log);
             });
-        });
+        }, o));
+        appLogScrollToBottom = L.bind(function () {
+            const element = this.getUIElement("config").node.firstChild;
+            element.scrollTop = element.scrollHeight;
+        }, o);
 
         s.tab('core_log', _('Core Log'));
 
-        o = s.taboption('core_log', form.DummyValue, '_core_log');
-        o.render = function() {
-            return E('textarea', { 'id': 'core_log', 'style': 'width: 100%; padding: 4px', 'rows': 30, 'readonly': 'readonly', }, coreLog);
+        o = s.taboption('core_log', form.Button, 'scroll_to_bottom');
+        o.inputtitle = _('Scroll To Bottom');
+        o.onclick = function () {
+            if (coreLogScrollToBottom) coreLogScrollToBottom();
         };
-        poll.add(function () {
-            return L.resolveDefault(getCoreLog()).then(function (coreLog) {
-                const element = document.getElementById("core_log");
-                if (element) {
-                    element.textContent = coreLog;
-                }
+
+        o = s.taboption('core_log', form.TextValue, '_core_log');
+        o.rows = 30;
+        o.cfgvalue = function (section_id) {
+            return coreLog;
+        };
+        o.write = function (section_id, formvalue) {
+            return true;
+        };
+        poll.add(L.bind(function () {
+            const option = this;
+            return L.resolveDefault(getCoreLog()).then(function (log) {
+                option.getUIElement("config").setValue(log);
             });
-        });
+        }, o));
+        coreLogScrollToBottom = L.bind(function () {
+            const element = this.getUIElement("config").node.firstChild;
+            element.scrollTop = element.scrollHeight;
+        }, o);
 
         return m.render();
     },
-	handleSaveApply: null,
-	handleSave: null,
+    handleSaveApply: null,
+    handleSave: null,
     handleReset: null
-})
+});
