@@ -374,7 +374,7 @@ mixin_authentication() {
 		return
 	fi
 
-	authentication="$username:$password" yq -M -i '.authentication += [env(authentication)]'
+	authentication="$username:$password" yq -M -i '.authentication += [env(authentication)]' "$run_profile_path"
 }
 
 mixin_fake_ip_filter() {
