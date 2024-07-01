@@ -112,6 +112,7 @@ return view.extend({
 
         o = s.option(form.Value, 'cron_expression', _('Cron Expression'));
         o.retain = true;
+        o.rmempty = false;
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Choose Profile'));
@@ -173,8 +174,10 @@ return view.extend({
         s.anonymous = true;
 
         o = s.option(form.Value, 'name', _('Subscription Name'));
+        o.rmempty = false;
 
         o = s.option(form.Value, 'url', _('Subscription Url'));
+        o.rmempty = false;
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
@@ -237,7 +240,7 @@ return view.extend({
         o.placeholder = '9090';
 
         o = s.taboption('external_control', form.Value, 'api_secret', _('API Secret'));
-        o.placeholder = '666666';
+        o.rmempty = false;
 
         o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
         o.rmempty = false;
@@ -266,6 +269,25 @@ return view.extend({
         o = s.taboption('inbound', form.Value, 'tproxy_port', _('TPROXY Port'));
         o.datatype = 'port';
         o.placeholder = '7892';
+
+        o = s.taboption('inbound', form.Flag, 'authentication', _('Authentication'));
+        o.rmempty = false;
+
+        o = s.taboption('inbound', form.SectionValue, 'authentications', form.TableSection, 'authentication', _('Edit Authentications'));
+        o.retain = true;
+        o.depends('authentication', '1');
+
+        o.subsection.anonymous = true;
+        o.subsection.addremove = true;
+
+        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
+        so.rmempty = false;
+
+        so = o.subsection.option(form.Value, 'username', _('Username'));
+        so.rmempty = false;
+
+        so = o.subsection.option(form.Value, 'password', _('Password'));
+        so.rmempty = false;
 
         s.tab('dns', _('DNS Config'));
 
@@ -314,6 +336,7 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.Value, 'domain_name', _('Domain Name'));
+        so.rmempty = false;
 
         so = o.subsection.option(form.DynamicList, 'ip', _('IP'));
 
@@ -375,6 +398,7 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.Value, 'matcher', _('Matcher'));
+        so.rmempty = false;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
 
