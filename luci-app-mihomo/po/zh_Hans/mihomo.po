@@ -175,6 +175,18 @@ msgstr "Redirect 端口"
 msgid "TPROXY Port"
 msgstr "TPROXY 端口"
 
+msgid "Authentication"
+msgid "身份验证"
+
+msgid "Edit Authentications"
+msgstr "编辑身份验证"
+
+msgid "username"
+msgstr "用户名"
+
+msgid "password"
+msgstr "密码"
+
 msgid "DNS Config"
 msgstr "DNS 配置"
 

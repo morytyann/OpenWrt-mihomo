@@ -57,6 +57,7 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/mihomo.init $(1)/etc/init.d/mihomo
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(CURDIR)/files/init.sh $(1)/etc/uci-defaults/99_init-mihomo
 	$(INSTALL_BIN) $(CURDIR)/files/migrate.sh $(1)/etc/uci-defaults/99_migrate-mihomo
 
 	$(INSTALL_DIR) $(1)/etc/capabilities

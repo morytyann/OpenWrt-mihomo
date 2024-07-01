@@ -113,13 +113,14 @@ start_service() {
 		config_get api_secret "mixin" "api_secret" "666666"
 		config_get_bool selection_cache "mixin" "selection_cache" 0
 		# inbound
-		local allow_lan http_port socks_port mixed_port redir_port tproxy_port
+		local allow_lan http_port socks_port mixed_port redir_port tproxy_port authentication
 		config_get_bool allow_lan "mixin" "allow_lan" 0
 		config_get http_port "mixin" "http_port" "8080"
 		config_get socks_port "mixin" "socks_port" "1080"
 		config_get mixed_port "mixin" "mixed_port" "7890"
 		config_get redir_port "mixin" "redir_port" "7891"
 		config_get tproxy_port "mixin" "tproxy_port" "7892"
+		config_get_bool authentication "mixin" "authentication" 0
 		# dns
 		local dns_port dns_mode fake_ip_range fake_ip_cache fake_ip_filter dns_system_hosts dns_hosts dns_nameserver dns_fallback_filter dns_nameserver_policy
 		config_get dns_port "mixin" "dns_port" "1053"
@@ -167,6 +168,10 @@ start_service() {
 		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval)
 		' "$run_profile_path"
 
+		if [ "$authentication" == 1 ]; then
+			yq -M -i 'del(.authentication)' "$run_profile_path"
+			config_foreach mixin_authentication "authentication"
+		fi
 		if [ "$fake_ip_filter" == 1 ]; then
 			yq -M -i 'del(.dns.fake-ip-filter)' "$run_profile_path"
 			config_list_foreach "mixin" "fake_ip_filters" mixin_fake_ip_filter
@@ -355,6 +360,21 @@ download_ui() {
 			rm -rf "$dest_dir"
 		fi
 	fi
+}
+
+mixin_authentication() {
+	local section=$1
+
+	local enabled username password
+	config_get_bool enabled "$section" "enabled" 0
+	config_get username "$section" "username"
+	config_get password "$section" "password"
+
+	if [ "$enabled" == 0 ]; then
+		return
+	fi
+
+	authentication="$username:$password" yq -M -i '.authentication += [env(authentication)]' "$run_profile_path"
 }
 
 mixin_fake_ip_filter() {
