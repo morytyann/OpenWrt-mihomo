@@ -115,6 +115,9 @@ msgstr "TCP并发"
 msgid "TCP Keep Alive Interval"
 msgstr "TCP Keep Alive 间隔"
 
+msgid "Log Level"
+msgstr "日志级别"
+
 msgid "External Control Config"
 msgstr "外部控制配置"
 

@@ -200,11 +200,11 @@ return view.extend({
         o.placeholder = '600';
 
         o = s.taboption('global', form.ListValue, 'log_level', _('Log Level'));
-        o.value('silent', _('Slient'));
-        o.value('error', _('Error'));
-        o.value('warning', _('Warning'));
-        o.value('info', _('Info'));
-        o.value('debug', _('Debug'));
+        o.value('silent');
+        o.value('error');
+        o.value('warning');
+        o.value('info');
+        o.value('debug');
 
         s.tab('external_control', _('External Control Config'));
 
