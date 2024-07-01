@@ -112,6 +112,7 @@ return view.extend({
 
         o = s.option(form.Value, 'cron_expression', _('Cron Expression'));
         o.retain = true;
+        o.rmempty = false;
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Choose Profile'));
@@ -126,10 +127,6 @@ return view.extend({
 
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = '/etc/mihomo/profiles';
-        o.browser = true;
-        o.enable_delete = true;
-        o.enable_upload = true;
-        o.rmempty = true;
 
         o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
         o.rmempty = false;
@@ -173,8 +170,10 @@ return view.extend({
         s.anonymous = true;
 
         o = s.option(form.Value, 'name', _('Subscription Name'));
+        o.rmempty = false;
 
         o = s.option(form.Value, 'url', _('Subscription Url'));
+        o.rmempty = false;
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
@@ -199,6 +198,13 @@ return view.extend({
         o = s.taboption('global', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
         o.placeholder = '600';
+
+        o = s.taboption('global', form.ListValue, 'log_level', _('Log Level'));
+        o.value('silent', _('Slient'));
+        o.value('error', _('Error'));
+        o.value('warning', _('Warning'));
+        o.value('info', _('Info'));
+        o.value('debug', _('Debug'));
 
         s.tab('external_control', _('External Control Config'));
 
@@ -237,7 +243,7 @@ return view.extend({
         o.placeholder = '9090';
 
         o = s.taboption('external_control', form.Value, 'api_secret', _('API Secret'));
-        o.placeholder = '666666';
+        o.rmempty = false;
 
         o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
         o.rmempty = false;
@@ -314,6 +320,7 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.Value, 'domain_name', _('Domain Name'));
+        so.rmempty = false;
 
         so = o.subsection.option(form.DynamicList, 'ip', _('IP'));
 
@@ -375,6 +382,7 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.Value, 'matcher', _('Matcher'));
+        so.rmempty = false;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
 
@@ -439,10 +447,13 @@ return view.extend({
         o.value('memconservative', _('Memory Conservative Loader'));
 
         o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB) Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT) Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Flag, 'geox_auto_update', _('GeoX Auto Update'));
         o.rmempty = false;
