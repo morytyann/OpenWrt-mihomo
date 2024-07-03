@@ -75,10 +75,13 @@ start_service() {
 	config_get_bool mixin "config" "mixin" 1
 	if [ "$mixin" == 0 ]; then
 		log "Mixin is disabled, only mixin neccesary config."
+		# global
+		local log_level
+		config_get log_level "mixin" "log_level"
 		# api
 		local api_port api_secret
 		config_get api_port "mixin" "api_port" "9090"
-		config_get api_secret "mixin" "api_secret" "666666"
+		config_get api_secret "mixin" "api_secret"
 		# inbound
 		local http_port socks_port mixed_port redir_port tproxy_port
 		config_get http_port "mixin" "http_port" "8080"
@@ -90,10 +93,12 @@ start_service() {
 		local dns_port
 		config_get dns_port "mixin" "dns_port" "1053"
 		# do mixin
+		log_level="$log_level" \
 		ui_path="ui" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
 		http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
 		yq -M -i '
+		.log-level = env(log_level) |
 		.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
@@ -101,12 +106,13 @@ start_service() {
 	else
 		log "Mixin is enabled, mixin all config."
 		# global
-		local mode match_process unify_delay tcp_concurrent tcp_keep_alive_interval
+		local mode match_process unify_delay tcp_concurrent tcp_keep_alive_interval log_level
 		config_get mode "mixin" "mode"
 		config_get match_process "mixin" "match_process"
 		config_get_bool unify_delay "mixin" "unify_delay" 0
 		config_get_bool tcp_concurrent "mixin" "tcp_concurrent" 0
 		config_get tcp_keep_alive_interval "mixin" "tcp_keep_alive_interval" 600
+		config_get log_level "mixin" "log_level"
 		# api
 		local api_port api_secret selection_cache
 		config_get api_port "mixin" "api_port" "9090"
@@ -149,7 +155,7 @@ start_service() {
 		config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 		config_get geox_update_interval "mixin" "geox_update_interval" "24"
 		# do mixin
-		mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" \
+		mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" log_level="$log_level" \
 		ui_path="ui" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" selection_cache="$selection_cache" \
 		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" fake_ip_cache="$fake_ip_cache" \
@@ -158,7 +164,7 @@ start_service() {
 		geoip_format="$geoip_format" geodata_loader="$geodata_loader" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geosite_url="$geosite_url" \
 		geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
 		yq -M -i '
-		.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) |
+		.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) | .log-level = env(log_level) |
 		.external-ui = env(ui_path) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
 		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range) | .profile.store-fake-ip = env(fake_ip_cache) == 1 |

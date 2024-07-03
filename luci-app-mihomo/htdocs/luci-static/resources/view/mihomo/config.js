@@ -127,10 +127,6 @@ return view.extend({
 
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = '/etc/mihomo/profiles';
-        o.browser = true;
-        o.enable_delete = true;
-        o.enable_upload = true;
-        o.rmempty = true;
 
         o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
         o.rmempty = false;
@@ -202,6 +198,13 @@ return view.extend({
         o = s.taboption('global', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
         o.placeholder = '600';
+
+        o = s.taboption('global', form.ListValue, 'log_level', _('Log Level'));
+        o.value('silent');
+        o.value('error');
+        o.value('warning');
+        o.value('info');
+        o.value('debug');
 
         s.tab('external_control', _('External Control Config'));
 
@@ -463,10 +466,13 @@ return view.extend({
         o.value('memconservative', _('Memory Conservative Loader'));
 
         o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB) Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT) Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
+        o.rmempty = false;
 
         o = s.taboption('geox', form.Flag, 'geox_auto_update', _('GeoX Auto Update'));
         o.rmempty = false;
