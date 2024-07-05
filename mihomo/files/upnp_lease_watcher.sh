@@ -4,7 +4,7 @@
 
 load_config() {
 	config_load upnpd
-	config_get upnp_enabled "config" "enabled" 0
+	config_get enabled "config" "enabled" 0
 	config_get upnp_lease_file "config" "upnp_lease_file" "/var/run/miniupnpd.leases"
 }
 
@@ -26,11 +26,13 @@ add_upnp_exclusion() {
 }
 
 load_config
-if [ "$upnp_enabled" == 0 ]; then
+if [ "$enabled" == 0 ]; then
 	return
 fi
 
+add_upnp_exclusion
+
 while true; do
-	add_upnp_exclusion
 	inotifywait -e create,modify --include $(basename "$upnp_lease_file") $(dirname "$upnp_lease_file")
+	add_upnp_exclusion
 done
