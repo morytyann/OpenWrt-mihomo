@@ -118,7 +118,7 @@ return view.extend({
         o = s.option(form.ListValue, 'profile', _('Choose Profile'));
 
         for (const profile of profiles) {
-            o.value('file:/etc/mihomo/profiles/' + profile.name, _('File:') + profile.name);
+            o.value('file:' + profilesDir + '/' + profile.name, _('File:') + profile.name);
         }
 
         for (const subscription of subscriptions) {
@@ -126,7 +126,7 @@ return view.extend({
         }
 
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
-        o.root_directory = '/etc/mihomo/profiles';
+        o.root_directory = profilesDir;
 
         o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
         o.rmempty = false;
