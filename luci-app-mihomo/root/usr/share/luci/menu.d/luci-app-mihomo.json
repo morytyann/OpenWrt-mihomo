@@ -17,6 +17,13 @@
             "path": "mihomo/config"
         }
     },
+    "admin/services/mihomo/profileseditor": {
+        "title": "ProfilesEditor",
+        "action": {
+            "type": "view",
+            "path": "mihomo/profileseditor"
+        }
+    },
     "admin/services/mihomo/log": {
         "title": "Log",
         "action": {
