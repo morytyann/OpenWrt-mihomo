@@ -331,5 +331,5 @@ msgstr "核心日志"
 msgid "Scroll To Bottom"
 msgstr "滚动到底部"
 
-msgid "ProfilesEditor"
-msgstr "配置编辑"
+msgid "Editor"
+msgstr "编辑器"

@@ -24,7 +24,6 @@ return view.extend({
         const coreLog = data[1];
 
         let m, s, o;
-        let appLogScrollToBottom, coreLogScrollToBottom;
 
         m = new form.Map('mihomo');
 
@@ -35,11 +34,13 @@ return view.extend({
         o = s.taboption('app_log', form.Button, 'scroll_to_bottom');
         o.inputtitle = _('Scroll To Bottom');
         o.onclick = function () {
-            if (appLogScrollToBottom) appLogScrollToBottom();
+            const element = m.lookupOption('mihomo.config._app_log')[0].getUIElement("config").node.firstChild;
+            element.scrollTop = element.scrollHeight;
         };
 
         o = s.taboption('app_log', form.TextValue, '_app_log');
         o.rows = 30;
+        o.wrap = false;
         o.cfgvalue = function (section_id) {
             return appLog;
         };
@@ -52,21 +53,19 @@ return view.extend({
                 option.getUIElement("config").setValue(log);
             });
         }, o));
-        appLogScrollToBottom = L.bind(function () {
-            const element = this.getUIElement("config").node.firstChild;
-            element.scrollTop = element.scrollHeight;
-        }, o);
 
         s.tab('core_log', _('Core Log'));
 
         o = s.taboption('core_log', form.Button, 'scroll_to_bottom');
         o.inputtitle = _('Scroll To Bottom');
         o.onclick = function () {
-            if (coreLogScrollToBottom) coreLogScrollToBottom();
+            const element = m.lookupOption('mihomo.config._core_log')[0].getUIElement("config").node.firstChild;
+            element.scrollTop = element.scrollHeight;
         };
 
         o = s.taboption('core_log', form.TextValue, '_core_log');
         o.rows = 30;
+        o.wrap = false;
         o.cfgvalue = function (section_id) {
             return coreLog;
         };
@@ -79,10 +78,6 @@ return view.extend({
                 option.getUIElement("config").setValue(log);
             });
         }, o));
-        coreLogScrollToBottom = L.bind(function () {
-            const element = this.getUIElement("config").node.firstChild;
-            element.scrollTop = element.scrollHeight;
-        }, o);
 
         return m.render();
     },
