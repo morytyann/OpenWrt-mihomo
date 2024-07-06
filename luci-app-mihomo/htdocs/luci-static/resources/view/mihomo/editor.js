@@ -17,7 +17,7 @@ return view.extend({
         ]);
     },
     render: function (data) {
-        const profiles = data[1];
+        const profiles = data[0];
 
         let m, s, o;
         
