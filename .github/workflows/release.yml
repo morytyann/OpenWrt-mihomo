@@ -19,7 +19,7 @@ jobs:
           - aarch64_generic
           - x86_64
         release:
-          - 23.05
+          - openwrt-23.05
 
     steps:
       - name: Version
