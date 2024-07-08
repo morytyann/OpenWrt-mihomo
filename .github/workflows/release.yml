@@ -6,6 +6,9 @@ on:
     tags:
       - v*
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: ${{ matrix.arch }}-${{ matrix.release }} build
