@@ -1,13 +1,11 @@
-name: Build Packages
+name: Release Packages
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
-    paths:
-      - 'mihomo/**'
-      - 'luci-app-mihomo/**'
+    tags:
+      - v*
 
 jobs:
   build:
@@ -24,7 +22,13 @@ jobs:
           - 23.05
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: export LUCI_APP_MIHOMO_PKG_VERSION=$(echo "${TAG}/v/}")
+
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -36,8 +40,8 @@ jobs:
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: ${{ matrix.arch }}-${{ matrix.release }}
-          path: bin/packages/${{ matrix.arch }}/mihomo/*.ipk
+          files: |
+            bin/packages/${{ matrix.arch }}/mihomo/*.ipk
