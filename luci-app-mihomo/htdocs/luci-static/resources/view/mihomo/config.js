@@ -186,6 +186,11 @@ return view.extend({
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
+        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'), _('This option does not work well with Fake-IP.'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('transparent_proxy', '1');
+
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
         s.anonymous = true;

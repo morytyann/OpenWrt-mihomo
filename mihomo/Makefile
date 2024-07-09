@@ -49,6 +49,7 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/profile_watcher.sh $(1)/etc/mihomo/profile_watcher.sh
 	$(INSTALL_BIN) $(CURDIR)/files/upnp_lease_watcher.sh $(1)/etc/mihomo/upnp_lease_watcher.sh
 	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
+	$(INSTALL_BIN) $(CURDIR)/files/geoip-ipv4-cn.nft $(1)/etc/mihomo/geoip-ipv4-cn.nft
 	$(INSTALL_DATA) $(CURDIR)/files/mixin.yaml $(1)/etc/mihomo/mixin.yaml
 
 	$(INSTALL_DIR) $(1)/etc/config
