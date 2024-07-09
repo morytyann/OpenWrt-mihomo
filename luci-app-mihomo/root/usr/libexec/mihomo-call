@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# paths
+home_dir="/etc/mihomo"
+run_dir="$home_dir/run"
+run_profile_path="$run_dir/config.yaml"
+
+action=$1
+shift
+
+case "$action" in
+	load)
+		case "$1" in
+			profile)
+				yq -M -o json < "$run_profile_path"
+			;;
+		esac
+	;;
+	version)
+		case "$1" in
+			app)
+				opkg list-installed | grep "luci-app-mihomo" | cut -d " " -f 3
+			;;
+			core)
+				mihomo -v | grep "Mihomo" | cut -d " " -f 3
+			;;
+		esac
+	;;
+esac

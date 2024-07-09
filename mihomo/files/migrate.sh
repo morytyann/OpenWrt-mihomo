@@ -21,5 +21,17 @@ authentication=$(uci -q get mihomo.mixin.authentication); [ -z "$authentication"
     uci set mihomo.@authentication[-1].password=$(awk 'BEGIN{srand(); print int(rand() * 1000000)}')
 }
 
+# add mihomo.status
+status=$(uci -q get mihomo.status); [ -z "$status" ] && uci set mihomo.status=status
+
+# add mihomo.editor
+editor=$(uci -q get mihomo.editor); [ -z "$status" ] && uci set mihomo.editor=editor
+
+# add mihomo.log
+log=$(uci -q get mihomo.log); [ -z "$status" ] && uci set mihomo.log=log
+
 # commit
 uci commit mihomo
+
+# exit with 0
+exit 0

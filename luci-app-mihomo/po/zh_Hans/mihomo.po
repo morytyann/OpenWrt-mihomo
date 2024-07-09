@@ -13,6 +13,15 @@ msgstr "基础配置"
 msgid "Status"
 msgstr "状态"
 
+msgid "App Version"
+msgstr "插件版本"
+
+msgid "Core Version"
+msgstr "核心版本"
+
+msgid "Core Status"
+msgstr "核心状态"
+
 msgid "Running"
 msgstr "运行中"
 
