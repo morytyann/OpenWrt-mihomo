@@ -43,6 +43,7 @@ The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 
 ## Dependencies
 
+- ca-bundle
 - curl
 - inotifywait
 - yq

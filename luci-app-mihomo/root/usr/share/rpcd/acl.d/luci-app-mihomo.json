@@ -11,7 +11,7 @@
                 "/etc/mihomo/profiles/*.yaml": ["read"],
                 "/etc/mihomo/profiles/*.yml": ["read"],
                 "/etc/mihomo/run/*.log": ["read"],
-                "/usr/bin/yq": ["exec"]
+                "/usr/libexec/mihomo-call": ["exec"]
             }
         },
         "write": {

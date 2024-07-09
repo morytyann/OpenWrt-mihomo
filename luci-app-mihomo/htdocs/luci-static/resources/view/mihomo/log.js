@@ -27,14 +27,14 @@ return view.extend({
 
         m = new form.Map('mihomo');
 
-        s = m.section(form.NamedSection, 'config', 'config');
+        s = m.section(form.NamedSection, 'log', 'log');
 
         s.tab('app_log', _('App Log'));
 
         o = s.taboption('app_log', form.Button, 'scroll_to_bottom');
         o.inputtitle = _('Scroll To Bottom');
         o.onclick = function () {
-            const element = m.lookupOption('mihomo.config._app_log')[0].getUIElement("config").node.firstChild;
+            const element = m.lookupOption('mihomo.log._app_log')[0].getUIElement("log").node.firstChild;
             element.scrollTop = element.scrollHeight;
         };
 
@@ -50,7 +50,7 @@ return view.extend({
         poll.add(L.bind(function () {
             const option = this;
             return L.resolveDefault(getAppLog()).then(function (log) {
-                option.getUIElement("config").setValue(log);
+                option.getUIElement("log").setValue(log);
             });
         }, o));
 
@@ -59,7 +59,7 @@ return view.extend({
         o = s.taboption('core_log', form.Button, 'scroll_to_bottom');
         o.inputtitle = _('Scroll To Bottom');
         o.onclick = function () {
-            const element = m.lookupOption('mihomo.config._core_log')[0].getUIElement("config").node.firstChild;
+            const element = m.lookupOption('mihomo.log._core_log')[0].getUIElement("log").node.firstChild;
             element.scrollTop = element.scrollHeight;
         };
 
@@ -75,7 +75,7 @@ return view.extend({
         poll.add(L.bind(function () {
             const option = this;
             return L.resolveDefault(getCoreLog()).then(function (log) {
-                option.getUIElement("config").setValue(log);
+                option.getUIElement("log").setValue(log);
             });
         }, o));
 

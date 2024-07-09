@@ -23,7 +23,7 @@ return view.extend({
         
         m = new form.Map('mihomo');
 
-        s = m.section(form.NamedSection, 'config', 'config');
+        s = m.section(form.NamedSection, 'editor', 'editor');
 
         o = s.option(form.ListValue, '_profile', _('Choose Profile'));
         o.optional = true;
@@ -36,14 +36,14 @@ return view.extend({
         };
         o.onchange = function (event, section_id, value) {
             L.resolveDefault(fs.read_direct(value), '').then(function (content) {
-                m.lookupOption('mihomo.config._profile_content')[0].getUIElement("config").setValue(content);
+                m.lookupOption('mihomo.editor._profile_content')[0].getUIElement("editor").setValue(content);
             });
         };
 
         o = s.option(form.TextValue, '_profile_content',);
         o.rows = 30;
         o.write = function (section_id, formvalue) {
-            const path = m.lookupOption('mihomo.config._profile')[0].formvalue('config');
+            const path = m.lookupOption('mihomo.editor._profile')[0].formvalue('editor');
             return fs.write(path, formvalue);
         };
 
