@@ -36,7 +36,7 @@ jobs:
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
-          V: " LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}"
+          V: "sc LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}"
 
       - name: Release
         uses: softprops/action-gh-release@v2
