@@ -32,11 +32,11 @@ jobs:
       - name: Build
         uses: openwrt/gh-action-sdk@main
         env:
-          LUCI_APP_MIHOMO_PKG_VERSION: "${{ github.ref_name }}"
           ARCH: ${{ matrix.arch }}-${{ matrix.release }}
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
+          V: " LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}"
 
       - name: Release
         uses: softprops/action-gh-release@v2
