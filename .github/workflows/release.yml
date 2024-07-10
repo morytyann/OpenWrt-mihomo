@@ -30,13 +30,13 @@ jobs:
           fetch-depth: 0
 
       - name: Build
-        uses: openwrt/gh-action-sdk@main
+        uses: morytyann/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.release }}
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
-          V: "sc LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}"
+          MAKE_ARGS: LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
