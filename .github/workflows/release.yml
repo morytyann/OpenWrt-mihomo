@@ -24,11 +24,6 @@ jobs:
           - openwrt-23.05
 
     steps:
-      - name: Version
-        env:
-          TAG: ${{ github.ref_name }}
-        run: export LUCI_APP_MIHOMO_PKG_VERSION=$(echo "${TAG}/v/}")
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -41,6 +36,7 @@ jobs:
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
+          V: LUCI_APP_MIHOMO_PKG_VERSION="${${{ github.ref_name }}}/v/}"
 
       - name: Release
         uses: softprops/action-gh-release@v2
