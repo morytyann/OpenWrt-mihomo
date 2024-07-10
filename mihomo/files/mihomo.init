@@ -246,6 +246,7 @@ start_service() {
 	local transparent_proxy dns_hijack
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
 	config_get_bool dns_hijack "proxy" "dns_hijack" 0
+	config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
 	if [ "$transparent_proxy" == 1 ]; then
 		log "Transparent Proxy is enabled."
 		if [ "$dns_hijack" == 0 ]; then
@@ -256,6 +257,11 @@ start_service() {
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
 		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		# bypass china mainland ip
+		if [ "$bypass_china_mainland_ip" == 1 ]; then
+			log "Transparent Proxy: Bypass china mainland ip is enabled."
+			nft -f "$home_dir/geoip-ipv4-cn.nft"
+		fi
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
 		add_wan_inbound_exclusion

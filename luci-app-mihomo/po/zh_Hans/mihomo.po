@@ -85,6 +85,12 @@ msgstr "DNS 劫持"
 msgid "When disabled, DNS request will not redirect to core, you need handle this by yourself!"
 msgstr "当禁用此选项时，DNS请求将不再重定向到核心，你需要自行处理！"
 
+msgid "Bypass China Mainland IP"
+msgstr "绕过中国大陆 IP"
+
+msgid "This option does not work well with Fake-IP."
+msgstr "此选项不能很好的和Fake-IP一起工作。"
+
 msgid "Subscription Config"
 msgstr "订阅配置"
 

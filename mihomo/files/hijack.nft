@@ -1,6 +1,11 @@
 #!/usr/sbin/nft -f
 
 table ip mihomo {
+	set china_ip {
+		type ipv4_addr
+		flags interval
+	}
+
 	set private_ip {
 		type ipv4_addr
 		flags interval
@@ -102,6 +107,7 @@ table ip mihomo {
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
 		ip daddr @private_ip counter return
+		ip daddr @china_ip counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
 		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
@@ -112,6 +118,7 @@ table ip mihomo {
 	chain mangle_output {
 		type route hook output priority mangle; policy accept;
 		ip daddr @private_ip counter return
+		ip daddr @china_ip counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta skuid $MIHOMO_USER counter return
 		meta l4proto . th sport @router_exclusion counter return

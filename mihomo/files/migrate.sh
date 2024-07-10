@@ -30,6 +30,9 @@ editor=$(uci -q get mihomo.editor); [ -z "$status" ] && uci set mihomo.editor=ed
 # add mihomo.log
 log=$(uci -q get mihomo.log); [ -z "$status" ] && uci set mihomo.log=log
 
+# add mihomo.proxy.bypass_china_mainland_ip
+bypass_china_mainland_ip=$(uci -q get mihomo.proxy.bypass_china_mainland_ip); [ -z "$bypass_china_mainland_ip" ] && uci set mihomo.proxy.bypass_china_mainland_ip=0
+
 # commit
 uci commit mihomo
 
