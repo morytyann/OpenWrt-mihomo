@@ -34,11 +34,11 @@ async function getServiceStatus() {
 }
 
 function getAppVersion() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'app']), {});
+    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'app']));
 }
 
 function getCoreVersion() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']), {});
+    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']));
 }
 
 function loadProfile() {
@@ -73,11 +73,15 @@ async function openDashboard(type) {
 }
 
 function renderStatus(running) {
-    if (running) {
-        return E('input', { style: 'border: unset; color: green; font-style: italic; font-weight: bold;', readonly: 'readonly', value: _('Running') });
-    } else {
-        return E('input', { style: 'border: unset; color: red; font-style: italic; font-weight: bold;', readonly: 'readonly', value: _('Not Running') });
+    return updateStatus(E('input', { id: 'core_status', style: 'border: unset; font-style: italic; font-weight: bold;', readonly: '' }), running);
+}
+
+function updateStatus(element, running) {
+    if (element) {
+        element.style.color = running ? 'green' : 'red';
+        element.value = running ? _('Running') : _('Not Running');
     }
+    return element;
 }
 
 return view.extend({
@@ -105,12 +109,12 @@ return view.extend({
 
         o = s.option(form.DummyValue, '_app_version', _('App Version'));
         o.cfgvalue = function (section_id) {
-            return E('input', { style: 'border: unset;', readonly: 'readonly', value: appVersion });
+            return E('input', { style: 'border: unset;', readonly: 'readonly', value: appVersion.trim() });
         };
 
         o = s.option(form.DummyValue, '_core_version', _('Core Version'));
         o.cfgvalue = function (section_id) {
-            return E('input', { style: 'border: unset;', readonly: 'readonly', value: coreVersion });
+            return E('input', { style: 'border: unset;', readonly: 'readonly', value: coreVersion.trim() });
         };
 
         o = s.option(form.DummyValue, '_core_status', _('Core Status'));
@@ -119,7 +123,7 @@ return view.extend({
         };
         poll.add(function () {
             return L.resolveDefault(getServiceStatus()).then(function (running) {
-                m.lookupOption('mihomo.status._core_status')[0].getUIElement("status").node.replaceChildren(renderStatus(running));
+                updateStatus(document.getElementById('core_status'), running);
             });
         });
 
