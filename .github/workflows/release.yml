@@ -6,9 +6,6 @@ on:
     tags:
       - v*
 
-permissions:
-  contents: write
-
 jobs:
   build:
     name: ${{ matrix.arch }}-${{ matrix.release }} build
@@ -30,13 +27,12 @@ jobs:
           fetch-depth: 0
 
       - name: Build
-        uses: morytyann/gh-action-sdk@main
+        uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.release }}
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
-          MAKE_ARGS: LUCI_APP_MIHOMO_PKG_VERSION=${{ github.ref_name }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
