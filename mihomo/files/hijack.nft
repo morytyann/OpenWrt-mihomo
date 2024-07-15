@@ -62,16 +62,18 @@ table ip mihomo {
 	}
 
 	chain allow_dns_hijack {
-		ip saddr @acl_ip meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-		ether saddr @acl_mac meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
 	}
 
 	chain block_dns_hijack {
-		ip saddr != @acl_ip ether saddr != @acl_mac meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter return
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
 	}
 
 	chain router_dns_hijack {
-		ip daddr 127.0.0.1 meta l4proto { tcp, udp } th dport 53 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ip daddr 127.0.0.1 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
 	}
 
 	chain proxy {
@@ -88,7 +90,9 @@ table ip mihomo {
 	}
 
 	chain block_proxy {
-		meta l4proto { tcp, udp } ip saddr != @acl_ip ether saddr != @acl_mac meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } ip saddr @acl_ip counter return
+		meta l4proto { tcp, udp } ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
 	}
 
 	chain router_proxy {
@@ -119,8 +123,8 @@ table ip mihomo {
 		type route hook output priority mangle; policy accept;
 		ip daddr @private_ip counter return
 		ip daddr @china_ip counter return
-		meta l4proto { tcp, udp } th dport 53 counter return
 		meta skuid $MIHOMO_USER counter return
+		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . th sport @router_exclusion counter return
 	}
 }
