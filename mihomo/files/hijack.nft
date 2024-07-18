@@ -6,7 +6,7 @@ table ip mihomo {
 		flags interval
 	}
 
-	set private_ip {
+	set reserved_ip {
 		type ipv4_addr
 		flags interval
 		auto-merge
@@ -21,6 +21,12 @@ table ip mihomo {
 			224.0.0.0/4,
 			240.0.0.0/4
 		}
+	}
+
+	set wan_ip {
+		type ipv4_addr
+		flags interval
+		auto-merge
 	}
 
 	set acl_ip {
@@ -110,7 +116,8 @@ table ip mihomo {
 
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
-		ip daddr @private_ip counter return
+		ip daddr @reserved_ip counter return
+		ip daddr @wan_ip counter return
 		ip daddr @china_ip counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
@@ -121,7 +128,8 @@ table ip mihomo {
 
 	chain mangle_output {
 		type route hook output priority mangle; policy accept;
-		ip daddr @private_ip counter return
+		ip daddr @reserved_ip counter return
+		ip daddr @wan_ip counter return
 		ip daddr @china_ip counter return
 		meta skuid $MIHOMO_USER counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
