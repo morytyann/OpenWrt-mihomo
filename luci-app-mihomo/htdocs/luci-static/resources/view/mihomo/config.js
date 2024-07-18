@@ -225,8 +225,8 @@ return view.extend({
         o.value('strict');
         o.value('off');
 
-        o = s.taboption('general', widgets.DeviceSelect, 'outbound_interface', _('Outbound Interface'));
-        o.optional = false;
+        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
+        o.optional = true;
         o.rmempty = false;
 
         o = s.taboption('general', form.Flag, 'unify_delay', _('Unify Delay'));
