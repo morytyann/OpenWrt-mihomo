@@ -196,7 +196,7 @@ return view.extend({
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
-        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'), _('If you have multiple WAN interface, you can add them to here to skip inbound traffic to it, otherwise keep it default.'));
+        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'), _('If you have multiple WAN interface, you can add them to here to skip inbound traffic to it.'));
         o.multiple = true;
         o.optional = false;
         o.rmempty = false;
@@ -225,7 +225,7 @@ return view.extend({
         o.value('strict');
         o.value('off');
 
-        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
+        o = s.taboption('general', widgets.DeviceSelect, 'outbound_interface', _('Outbound Interface'));
         o.optional = false;
         o.rmempty = false;
 
@@ -447,8 +447,8 @@ return view.extend({
 
         s.tab('sniffer', _('Sniffer Config'));
 
-        s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
-        s.rmempty = false;
+        o = s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
+        o.rmempty = false;
 
         o = s.taboption('sniffer', form.Flag, 'sniff_dns_mapping', _('Sniff Redir-Host'));
         o.retain = true;

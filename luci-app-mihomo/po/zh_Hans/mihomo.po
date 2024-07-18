@@ -127,6 +127,9 @@ msgstr "直连模式"
 msgid "Match Process"
 msgstr "匹配进程"
 
+msgid "Outbound Interface"
+msgstr "出站接口"
+
 msgid "Unify Delay"
 msgstr "统一延迟"
 
