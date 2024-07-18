@@ -5,6 +5,7 @@
 'require fs';
 'require rpc';
 'require poll';
+'require tools.widgets as widgets';
 
 const profilesDir = '/etc/mihomo/profiles';
 const runProfilePath = '/etc/mihomo/run/config.yaml';
@@ -153,7 +154,7 @@ return view.extend({
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = profilesDir;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
+        o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin.'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
@@ -185,7 +186,7 @@ return view.extend({
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
 
-        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When disabled, DNS request will not redirect to core, you need handle this by yourself!'));
+        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When this option is disabled, DNS request will not redirect to core.'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
@@ -194,6 +195,11 @@ return view.extend({
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
+
+        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'), _('If you have multiple WAN interface, you can add them to here to skip inbound traffic to it.'));
+        o.multiple = true;
+        o.optional = false;
+        o.rmempty = false;
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
@@ -207,29 +213,33 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
-        s.tab('global', _('Global Config'));
+        s.tab('general', _('General Config'));
 
-        o = s.taboption('global', form.ListValue, 'mode', _('Proxy Mode'));
-        o.value('global', _('Global Mode'));
+        o = s.taboption('general', form.ListValue, 'mode', _('Proxy Mode'));
+        o.value('general', _('Global Mode'));
         o.value('rule', _('Rule Mode'));
         o.value('direct', _('Direct Mode'));
 
-        o = s.taboption('global', form.ListValue, 'match_process', _('Match Process'));
+        o = s.taboption('general', form.ListValue, 'match_process', _('Match Process'));
         o.value('always');
         o.value('strict');
         o.value('off');
 
-        o = s.taboption('global', form.Flag, 'unify_delay', _('Unify Delay'));
+        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
+        o.optional = true;
         o.rmempty = false;
 
-        o = s.taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o = s.taboption('general', form.Flag, 'unify_delay', _('Unify Delay'));
         o.rmempty = false;
 
-        o = s.taboption('global', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
+        o = s.taboption('general', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o.rmempty = false;
+
+        o = s.taboption('general', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
         o.placeholder = '600';
 
-        o = s.taboption('global', form.ListValue, 'log_level', _('Log Level'));
+        o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
         o.value('silent');
         o.value('error');
         o.value('warning');
@@ -437,8 +447,8 @@ return view.extend({
 
         s.tab('sniffer', _('Sniffer Config'));
 
-        s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
-        s.rmempty = false;
+        o = s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
+        o.rmempty = false;
 
         o = s.taboption('sniffer', form.Flag, 'sniff_dns_mapping', _('Sniff Redir-Host'));
         o.retain = true;

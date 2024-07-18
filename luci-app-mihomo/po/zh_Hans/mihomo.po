@@ -52,8 +52,8 @@ msgstr "上传配置文件"
 msgid "Mixin"
 msgstr "混入"
 
-msgid "Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!"
-msgstr "即使禁用此选项，必要的配置仍然会混入以确保正常工作！"
+msgid "Even if this option is disabled, the neccesary config will still mixin."
+msgstr "即使禁用此选项，必要的配置仍然会混入。"
 
 msgid "Proxy Config"
 msgstr "代理配置"
@@ -82,14 +82,20 @@ msgstr "访问控制 MAC"
 msgid "DNS Hijack"
 msgstr "DNS 劫持"
 
-msgid "When disabled, DNS request will not redirect to core, you need handle this by yourself!"
-msgstr "当禁用此选项时，DNS请求将不再重定向到核心，你需要自行处理！"
+msgid "When this option is disabled, DNS request will not redirect to core."
+msgstr "当禁用此选项时，DNS请求将不再重定向到核心。"
 
 msgid "Bypass China Mainland IP"
 msgstr "绕过中国大陆 IP"
 
 msgid "This option does not work well with Fake-IP."
-msgstr "此选项不能很好的和Fake-IP一起工作。"
+msgstr "此选项不能很好的和 Fake-IP 一起工作。"
+
+msgid "WAN Interfaces"
+msgstr "WAN 接口"
+
+msgid "If you have multiple WAN interface, you can add them to here to skip inbound traffic to it."
+msgstr "如果你有多个 WAN 接口，你可以将他们添加到此处以跳过他们的入站流量。"
 
 msgid "Subscription Config"
 msgstr "订阅配置"
@@ -103,7 +109,7 @@ msgstr "订阅链接"
 msgid "Mixin Config"
 msgstr "混入配置"
 
-msgid "Global Config"
+msgid "General Config"
 msgstr "全局配置"
 
 msgid "Proxy Mode"
@@ -120,6 +126,9 @@ msgstr "直连模式"
 
 msgid "Match Process"
 msgstr "匹配进程"
+
+msgid "Outbound Interface"
+msgstr "出站接口"
 
 msgid "Unify Delay"
 msgstr "统一延迟"

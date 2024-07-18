@@ -1,7 +1,5 @@
 #!/bin/sh /etc/rc.common
 
-. /lib/functions/network.sh
-
 START=99
 USE_PROCD=1
 
@@ -36,13 +34,11 @@ mixin_path="$home_dir/mixin.yaml"
 profile_watcher="$home_dir/profile_watcher.sh"
 upnp_lease_watcher="$home_dir/upnp_lease_watcher.sh"
 
-# wan
-network_find_wan wan_dev
-network_get_ipaddr wan_ip "$wan_dev"
-
 start_service() {
+	. /lib/functions/network.sh
+	# load config
 	config_load mihomo
-
+	# check if enabled
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
@@ -76,8 +72,9 @@ start_service() {
 	config_get_bool mixin "config" "mixin" 1
 	if [ "$mixin" == 0 ]; then
 		log "Mixin is disabled, only mixin neccesary config."
-		# global
-		local log_level
+		# general
+		local outbound_interface log_level
+		config_get outbound_interface "mixin" "outbound_interface"
 		config_get log_level "mixin" "log_level"
 		# api
 		local api_port api_secret
@@ -104,12 +101,21 @@ start_service() {
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
 		' "$run_profile_path"
+
+		if [ -n "$outbound_interface" ]; then
+			local outbound_device
+			network_get_device outbound_device "$outbound_interface"
+			if [ -n "$outbound_device" ]; then
+				outbound_device="$outbound_device" yq -M -i '.interface-name = env(outbound_device)' "$run_profile_path"
+			fi
+		fi
 	else
 		log "Mixin is enabled, mixin all config."
-		# global
-		local mode match_process unify_delay tcp_concurrent tcp_keep_alive_interval log_level
+		# general
+		local mode match_process outbound_interface unify_delay tcp_concurrent tcp_keep_alive_interval log_level
 		config_get mode "mixin" "mode"
 		config_get match_process "mixin" "match_process"
+		config_get outbound_interface "mixin" "outbound_interface"
 		config_get_bool unify_delay "mixin" "unify_delay" 0
 		config_get_bool tcp_concurrent "mixin" "tcp_concurrent" 0
 		config_get tcp_keep_alive_interval "mixin" "tcp_keep_alive_interval" 600
@@ -175,6 +181,13 @@ start_service() {
 		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval)
 		' "$run_profile_path"
 
+		if [ -n "$outbound_interface" ]; then
+			local outbound_device
+			network_get_device outbound_device "$outbound_interface"
+			if [ -n "$outbound_device" ]; then
+				outbound_device="$outbound_device" yq -M -i '.interface-name = env(outbound_device)' "$run_profile_path"
+			fi
+		fi
 		if [ "$authentication" == 1 ]; then
 			yq -M -i 'del(.authentication)' "$run_profile_path"
 			config_foreach mixin_authentication "authentication"
@@ -330,7 +343,13 @@ reload_service() {
 
 service_triggers() {
 	procd_add_reload_trigger "mihomo" "firewall" "upnpd"
-	procd_add_reload_interface_trigger "$wan_dev"
+
+	config_load mihomo
+	config_list_foreach "proxy" "wan_interfaces" add_reload_interface_trigger
+}
+
+add_reload_interface_trigger() {
+	procd_add_reload_interface_trigger "$1"
 }
 
 cleanup() {
@@ -504,7 +523,13 @@ add_acl_mac() {
 }
 
 add_wan_inbound_exclusion() {
-	nft add element ip mihomo private_ip \{ "$wan_ip" \}
+	config_list_foreach "proxy" "wan_interfaces" do_add_wan_inbound_exclusion
+}
+
+do_add_wan_inbound_exclusion() {
+	local wan_ip
+	network_get_ipaddr wan_ip $1
+	nft add element ip mihomo wan_ip \{ "$wan_ip" \}
 }
 
 add_firewall_exclusion() {
