@@ -29,6 +29,17 @@ table ip mihomo {
 		auto-merge
 	}
 
+	set fake_ip {
+		type ipv4_addr
+		flags interval
+	}
+
+	set acl_dport {
+		type inet_proto . inet_service
+		flags interval
+		auto-merge
+	}
+
 	set acl_ip {
 		type ipv4_addr
 		flags interval
@@ -119,6 +130,7 @@ table ip mihomo {
 		ip daddr @reserved_ip counter return
 		ip daddr @wan_ip counter return
 		ip daddr @china_ip counter return
+		ip daddr != @fake_ip meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
 		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
@@ -128,10 +140,11 @@ table ip mihomo {
 
 	chain mangle_output {
 		type route hook output priority mangle; policy accept;
+		meta skuid $MIHOMO_USER counter return
 		ip daddr @reserved_ip counter return
 		ip daddr @wan_ip counter return
 		ip daddr @china_ip counter return
-		meta skuid $MIHOMO_USER counter return
+		ip daddr != @fake_ip meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . th sport @router_exclusion counter return
 	}

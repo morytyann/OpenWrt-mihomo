@@ -154,7 +154,7 @@ return view.extend({
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = profilesDir;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin.'));
+        o = s.option(form.Flag, 'mixin', _('Mixin'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
@@ -172,10 +172,11 @@ return view.extend({
         o.retain = true;
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
+        o.value('forbid', _('Forbid Mode'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
-        o.datatype = 'ipaddr';
+        o.datatype = 'ipmask4';
         o.retain = true;
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
@@ -186,17 +187,29 @@ return view.extend({
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
 
-        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When this option is disabled, DNS request will not redirect to core.'));
+        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'), _('This option does not work well with Fake-IP.'));
+        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
-        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'), _('If you have multiple WAN interface, you can add them to here to skip inbound traffic to it.'));
+        o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
+        o.retain = true;
+        o.value('1-65535', _('All Port'))
+        o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
+        o.retain = true;
+        o.value('1-65535', _('All Port'))
+        o.value('123 443 8443', _('Commonly Used Port'));
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
         o.rmempty = false;
@@ -525,7 +538,7 @@ return view.extend({
 
         s.tab('mixin_file_content', _('Mixin File Content'));
 
-        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', null, _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
+        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
         o.rows = 20;
         o.cfgvalue = function (section_id) {
             return L.resolveDefault(fs.read_direct(mixinPath));

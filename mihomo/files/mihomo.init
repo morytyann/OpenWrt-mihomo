@@ -275,6 +275,19 @@ start_service() {
 			log "Transparent Proxy: Bypass china mainland ip is enabled."
 			nft -f "$home_dir/geoip-ipv4-cn.nft"
 		fi
+		# destination port to proxy
+		config_get acl_tcp_dport "proxy" "acl_tcp_dport" "1-65535"
+		config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
+		log "Transparent Proxy: Destination TCP Port to Proxy: $acl_tcp_dport."
+		log "Transparent Proxy: Destination UDP Port to Proxy: $acl_udp_dport."
+		nft add element ip mihomo fake_ip \{ "$fake_ip_range" \}
+		local acl_dport
+		for acl_dport in $acl_tcp_dport; do
+			nft add element ip mihomo acl_dport \{ "tcp" . "$acl_dport" \}
+		done
+		for acl_dport in $acl_udp_dport; do
+			nft add element ip mihomo acl_dport \{ "udp" . "$acl_dport" \}
+		done
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
 		add_wan_inbound_exclusion
@@ -315,6 +328,8 @@ start_service() {
 				nft add rule ip mihomo dns_hijack jump block_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump block_proxy
+		elif [ "$access_control_mode" == "forbid" ]; then
+			log "Transparent Proxy: Access Control is using forbid mode, do not set proxy for any client."
 		fi
 	fi
 	# cron
