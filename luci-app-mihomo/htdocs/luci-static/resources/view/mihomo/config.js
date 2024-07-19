@@ -176,7 +176,7 @@ return view.extend({
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
-        o.datatype = 'cidr4';
+        o.datatype = 'ipmask4';
         o.retain = true;
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
@@ -197,16 +197,16 @@ return view.extend({
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
-        o = s.option(form.DynamicList, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
+        o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
         o.retain = true;
         o.value('1-65535', _('All Port'))
-        o.value('21, 22, 80, 110, 143, 194, 443, 465, 993, 995, 8080, 8443', _('Commonly Used Port'));
+        o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
-        o = s.option(form.DynamicList, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
+        o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
         o.retain = true;
         o.value('1-65535', _('All Port'))
-        o.value('123, 443, 8443', _('Commonly Used Port'));
+        o.value('123 443 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
