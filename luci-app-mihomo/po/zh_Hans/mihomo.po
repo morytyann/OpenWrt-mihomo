@@ -52,9 +52,6 @@ msgstr "上传配置文件"
 msgid "Mixin"
 msgstr "混入"
 
-msgid "Even if this option is disabled, the neccesary config will still mixin."
-msgstr "即使禁用此选项，必要的配置仍然会混入。"
-
 msgid "Proxy Config"
 msgstr "代理配置"
 
@@ -67,11 +64,14 @@ msgstr "路由器代理"
 msgid "Access Control Mode"
 msgstr "访问控制模式"
 
+msgid "Allow Mode"
+msgstr "白名单模式"
+
 msgid "Block Mode"
 msgstr "黑名单模式"
 
-msgid "Allow Mode"
-msgstr "白名单模式"
+msgid "Forbid Mode"
+msgstr "禁止模式"
 
 msgid "Access Control IP"
 msgstr "访问控制 IP"
@@ -82,20 +82,23 @@ msgstr "访问控制 MAC"
 msgid "DNS Hijack"
 msgstr "DNS 劫持"
 
-msgid "When this option is disabled, DNS request will not redirect to core."
-msgstr "当禁用此选项时，DNS请求将不再重定向到核心。"
-
 msgid "Bypass China Mainland IP"
 msgstr "绕过中国大陆 IP"
 
-msgid "This option does not work well with Fake-IP."
-msgstr "此选项不能很好的和 Fake-IP 一起工作。"
+msgid "Destination TCP Port to Proxy"
+msgstr "要代理的TCP目标端口"
+
+msgid "Destination UDP Port to Proxy"
+msgstr "要代理的UDP目标端口"
+
+msgid "All Port"
+msgstr "全部端口"
+
+msgid "Commonly Used Port"
+msgstr "常用端口"
 
 msgid "WAN Interfaces"
 msgstr "WAN 接口"
-
-msgid "If you have multiple WAN interface, you can add them to here to skip inbound traffic to it."
-msgstr "如果你有多个 WAN 接口，你可以将他们添加到此处以跳过他们的入站流量。"
 
 msgid "Subscription Config"
 msgstr "订阅配置"
@@ -339,9 +342,6 @@ msgstr "小时"
 
 msgid "Mixin File Content"
 msgstr "混入文件内容"
-
-msgid "The file's content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile."
-msgstr "上方文件内容将会在其他混入配置之前合并到配置文件（意味着更低的优先级），并且将重写配置文件中相同的字段。"
 
 msgid "Log"
 msgstr "日志"
