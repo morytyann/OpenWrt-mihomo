@@ -51,8 +51,12 @@ jobs:
           PACKAGES: luci-app-mihomo
           NO_REFRESH_CHECK: true
 
+      - name: Compress
+        run: |
+          tar -c -z -f mihomo_${{ matrix.arch }}.tar.gz -C bin/packages/${{ matrix.arch }}/mihomo .
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            bin/packages/${{ matrix.arch }}/mihomo/*.ipk
+            mihomo_${{ matrix.arch }}.tar.gz
