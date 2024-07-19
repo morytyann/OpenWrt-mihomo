@@ -27,10 +27,10 @@ authentication=$(uci -q get mihomo.mixin.authentication); [ -z "$authentication"
 status=$(uci -q get mihomo.status); [ -z "$status" ] && uci set mihomo.status=status
 
 # add mihomo.editor
-editor=$(uci -q get mihomo.editor); [ -z "$status" ] && uci set mihomo.editor=editor
+editor=$(uci -q get mihomo.editor); [ -z "$editor" ] && uci set mihomo.editor=editor
 
 # add mihomo.log
-log=$(uci -q get mihomo.log); [ -z "$status" ] && uci set mihomo.log=log
+log=$(uci -q get mihomo.log); [ -z "$log" ] && uci set mihomo.log=log
 
 # add mihomo.proxy.bypass_china_mainland_ip
 bypass_china_mainland_ip=$(uci -q get mihomo.proxy.bypass_china_mainland_ip); [ -z "$bypass_china_mainland_ip" ] && uci set mihomo.proxy.bypass_china_mainland_ip=0
@@ -43,6 +43,12 @@ wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces"
 
 # add mihomo.mixin.outbound_interface
 outbound_interface=$(uci -q get mihomo.mixin.outbound_interface); [ -z "$outbound_interface" ] && uci set mihomo.mixin.outbound_interface="$wan_dev"
+
+# add mihomo.proxy.acl_tcp_dport
+acl_tcp_dport=$(uci -q get mihomo.proxy.acl_tcp_dport); [ -z "$acl_tcp_dport" ] && uci add_list mihomo.proxy.acl_tcp_dport="1-65535"
+
+# add mihomo.proxy.acl_udp_dport
+acl_udp_dport=$(uci -q get mihomo.proxy.acl_udp_dport); [ -z "$acl_udp_dport" ] && uci add_list mihomo.proxy.acl_udp_dport="1-65535"
 
 # commit
 uci commit mihomo
