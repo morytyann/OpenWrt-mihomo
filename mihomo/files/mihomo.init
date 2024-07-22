@@ -18,36 +18,24 @@ run_app_log_path="$run_dir/app.log"
 run_core_log_path="$run_dir/core.log"
 run_profile_path="$run_dir/config.yaml"
 run_ui_dir="$run_dir/ui"
-run_ui_razord_path="$run_ui_dir/razord.tar.gz"
-run_ui_razord_src_dir="$run_ui_dir/Razord-meta-gh-pages"
-run_ui_razord_dir="$run_ui_dir/razord"
-run_ui_yacd_path="$run_ui_dir/yacd.tar.gz"
-run_ui_yacd_src_dir="$run_ui_dir/Yacd-meta-gh-pages"
-run_ui_yacd_dir="$run_ui_dir/yacd"
-run_ui_metacubexd_path="$run_ui_dir/metacubexd.tar.gz"
-run_ui_metacubexd_src_dir="$run_ui_dir/metacubexd-gh-pages"
-run_ui_metacubexd_dir="$run_ui_dir/metacubexd"
-geoip_mmdb_path="$run_dir/Country.mmdb"
-geoip_dat_path="$run_dir/GeoIP.dat"
-geosite_path="$run_dir/GeoSite.dat"
 mixin_path="$home_dir/mixin.yaml"
 profile_watcher="$home_dir/profile_watcher.sh"
 upnp_lease_watcher="$home_dir/upnp_lease_watcher.sh"
 
 start_service() {
 	. /lib/functions/network.sh
+	# clear log 
+	clear_all_log
 	# load config
 	config_load mihomo
 	# check if enabled
 	local enabled
 	config_get_bool enabled "config" "enabled" 0
 	if [ "$enabled" == 0 ]; then
-		clear_all_log
 		log "App is disabled."
 		log "Exiting..."
 		return
 	fi
-	clear_app_log
 	log "App is enabled."
 	log "Starting..."
 	# download profile
@@ -64,9 +52,9 @@ start_service() {
 	config_get ui_yacd_url "mixin" "ui_yacd_url"
 	config_get_bool ui_metacubexd "mixin" "ui_metacubexd" 0
 	config_get ui_metacubexd_url "mixin" "ui_metacubexd_url"
-	download_ui "$ui_razord" "$ui_razord_url" "$run_ui_razord_path" "$run_ui_dir" "$run_ui_razord_src_dir" "$run_ui_razord_dir"
-	download_ui "$ui_yacd" "$ui_yacd_url" "$run_ui_yacd_path" "$run_ui_dir" "$run_ui_yacd_src_dir" "$run_ui_yacd_dir"
-	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$run_ui_metacubexd_path" "$run_ui_dir" "$run_ui_metacubexd_src_dir" "$run_ui_metacubexd_dir"
+	download_ui "$ui_razord" "$ui_razord_url" "$run_ui_dir" "Razord-meta-gh-pages" "razord"
+	download_ui "$ui_yacd" "$ui_yacd_url" "$run_ui_dir" "Yacd-meta-gh-pages"   "yacd"
+	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$run_ui_dir" "metacubexd-gh-pages"  "metacubexd"
 	# mixin
 	local mixin
 	config_get_bool mixin "config" "mixin" 1
@@ -235,7 +223,7 @@ start_service() {
 	# start core
 	procd_open_instance core
 
-	procd_set_param command /bin/sh -c "/usr/bin/mihomo -d $run_dir > $run_core_log_path 2>&1"
+	procd_set_param command /bin/sh -c "/usr/bin/mihomo -d $run_dir >> $run_core_log_path 2>&1"
 	procd_set_param file "$run_profile_path"
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
@@ -347,10 +335,6 @@ stop_service() {
 	cleanup
 }
 
-service_stopped() {
-	clear_all_log
-}
-
 reload_service() {
 	cleanup
 	start
@@ -381,25 +365,19 @@ log() {
 }
 
 clear_all_log() {
-	clear_app_log
-	clear_core_log
-}
-
-clear_app_log() {
-	> "$run_app_log_path"
-}
-
-clear_core_log() {
-	> "$run_core_log_path"
+	echo -n > "$run_app_log_path"
+	echo -n > "$run_core_log_path"
 }
 
 download_ui() {
 	local enabled=$1
 	local url=$2
-	local file_path=$3
-	local file_dir=$4
-	local src_dir=$5
-	local dest_dir=$6
+	local file_dir=$3
+	local src_dir_name=$4
+	local dest_dir_name=$5
+	local file_path="$file_dir/$src_dir_name.tar.gz"
+	local src_dir="$file_dir/$src_dir_name"
+	local dest_dir="$file_dir/$dest_dir_name"
 	if [ "$enabled" == 1 ]; then
 		if [ ! -d "$dest_dir" ]; then
 			curl -s -L -o "$file_path" "$url"
