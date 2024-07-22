@@ -213,6 +213,7 @@ return view.extend({
         o.multiple = true;
         o.optional = false;
         o.rmempty = false;
+        o.depends('transparent_proxy', '1');
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
@@ -539,7 +540,7 @@ return view.extend({
         s.tab('mixin_file_content', _('Mixin File Content'));
 
         o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
-        o.rows = 20;
+        o.rows = 25;
         o.cfgvalue = function (section_id) {
             return L.resolveDefault(fs.read_direct(mixinPath));
         };

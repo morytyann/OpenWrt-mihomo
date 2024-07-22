@@ -3,12 +3,24 @@
 # paths
 home_dir="/etc/mihomo"
 run_dir="$home_dir/run"
+run_app_log_path="$run_dir/app.log"
+run_core_log_path="$run_dir/core.log"
 run_profile_path="$run_dir/config.yaml"
 
 action=$1
 shift
 
 case "$action" in
+	clear)
+		case "$1" in
+			app_log)
+				echo -n > "$run_app_log_path"
+			;;
+			core_log)
+				echo -n > "$run_core_log_path"
+			;;
+		esac
+	;;
 	load)
 		case "$1" in
 			profile)

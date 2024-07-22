@@ -35,13 +35,13 @@ return view.extend({
             return true;
         };
         o.onchange = function (event, section_id, value) {
-            L.resolveDefault(fs.read_direct(value), '').then(function (content) {
-                m.lookupOption('mihomo.editor._profile_content')[0].getUIElement("editor").setValue(content);
+            return L.resolveDefault(fs.read_direct(value), '').then(function (content) {
+                m.lookupOption('mihomo.editor._profile_content')[0].getUIElement('editor').setValue(content);
             });
         };
 
         o = s.option(form.TextValue, '_profile_content',);
-        o.rows = 30;
+        o.rows = 25;
         o.write = function (section_id, formvalue) {
             const path = m.lookupOption('mihomo.editor._profile')[0].formvalue('editor');
             return fs.write(path, formvalue);
