@@ -1,14 +1,16 @@
+![GitHub License](https://img.shields.io/github/license/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/morytyann/OpenWrt-mihomo/build.yml?style=for-the-badge&label=build) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/morytyann/OpenWrt-mihomo/release.yml?style=for-the-badge&label=release) ![GitHub Tag](https://img.shields.io/github/v/tag/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/morytyann/OpenWrt-mihomo/total?style=for-the-badge) ![GitHub Repo stars](https://img.shields.io/github/stars/morytyann/OpenWrt-mihomo?style=for-the-badge)
+
 # OpenWrt-mihomo
 
 A project contains mihomo packages for OpenWrt.
 
 ## Feature
- - Switch for Transparent Proxy
- - Switch for Router Proxy
- - Support Access Control
- - Support Profile Mixin
- - Support Subscribe and File
- - Support Scheduled Restart
+ - Transparent Proxy
+ - Access Control
+ - Profile Mixin
+ - Compatible with Multiple WAN
+ - Edit Profile in LuCI
+ - Scheduled Restart
 
 ## Usage
 
