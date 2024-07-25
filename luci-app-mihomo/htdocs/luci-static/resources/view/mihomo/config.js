@@ -212,6 +212,7 @@ return view.extend({
         o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
+        o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 

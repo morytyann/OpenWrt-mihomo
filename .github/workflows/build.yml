@@ -2,12 +2,6 @@ name: Build Packages
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'mihomo/**'
-      - 'luci-app-mihomo/**'
 
 jobs:
   build:
