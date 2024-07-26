@@ -199,13 +199,15 @@ return view.extend({
 
         o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
         o.retain = true;
-        o.value('1-65535', _('All Port'))
+        o.rmempty = false;
+        o.value('1-65535', _('All Port'));
         o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
         o.retain = true;
-        o.value('1-65535', _('All Port'))
+        o.rmempty = false;
+        o.value('1-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
