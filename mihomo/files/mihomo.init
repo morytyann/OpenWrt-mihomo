@@ -53,8 +53,8 @@ start_service() {
 	config_get_bool ui_metacubexd "mixin" "ui_metacubexd" 0
 	config_get ui_metacubexd_url "mixin" "ui_metacubexd_url"
 	download_ui "$ui_razord" "$ui_razord_url" "$run_ui_dir" "Razord-meta-gh-pages" "razord"
-	download_ui "$ui_yacd" "$ui_yacd_url" "$run_ui_dir" "Yacd-meta-gh-pages"   "yacd"
-	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$run_ui_dir" "metacubexd-gh-pages"  "metacubexd"
+	download_ui "$ui_yacd" "$ui_yacd_url" "$run_ui_dir" "Yacd-meta-gh-pages" "yacd"
+	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$run_ui_dir" "metacubexd-gh-pages" "metacubexd"
 	# mixin
 	local mixin
 	config_get_bool mixin "config" "mixin" 1
@@ -240,7 +240,7 @@ start_service() {
 	procd_close_instance
 	# start profile watcher
 	procd_open_instance profile_watcher
-	procd_set_param command "$profile_watcher"
+	procd_set_param command /bin/sh -c "$profile_watcher"
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
 	# hijack
@@ -622,7 +622,8 @@ add_firewall_redirect_exclusion() {
 
 add_upnp_exclusion() {
 	procd_open_instance upnp_lease_watcher
-	procd_set_param command "$upnp_lease_watcher" "-t" $(date +%s)
+	procd_set_param command /bin/sh -c "$upnp_lease_watcher"
+	procd_set_param data timestamp=$(date +%s)
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
 }
