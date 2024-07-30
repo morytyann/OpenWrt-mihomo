@@ -162,14 +162,25 @@ return view.extend({
         o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
         o.rmempty = false;
 
+        o = s.option(form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(form.Flag, 'ipv6_proxy', _('IPv6 Proxy'));
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('transparent_proxy', '1');
+
         o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
-        o.optional = true;
         o.retain = true;
+        o.rmempty = false;
+        o.value('all', _('All Mode'));
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
         o.value('forbid', _('Forbid Mode'));
@@ -177,6 +188,12 @@ return view.extend({
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
         o.datatype = 'ipmask4';
+        o.retain = true;
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
+        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
+
+        o = s.option(form.DynamicList, 'acl_ip6', _('Access Control IP6'));
+        o.datatype = 'ipmask6';
         o.retain = true;
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
@@ -214,6 +231,13 @@ return view.extend({
         o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(widgets.NetworkSelect, 'wan6_interfaces', _('WAN6 Interfaces'));
+        o.multiple = true;
+        o.optional = true;
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');

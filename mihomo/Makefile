@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
 PKG_VERSION:=1.18.7
-PKG_RELEASE:=139
+PKG_RELEASE:=140
 PKG_BUILD_TIME=$(shell date -u -Iseconds)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -49,7 +49,9 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/profile_watcher.sh $(1)/etc/mihomo/profile_watcher.sh
 	$(INSTALL_BIN) $(CURDIR)/files/upnp_lease_watcher.sh $(1)/etc/mihomo/upnp_lease_watcher.sh
 	$(INSTALL_BIN) $(CURDIR)/files/hijack.nft $(1)/etc/mihomo/hijack.nft
-	$(INSTALL_BIN) $(CURDIR)/files/geoip-ipv4-cn.nft $(1)/etc/mihomo/geoip-ipv4-cn.nft
+	$(INSTALL_BIN) $(CURDIR)/files/hijack6.nft $(1)/etc/mihomo/hijack6.nft
+	$(INSTALL_BIN) $(CURDIR)/files/geoip-cn.nft $(1)/etc/mihomo/geoip-cn.nft
+	$(INSTALL_BIN) $(CURDIR)/files/geoip6-cn.nft $(1)/etc/mihomo/geoip6-cn.nft
 	$(INSTALL_DATA) $(CURDIR)/files/mixin.yaml $(1)/etc/mihomo/mixin.yaml
 
 	$(INSTALL_DIR) $(1)/etc/config

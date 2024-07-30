@@ -36,19 +36,32 @@ log=$(uci -q get mihomo.log); [ -z "$log" ] && uci set mihomo.log=log
 bypass_china_mainland_ip=$(uci -q get mihomo.proxy.bypass_china_mainland_ip); [ -z "$bypass_china_mainland_ip" ] && uci set mihomo.proxy.bypass_china_mainland_ip=0
 
 # get wan interface
-network_find_wan wan_dev
+network_find_wan wan_interface
+network_find_wan6 wan6_interface
 
 # add mihomo.proxy.wan_interfaces
-wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces" ] && uci add_list mihomo.proxy.wan_interfaces="$wan_dev"
+wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces" ] && uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
+
+# add mihomo.proxy.wan6_interfaces
+wan6_interfaces=$(uci -q get mihomo.proxy.wan6_interfaces); [ -z "$wan6_interfaces" ] && uci add_list mihomo.proxy.wan6_interfaces="$wan6_interface"
 
 # add mihomo.mixin.outbound_interface
-outbound_interface=$(uci -q get mihomo.mixin.outbound_interface); [ -z "$outbound_interface" ] && uci set mihomo.mixin.outbound_interface="$wan_dev"
+outbound_interface=$(uci -q get mihomo.mixin.outbound_interface); [ -z "$outbound_interface" ] && uci set mihomo.mixin.outbound_interface="$wan_interface"
 
 # add mihomo.proxy.acl_tcp_dport
-acl_tcp_dport=$(uci -q get mihomo.proxy.acl_tcp_dport); [ -z "$acl_tcp_dport" ] && uci add_list mihomo.proxy.acl_tcp_dport="1-65535"
+acl_tcp_dport=$(uci -q get mihomo.proxy.acl_tcp_dport); [ -z "$acl_tcp_dport" ] && uci set mihomo.proxy.acl_tcp_dport="1-65535"
 
 # add mihomo.proxy.acl_udp_dport
-acl_udp_dport=$(uci -q get mihomo.proxy.acl_udp_dport); [ -z "$acl_udp_dport" ] && uci add_list mihomo.proxy.acl_udp_dport="1-65535"
+acl_udp_dport=$(uci -q get mihomo.proxy.acl_udp_dport); [ -z "$acl_udp_dport" ] && uci set mihomo.proxy.acl_udp_dport="1-65535"
+
+# add mihomo.proxy.ipv4_proxy
+ipv4_proxy=$(uci -q get mihomo.proxy.ipv4_proxy); [ -z "$ipv4_proxy" ] && uci set mihomo.proxy.ipv4_proxy=1
+
+# add mihomo.proxy.ipv6_proxy
+ipv6_proxy=$(uci -q get mihomo.proxy.ipv6_proxy); [ -z "$ipv6_proxy" ] && uci set mihomo.proxy.ipv6_proxy=0
+
+# set mihomo.proxy.access_control_mode
+access_control_mode=$(uci -q get mihomo.proxy.access_control_mode); [ -z "$access_control_mode" ] && uci set mihomo.proxy.access_control_mode="all"
 
 # commit
 uci commit mihomo

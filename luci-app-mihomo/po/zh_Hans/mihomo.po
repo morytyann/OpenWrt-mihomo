@@ -58,11 +58,20 @@ msgstr "代理配置"
 msgid "Transparent Proxy"
 msgstr "透明代理"
 
+msgid "IPv4 Proxy"
+msgstr "IPv4 代理"
+
+msgid "IPv6 Proxy"
+msgstr "IPv6 代理"
+
 msgid "Router Proxy"
 msgstr "路由器代理"
 
 msgid "Access Control Mode"
 msgstr "访问控制模式"
+
+msgid "All Mode"
+msgstr "全部模式"
 
 msgid "Allow Mode"
 msgstr "白名单模式"
@@ -76,6 +85,9 @@ msgstr "禁止模式"
 msgid "Access Control IP"
 msgstr "访问控制 IP"
 
+msgid "Access Control IP6"
+msgstr "访问控制 IP6"
+
 msgid "Access Control MAC"
 msgstr "访问控制 MAC"
 
@@ -86,10 +98,10 @@ msgid "Bypass China Mainland IP"
 msgstr "绕过中国大陆 IP"
 
 msgid "Destination TCP Port to Proxy"
-msgstr "要代理的TCP目标端口"
+msgstr "要代理的 TCP 目标端口"
 
 msgid "Destination UDP Port to Proxy"
-msgstr "要代理的UDP目标端口"
+msgstr "要代理的 UDP 目标端口"
 
 msgid "All Port"
 msgstr "全部端口"
@@ -99,6 +111,9 @@ msgstr "常用端口"
 
 msgid "WAN Interfaces"
 msgstr "WAN 接口"
+
+msgid "WAN6 Interfaces"
+msgstr "WAN6 接口"
 
 msgid "Subscription Config"
 msgstr "订阅配置"
@@ -137,7 +152,7 @@ msgid "Unify Delay"
 msgstr "统一延迟"
 
 msgid "TCP Concurrent"
-msgstr "TCP并发"
+msgstr "TCP 并发"
 
 msgid "TCP Keep Alive Interval"
 msgstr "TCP Keep Alive 间隔"
