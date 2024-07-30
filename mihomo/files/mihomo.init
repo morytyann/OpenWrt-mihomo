@@ -566,6 +566,7 @@ add_acl_mac6() {
 }
 
 add_wan_inbound_exclusion() {
+	config_load mihomo
 	config_list_foreach "proxy" "wan_interfaces" do_add_wan_inbound_exclusion
 }
 
@@ -681,6 +682,7 @@ add_upnp_exclusion() {
 }
 
 add_wan6_inbound_exclusion() {
+	config_load mihomo
 	config_list_foreach "proxy" "wan6_interfaces" do_add_wan6_inbound_exclusion
 }
 
