@@ -244,24 +244,39 @@ start_service() {
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
 	# hijack
-	local transparent_proxy dns_hijack
+	local transparent_proxy ipv4_proxy ipv6_proxy
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
-	config_get_bool dns_hijack "proxy" "dns_hijack" 0
-	config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
+	config_get_bool ipv4_proxy "proxy" "ipv4_proxy" 0
+	config_get_bool ipv6_proxy "proxy" "ipv6_proxy" 0
 	if [ "$transparent_proxy" == 1 ]; then
 		log "Transparent Proxy is enabled."
-		if [ "$dns_hijack" == 0 ]; then
-			log "DNS Hijack is disabled, dns request will not redirect to the core."
-		fi
 		# transparent proxy
 		log "Transparent Proxy: Start hijack."
 		ip rule add fwmark "$fw_mark" table "$fw_table"
 		ip route add local default dev lo table "$fw_table"
-		nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		if [ "$ipv4_proxy" == 1 ]; then
+			nft -f "$home_dir/hijack.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		fi
+		if [ "$ipv6_proxy" == 1 ]; then
+			nft -f "$home_dir/hijack6.nft" -D FW_MARK="$fw_mark" -D MIHOMO_USER="$mihomo_user" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		fi
+		# dns hijack
+		local dns_hijack
+		config_get_bool dns_hijack "proxy" "dns_hijack" 0
+		if [ "$dns_hijack" == 0 ]; then
+			log "DNS Hijack is disabled, dns request will not redirect to the core."
+		fi
 		# bypass china mainland ip
+		local bypass_china_mainland_ip
+		config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
 		if [ "$bypass_china_mainland_ip" == 1 ]; then
 			log "Transparent Proxy: Bypass china mainland ip is enabled."
-			nft -f "$home_dir/geoip-ipv4-cn.nft"
+			if [ "$ipv4_proxy" == 1 ]; then
+				nft -f "$home_dir/geoip-cn.nft"
+			fi
+			if [ "$ipv6_proxy" == 1 ]; then
+				nft -f "$home_dir/geoip6-cn.nft"
+			fi
 		fi
 		# destination port to proxy
 		config_get acl_tcp_dport "proxy" "acl_tcp_dport" "1-65535"
@@ -270,17 +285,33 @@ start_service() {
 		log "Transparent Proxy: Destination UDP Port to Proxy: $acl_udp_dport."
 		nft add element ip mihomo fake_ip \{ "$fake_ip_range" \}
 		local acl_dport
-		for acl_dport in $acl_tcp_dport; do
-			nft add element ip mihomo acl_dport \{ "tcp" . "$acl_dport" \}
-		done
-		for acl_dport in $acl_udp_dport; do
-			nft add element ip mihomo acl_dport \{ "udp" . "$acl_dport" \}
-		done
+		if [ "$ipv4_proxy" == 1 ]; then
+			for acl_dport in $acl_tcp_dport; do
+				nft add element ip mihomo acl_dport \{ "tcp" . "$acl_dport" \}
+			done
+			for acl_dport in $acl_udp_dport; do
+				nft add element ip mihomo acl_dport \{ "udp" . "$acl_dport" \}
+			done
+		fi
+		if [ "$ipv6_proxy" == 1 ]; then
+			for acl_dport in $acl_tcp_dport; do
+				nft add element ip6 mihomo acl_dport \{ "tcp" . "$acl_dport" \}
+			done
+			for acl_dport in $acl_udp_dport; do
+				nft add element ip6 mihomo acl_dport \{ "udp" . "$acl_dport" \}
+			done
+		fi
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
-		add_wan_inbound_exclusion
-		add_firewall_exclusion
-		add_upnp_exclusion
+		if [ "$ipv4_proxy" == 1 ]; then
+			add_wan_inbound_exclusion
+			add_firewall_exclusion
+			add_upnp_exclusion
+		fi
+		if [ "$ipv6_proxy" == 1 ]; then
+			add_wan6_inbound_exclusion
+			add_firewall6_exclusion
+		fi
 		# reload config
 		config_load mihomo
 		# router proxy
@@ -288,36 +319,46 @@ start_service() {
 		config_get_bool router_proxy "proxy" "router_proxy" 0
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
-			if [ "$dns_hijack" == 1 ]; then
-				nft add rule ip mihomo nat_output jump router_dns_hijack
+			if [ "$ipv4_proxy" == 1 ]; then
+				if [ "$dns_hijack" == 1 ]; then
+					nft add rule ip mihomo nat_output jump router_dns_hijack
+				fi
+				nft add rule ip mihomo mangle_output jump router_proxy
 			fi
-			nft add rule ip mihomo mangle_output jump router_proxy
+			if [ "$ipv6_proxy" == 1 ]; then
+				if [ "$dns_hijack" == 1 ]; then
+					nft add rule ip6 mihomo nat_output jump router_dns_hijack
+				fi
+				nft add rule ip6 mihomo mangle_output jump router_proxy
+			fi
 		fi
 		# access control
 		local access_control_mode
 		config_get access_control_mode "proxy" "access_control_mode"
-		config_list_foreach "proxy" "acl_ip" add_acl_ip
-		config_list_foreach "proxy" "acl_mac" add_acl_mac
-		if [ -z "$access_control_mode" ]; then
-			log "Transparent Proxy: Access Control is disabled, set proxy for all client."
-			if [ "$dns_hijack" == 1 ]; then
-				nft add rule ip mihomo dns_hijack jump all_dns_hijack
-			fi
-			nft add rule ip mihomo proxy jump all_proxy
+		if [ "$access_control_mode" == "all" ]; then
+			log "Transparent Proxy: Access Control is using all mode, set proxy for all client."
 		elif [ "$access_control_mode" == "allow" ]; then
 			log "Transparent Proxy: Access Control is using allow mode, set proxy for client which is in acl."
-			if [ "$dns_hijack" == 1 ]; then
-				nft add rule ip mihomo dns_hijack jump allow_dns_hijack
-			fi
-			nft add rule ip mihomo proxy jump allow_proxy
 		elif [ "$access_control_mode" == "block" ]; then
 			log "Transparent Proxy: Access Control is using block mode, set proxy for client which is not in acl."
-			if [ "$dns_hijack" == 1 ]; then
-				nft add rule ip mihomo dns_hijack jump block_dns_hijack
-			fi
-			nft add rule ip mihomo proxy jump block_proxy
 		elif [ "$access_control_mode" == "forbid" ]; then
 			log "Transparent Proxy: Access Control is using forbid mode, do not set proxy for any client."
+		fi
+		if [ "$ipv4_proxy" == 1 ]; then
+			config_list_foreach "proxy" "acl_ip" add_acl_ip
+			config_list_foreach "proxy" "acl_mac" add_acl_mac
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip mihomo dns_hijack jump ${access_control_mode}_dns_hijack
+			fi
+			nft add rule ip mihomo proxy jump ${access_control_mode}_proxy
+		fi
+		if [ "$ipv6_proxy" == 1 ]; then
+			config_list_foreach "proxy" "acl_ip6" add_acl_ip6
+			config_list_foreach "proxy" "acl_mac" add_acl_mac6
+			if [ "$dns_hijack" == 1 ]; then
+				nft add rule ip6 mihomo dns_hijack jump ${access_control_mode}_dns_hijack
+			fi
+			nft add rule ip6 mihomo proxy jump ${access_control_mode}_proxy
 		fi
 	fi
 	# cron
@@ -356,6 +397,7 @@ cleanup() {
 	ip rule del table $fw_table > /dev/null 2>&1
 	ip route del local default dev lo table "$fw_table" > /dev/null 2>&1
 	nft delete table ip mihomo > /dev/null 2>&1
+	nft delete table ip6 mihomo > /dev/null 2>&1
 	# delete cron
 	sed -i '/#mihomo/d' "/etc/crontabs/root" > /dev/null 2>&1
 }
@@ -515,6 +557,14 @@ add_acl_mac() {
 	nft add element ip mihomo acl_mac \{ "$1" \}
 }
 
+add_acl_ip6() {
+	nft add element ip6 mihomo acl_ip \{ "$1" \}
+}
+
+add_acl_mac6() {
+	nft add element ip6 mihomo acl_mac \{ "$1" \}
+}
+
 add_wan_inbound_exclusion() {
 	config_list_foreach "proxy" "wan_interfaces" do_add_wan_inbound_exclusion
 }
@@ -522,7 +572,9 @@ add_wan_inbound_exclusion() {
 do_add_wan_inbound_exclusion() {
 	local wan_ip
 	network_get_ipaddr wan_ip $1
-	nft add element ip mihomo wan_ip \{ "$wan_ip" \}
+	if [ -n "$wan_ip" ]; then
+		nft add element ip mihomo wan_ip \{ "$wan_ip" \}
+	fi
 }
 
 add_firewall_exclusion() {
@@ -626,4 +678,61 @@ add_upnp_exclusion() {
 	procd_set_param data timestamp=$(date +%s)
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
+}
+
+add_wan6_inbound_exclusion() {
+	config_list_foreach "proxy" "wan6_interfaces" do_add_wan6_inbound_exclusion
+}
+
+do_add_wan6_inbound_exclusion() {
+	local wan6_prefix
+	network_get_prefixes6 wan6_prefix $1
+	if [ -n "$wan6_prefix" ]; then
+		nft add element ip6 mihomo wan_ip \{ "$wan6_prefix" \}
+	fi
+}
+
+add_firewall6_exclusion() {
+	config_load firewall
+	config_foreach add_firewall6_rule_exclusion "rule"
+}
+
+add_firewall6_rule_exclusion() {
+	local section="$1"
+
+	local enabled name proto src dest dest_ip dest_port family
+	config_get_bool enabled "$section" "enabled" 1
+	config_get name "$section" "name"
+	config_get proto "$section" "proto"
+	config_get src "$section" "src"
+	config_get dest "$section" "dest"
+	config_get dest_port "$section" "dest_port"
+	config_get family "$section" "family"
+
+	if [[ "$enabled" == 0 || -z "$src" || -n "$dest" || -z "$dest_port" || "$family" == "ipv4" ]]; then
+		return
+	fi
+
+	local tcp=0
+	local udp=0
+	if [[ -z "$proto" || "$proto" == "all" ]]; then
+		tcp=1
+		udp=1
+	else
+		for p in $proto; do
+			[ "$p" == "tcp" ] && tcp=1
+			[ "$p" == "udp" ] && udp=1
+		done
+	fi
+
+	if [ "$tcp" == 1 ]; then
+		for port in $dest_port; do
+			nft add element ip6 mihomo router_exclusion \{ tcp . "$port" \}
+		done
+	fi
+	if [ "$udp" == 1 ]; then
+		for port in $dest_port; do
+			nft add element ip6 mihomo router_exclusion \{ udp . "$port" \}
+		done
+	fi
 }

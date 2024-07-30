@@ -15,14 +15,19 @@ uci set mihomo.mixin.api_secret="$random"
 uci set mihomo.@authentication[0].password="$random"
 
 # get wan interface
-network_find_wan wan_dev
+network_find_wan wan_interface
+network_find_wan6 wan6_interface
 
 # set mihomo.proxy.wan_interfaces
 uci del mihomo.proxy.wan_interfaces
-uci add_list mihomo.proxy.wan_interfaces="$wan_dev"
+uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
+
+# set mihomo.proxy.wan6_interfaces
+uci del mihomo.proxy.wan6_interfaces
+uci add_list mihomo.proxy.wan6_interfaces="$wan6_interface"
 
 # set mihomo.mixin.outbound_interface
-uci set mihomo.mixin.outbound_interface="$wan_dev"
+uci set mihomo.mixin.outbound_interface="$wan_interface"
 
 # remove mihomo.config.init
 uci del mihomo.config.init
