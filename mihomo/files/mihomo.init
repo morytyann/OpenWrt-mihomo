@@ -335,9 +335,6 @@ start_service() {
 		# access control
 		local access_control_mode
 		config_get access_control_mode "proxy" "access_control_mode"
-		config_list_foreach "proxy" "acl_ip" add_acl_ip
-		config_list_foreach "proxy" "acl_ip6" add_acl_ip6
-		config_list_foreach "proxy" "acl_mac" add_acl_mac
 		if [ "$access_control_mode" == "all" ]; then
 			log "Transparent Proxy: Access Control is using all mode, set proxy for all client."
 		elif [ "$access_control_mode" == "allow" ]; then
@@ -348,12 +345,16 @@ start_service() {
 			log "Transparent Proxy: Access Control is using forbid mode, do not set proxy for any client."
 		fi
 		if [ "$ipv4_proxy" == 1 ]; then
+			config_list_foreach "proxy" "acl_ip" add_acl_ip
+			config_list_foreach "proxy" "acl_mac" add_acl_mac
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip mihomo dns_hijack jump ${access_control_mode}_dns_hijack
 			fi
 			nft add rule ip mihomo proxy jump ${access_control_mode}_proxy
 		fi
 		if [ "$ipv6_proxy" == 1 ]; then
+			config_list_foreach "proxy" "acl_ip6" add_acl_ip6
+			config_list_foreach "proxy" "acl_mac" add_acl_mac6
 			if [ "$dns_hijack" == 1 ]; then
 				nft add rule ip6 mihomo dns_hijack jump ${access_control_mode}_dns_hijack
 			fi
@@ -552,12 +553,15 @@ add_acl_ip() {
 	nft add element ip mihomo acl_ip \{ "$1" \}
 }
 
+add_acl_mac() {
+	nft add element ip mihomo acl_mac \{ "$1" \}
+}
+
 add_acl_ip6() {
 	nft add element ip6 mihomo acl_ip \{ "$1" \}
 }
 
-add_acl_mac() {
-	nft add element ip mihomo acl_mac \{ "$1" \}
+add_acl_mac6() {
 	nft add element ip6 mihomo acl_mac \{ "$1" \}
 }
 
