@@ -162,6 +162,12 @@ return view.extend({
         o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
         o.rmempty = false;
 
+        o = s.option(form.ListValue, 'transparent_proxy_mode', _('Transparent Proxy Mode'));
+        o.retain = true;
+        o.rmempty = false;
+        o.value('tproxy', _('TPROXY Mode'));
+        o.value('tun', _('TUN Mode'));
+
         o = s.option(form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
         o.retain = true;
         o.rmempty = false;
@@ -262,9 +268,9 @@ return view.extend({
         o.value('direct', _('Direct Mode'));
 
         o = s.taboption('general', form.ListValue, 'match_process', _('Match Process'));
-        o.value('always');
-        o.value('strict');
-        o.value('off');
+        o.value('strict', _('Auto'));
+        o.value('always', _('Enable'));
+        o.value('off', _('Disable'));
 
         o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
         o.optional = true;
@@ -372,6 +378,31 @@ return view.extend({
 
         so = o.subsection.option(form.Value, 'password', _('Password'));
         so.rmempty = false;
+
+        s.tab('tun', _('TUN Config'));
+
+        o = s.taboption('tun', form.ListValue, 'tun_stack', _('Stack'));
+        o.retain = true;
+        o.value('system', _('System'));
+        o.value('gvisor', _('gVisor'));
+        o.value('mixed', _('Mixed'));
+
+        o = s.taboption('tun', form.Value, 'tun_mtu', _('MTU'));
+        o.placeholder = '9000';
+        o.retain = true;
+
+        o = s.taboption('tun', form.Flag, 'tun_gso', _('GSO'));
+        o.retain = true;
+        o.rmempty = false;
+
+        o = s.taboption('tun', form.Value, 'tun_gso_max_size', _('GSO Max Size'));
+        o.placeholder = '65536';
+        o.retain = true;
+        o.depends('tun_gso', '1');
+
+        o = s.taboption('tun', form.Flag, 'tun_endpoint_independent_nat', _('Endpoint Independent NAT'));
+        o.retain = true;
+        o.rmempty = false;
 
         s.tab('dns', _('DNS Config'));
 

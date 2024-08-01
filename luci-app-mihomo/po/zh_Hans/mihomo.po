@@ -58,6 +58,15 @@ msgstr "代理配置"
 msgid "Transparent Proxy"
 msgstr "透明代理"
 
+msgid "Transparent Proxy Mode"
+msgstr "透明代理模式"
+
+msgid "TPROXY Mode"
+msgstr "TPROXY 模式"
+
+msgid "TUN Mode"
+msgstr "TUN 模式"
+
 msgid "IPv4 Proxy"
 msgstr "IPv4 代理"
 
@@ -145,6 +154,12 @@ msgstr "直连模式"
 msgid "Match Process"
 msgstr "匹配进程"
 
+msgid "Auto"
+msgstr "自动"
+
+msgid "Disable"
+msgstr "禁用"
+
 msgid "Outbound Interface"
 msgstr "出站接口"
 
@@ -231,6 +246,24 @@ msgstr "用户名"
 
 msgid "password"
 msgstr "密码"
+
+msgid "TUN Config"
+msgstr "TUN 配置"
+
+msgid "Stack"
+msgstr "栈"
+
+msgid "Device"
+msgstr "设备"
+
+msgid "GSO"
+msgstr "通用分段卸载"
+
+msgid "GSO Max Size"
+msgstr "分段最大长度"
+
+msgid "Endpoint Independent NAT"
+msgstr "独立于端点的 NAT"
 
 msgid "DNS Config"
 msgstr "DNS 配置"

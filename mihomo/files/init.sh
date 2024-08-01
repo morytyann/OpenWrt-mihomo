@@ -1,6 +1,17 @@
 #!/bin/sh
 
-. /lib/functions/network.sh
+. $IPKG_INSTROOT/lib/functions/network.sh
+. $IPKG_INSTROOT/etc/mihomo/constants.sh
+
+# add firewall include for tun
+uci -q batch <<-EOF > /dev/null
+	delete firewall.mihomo
+	set firewall.mihomo=include
+	set firewall.mihomo.type=script
+	set firewall.mihomo.path=$TUN_SH
+    set firewall.mihomo.fw4_compatible=1
+	commit firewall
+EOF
 
 # check mihomo.config.init
 init=$(uci -q get mihomo.config.init); [ -z "$init" ] && return
@@ -8,23 +19,18 @@ init=$(uci -q get mihomo.config.init); [ -z "$init" ] && return
 # generate random string for api secret and authentication password
 random=$(awk 'BEGIN{srand(); print int(rand() * 1000000)}')
 
+# get wan interface
+network_find_wan wan_interface
+
 # set mihomo.mixin.api_secret
 uci set mihomo.mixin.api_secret="$random"
 
 # set mihomo.@authentication[0].password
 uci set mihomo.@authentication[0].password="$random"
 
-# get wan interface
-network_find_wan wan_interface
-network_find_wan6 wan6_interface
-
 # set mihomo.proxy.wan_interfaces
 uci del mihomo.proxy.wan_interfaces
 uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
-
-# set mihomo.proxy.wan6_interfaces
-uci del mihomo.proxy.wan6_interfaces
-uci add_list mihomo.proxy.wan6_interfaces="$wan6_interface"
 
 # set mihomo.mixin.outbound_interface
 uci set mihomo.mixin.outbound_interface="$wan_interface"
