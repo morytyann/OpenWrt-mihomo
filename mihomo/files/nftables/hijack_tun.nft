@@ -1,0 +1,151 @@
+#!/usr/sbin/nft -f
+
+table ip mihomo {
+	set china_ip {
+		type ipv4_addr
+		flags interval
+	}
+
+	set reserved_ip {
+		type ipv4_addr
+		flags interval
+		auto-merge
+		elements = {
+			0.0.0.0/8,
+			10.0.0.0/8,
+			127.0.0.0/8,
+			100.64.0.0/10,
+			169.254.0.0/16,
+			172.16.0.0/12,
+			192.168.0.0/16,
+			224.0.0.0/4,
+			240.0.0.0/4
+		}
+	}
+
+	set wan_ip {
+		type ipv4_addr
+		flags interval
+		auto-merge
+	}
+
+	set fake_ip {
+		type ipv4_addr
+		flags interval
+	}
+
+	set acl_dport {
+		type inet_proto . inet_service
+		flags interval
+		auto-merge
+	}
+
+	set acl_ip {
+		type ipv4_addr
+		flags interval
+		auto-merge
+	}
+
+	set acl_mac {
+		type ether_addr
+		flags interval
+		auto-merge
+	}
+
+	set redirect_exclusion {
+		type inet_proto . ipv4_addr . inet_service
+		flags interval
+		auto-merge
+	}
+
+	set upnp_exclusion {
+		type inet_proto . ipv4_addr . inet_service
+		flags interval, timeout
+		auto-merge
+	}
+
+	set router_exclusion {
+		type inet_proto . inet_service
+		flags interval
+		auto-merge
+	}
+
+	chain dns_hijack {
+
+	}
+
+	chain all_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+	}
+
+	chain allow_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
+	}
+
+	chain block_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter return
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+	}
+
+	chain router_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 ip daddr 127.0.0.1 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
+	}
+
+	chain proxy {
+
+	}
+
+	chain all_proxy {
+		meta l4proto { tcp, udp } meta mark set $FW_MARK counter
+	}
+
+	chain allow_proxy {
+		meta l4proto { tcp, udp } ip saddr @acl_ip meta mark set $FW_MARK counter
+		meta l4proto { tcp, udp } ether saddr @acl_mac meta mark set $FW_MARK counter
+	}
+
+	chain block_proxy {
+		meta l4proto { tcp, udp } ip saddr @acl_ip counter return
+		meta l4proto { tcp, udp } ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } meta mark set $FW_MARK counter
+	}
+
+	chain router_proxy {
+		meta l4proto { tcp, udp } meta mark set $FW_MARK counter
+	}
+
+	chain dstnat {
+		type nat hook prerouting priority dstnat + 1; policy accept;
+		jump dns_hijack
+	}
+
+	chain nat_output {
+		type nat hook output priority filter; policy accept;
+	}
+
+	chain mangle_prerouting {
+		type filter hook prerouting priority mangle; policy accept;
+		meta l4proto { tcp, udp } iifname $TUN_DEVICE counter return
+		ip daddr @reserved_ip counter return
+		ip daddr @wan_ip counter return
+		ip daddr @china_ip counter return
+		ip daddr != @fake_ip meta l4proto . th dport != @acl_dport counter return
+		meta l4proto { tcp, udp } th dport 53 counter return
+		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
+		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
+		jump proxy
+	}
+
+	chain mangle_output {
+		type route hook output priority mangle; policy accept;
+		meta skuid $MIHOMO_USER counter return
+		ip daddr @reserved_ip counter return
+		ip daddr @wan_ip counter return
+		ip daddr @china_ip counter return
+		ip daddr != @fake_ip meta l4proto . th dport != @acl_dport counter return
+		meta l4proto { tcp, udp } th dport 53 counter return
+		meta l4proto . th sport @router_exclusion counter return
+	}
+}

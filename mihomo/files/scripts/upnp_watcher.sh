@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /lib/functions.sh
+. $IPKG_INSTROOT/lib/functions.sh
 
 load_config() {
 	config_load upnpd

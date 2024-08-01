@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /lib/functions/network.sh
+. $IPKG_INSTROOT/lib/functions/network.sh
 
 # delete mihomo.proxy.routing_mark
 routing_mark=$(uci -q get mihomo.proxy.routing_mark); [ -n "$routing_mark" ] && uci del mihomo.proxy.routing_mark
@@ -16,11 +16,11 @@ log_level=$(uci -q get mihomo.mixin.log_level); [ -z "$log_level" ] && uci set m
 
 # add mihomo.mixin.authentication
 authentication=$(uci -q get mihomo.mixin.authentication); [ -z "$authentication" ] && {
-    uci set mihomo.mixin.authentication=1
-    uci add mihomo.authentication
-    uci set mihomo.@authentication[-1].enabled=1
-    uci set mihomo.@authentication[-1].username=mihomo
-    uci set mihomo.@authentication[-1].password=$(awk 'BEGIN{srand(); print int(rand() * 1000000)}')
+	uci set mihomo.mixin.authentication=1
+	uci add mihomo.authentication
+	uci set mihomo.@authentication[-1].enabled=1
+	uci set mihomo.@authentication[-1].username=mihomo
+	uci set mihomo.@authentication[-1].password=$(awk 'BEGIN{srand(); print int(rand() * 1000000)}')
 }
 
 # add mihomo.status
@@ -37,13 +37,9 @@ bypass_china_mainland_ip=$(uci -q get mihomo.proxy.bypass_china_mainland_ip); [ 
 
 # get wan interface
 network_find_wan wan_interface
-network_find_wan6 wan6_interface
 
 # add mihomo.proxy.wan_interfaces
 wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces" ] && uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
-
-# add mihomo.proxy.wan6_interfaces
-wan6_interfaces=$(uci -q get mihomo.proxy.wan6_interfaces); [ -z "$wan6_interfaces" ] && uci add_list mihomo.proxy.wan6_interfaces="$wan6_interface"
 
 # add mihomo.mixin.outbound_interface
 outbound_interface=$(uci -q get mihomo.mixin.outbound_interface); [ -z "$outbound_interface" ] && uci set mihomo.mixin.outbound_interface="$wan_interface"
@@ -62,6 +58,27 @@ ipv6_proxy=$(uci -q get mihomo.proxy.ipv6_proxy); [ -z "$ipv6_proxy" ] && uci se
 
 # set mihomo.proxy.access_control_mode
 access_control_mode=$(uci -q get mihomo.proxy.access_control_mode); [ -z "$access_control_mode" ] && uci set mihomo.proxy.access_control_mode="all"
+
+# add mihomo.proxy.transparent_proxy_mode
+transparent_proxy_mode=$(uci -q get mihomo.proxy.transparent_proxy_mode); [ -z "$transparent_proxy_mode" ] && uci set mihomo.proxy.transparent_proxy_mode="tproxy"
+
+# add mihomo.mixin.tun_stack
+tun_stack=$(uci -q get mihomo.mixin.tun_stack); [ -z "$tun_stack" ] && uci set mihomo.mixin.tun_stack="system"
+
+# add mihomo.mixin.tun_mtu
+tun_mtu=$(uci -q get mihomo.mixin.tun_mtu); [ -z "$tun_mtu" ] && uci set mihomo.mixin.tun_mtu="9000"
+
+# add mihomo.mixin.tun_gso
+tun_gso=$(uci -q get mihomo.mixin.tun_gso); [ -z "$tun_gso" ] && uci set mihomo.mixin.tun_gso=1
+
+# add mihomo.mixin.tun_gso_max_size
+tun_gso_max_size=$(uci -q get mihomo.mixin.tun_gso_max_size); [ -z "$tun_gso_max_size" ] && uci set mihomo.mixin.tun_gso_max_size="65536"
+
+# add mihomo.mixin.tun_endpoint_independent_nat
+tun_endpoint_independent_nat=$(uci -q get mihomo.mixin.tun_endpoint_independent_nat); [ -z "$tun_endpoint_independent_nat" ] && uci set mihomo.mixin.tun_endpoint_independent_nat=0
+
+# add mihomo.config.test_profile
+test_profile=$(uci -q get mihomo.config.test_profile); [ -z "$test_profile" ] && uci set mihomo.config.test_profile=1
 
 # commit
 uci commit mihomo

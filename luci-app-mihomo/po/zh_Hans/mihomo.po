@@ -31,6 +31,21 @@ msgstr "未在运行"
 msgid "Enable"
 msgstr "启用"
 
+msgid "Disable"
+msgstr "禁用"
+
+msgid "Auto"
+msgstr "自动"
+
+msgid "Mode"
+msgstr "模式"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Value"
+msgstr "值"
+
 msgid "Scheduled Restart"
 msgstr "定时重启"
 
@@ -52,11 +67,20 @@ msgstr "上传配置文件"
 msgid "Mixin"
 msgstr "混入"
 
+msgid "Test Profile"
+msgstr "检查配置文件"
+
 msgid "Proxy Config"
 msgstr "代理配置"
 
 msgid "Transparent Proxy"
 msgstr "透明代理"
+
+msgid "TPROXY Mode"
+msgstr "TPROXY 模式"
+
+msgid "TUN Mode"
+msgstr "TUN 模式"
 
 msgid "IPv4 Proxy"
 msgstr "IPv4 代理"
@@ -67,8 +91,11 @@ msgstr "IPv6 代理"
 msgid "Router Proxy"
 msgstr "路由器代理"
 
-msgid "Access Control Mode"
-msgstr "访问控制模式"
+msgid "DNS Hijack"
+msgstr "DNS 劫持"
+
+msgid "Access Control"
+msgstr "访问控制"
 
 msgid "All Mode"
 msgstr "全部模式"
@@ -82,17 +109,8 @@ msgstr "黑名单模式"
 msgid "Forbid Mode"
 msgstr "禁止模式"
 
-msgid "Access Control IP"
-msgstr "访问控制 IP"
-
-msgid "Access Control IP6"
-msgstr "访问控制 IP6"
-
-msgid "Access Control MAC"
-msgstr "访问控制 MAC"
-
-msgid "DNS Hijack"
-msgstr "DNS 劫持"
+msgid "Bypass"
+msgstr "绕过"
 
 msgid "Bypass China Mainland IP"
 msgstr "绕过中国大陆 IP"
@@ -232,6 +250,24 @@ msgstr "用户名"
 msgid "password"
 msgstr "密码"
 
+msgid "TUN Config"
+msgstr "TUN 配置"
+
+msgid "Stack"
+msgstr "栈"
+
+msgid "Device"
+msgstr "设备"
+
+msgid "GSO"
+msgstr "通用分段卸载"
+
+msgid "GSO Max Size"
+msgstr "分段最大长度"
+
+msgid "Endpoint Independent NAT"
+msgstr "独立于端点的 NAT"
+
 msgid "DNS Config"
 msgstr "DNS 配置"
 
@@ -240,12 +276,6 @@ msgstr "DNS 端口"
 
 msgid "DNS Mode"
 msgstr "DNS 模式"
-
-msgid "Fake-IP"
-msgstr "Fake-IP"
-
-msgid "Redir-Host"
-msgstr "Redir-Host"
 
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
@@ -277,9 +307,6 @@ msgstr "覆盖 DNS 服务器"
 msgid "Edit Nameservers"
 msgstr "编辑 DNS 服务器"
 
-msgid "Type"
-msgstr "类型"
-
 msgid "Nameserver"
 msgstr "DNS 服务器"
 
@@ -288,9 +315,6 @@ msgstr "覆盖 Fallback 过滤列表"
 
 msgid "Edit Fallback Filters"
 msgstr "编辑 Fallback 过滤列表"
-
-msgid "Value"
-msgstr "值"
 
 msgid "Overwrite Nameserver Policy"
 msgstr "覆盖 DNS 服务器查询策略"
