@@ -162,94 +162,90 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
 
-        o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));
+        s.tab('transparent_proxy', _('Transparent Proxy'));
+
+        o = s.taboption('transparent_proxy', form.Flag, 'transparent_proxy', _('Enable'));
         o.rmempty = false;
 
-        o = s.option(form.ListValue, 'transparent_proxy_mode', _('Transparent Proxy Mode'));
+        o = s.taboption('transparent_proxy', form.ListValue, 'transparent_proxy_mode', _('Mode'));
         o.retain = true;
         o.rmempty = false;
         o.value('tproxy', _('TPROXY Mode'));
         o.value('tun', _('TUN Mode'));
 
-        o = s.option(form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
+        o = s.taboption('transparent_proxy', form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Flag, 'ipv6_proxy', _('IPv6 Proxy'));
+        o = s.taboption('transparent_proxy', form.Flag, 'ipv6_proxy', _('IPv6 Proxy'));
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Flag, 'router_proxy', _('Router Proxy'));
+        o = s.taboption('transparent_proxy', form.Flag, 'router_proxy', _('Router Proxy'));
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.ListValue, 'access_control_mode', _('Access Control Mode'));
+        o = s.taboption('transparent_proxy', form.Flag, 'dns_hijack', _('DNS Hijack'));
+        o.retain = true;
+        o.rmempty = false;
+
+        s.tab('access_control', _('Access Control'));
+
+        o = s.taboption('access_control', form.ListValue, 'access_control_mode', _('Mode'));
         o.retain = true;
         o.rmempty = false;
         o.value('all', _('All Mode'));
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
         o.value('forbid', _('Forbid Mode'));
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
+        o = s.taboption('access_control', form.DynamicList, 'acl_ip', 'IP');
         o.datatype = 'ipmask4';
         o.retain = true;
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
+        o.depends('access_control_mode', 'allow');
+        o.depends('access_control_mode', 'block');
 
-        o = s.option(form.DynamicList, 'acl_ip6', _('Access Control IP6'));
+        o = s.taboption('access_control', form.DynamicList, 'acl_ip6', 'IP6');
         o.datatype = 'ipmask6';
         o.retain = true;
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
+        o.depends('access_control_mode', 'allow');
+        o.depends('access_control_mode', 'block');
 
-        o = s.option(form.DynamicList, 'acl_mac', _('Access Control MAC'));
+        o = s.taboption('access_control', form.DynamicList, 'acl_mac', 'MAC');
         o.datatype = 'macaddr';
         o.retain = true;
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
-        o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
+        o.depends('access_control_mode', 'allow');
+        o.depends('access_control_mode', 'block');
 
-        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'));
+        s.tab('bypass', _('Bypass'));
+
+        o = s.taboption('bypass', form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'));
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'));
-        o.retain = true;
-        o.rmempty = false;
-        o.depends('transparent_proxy', '1');
-
-        o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
+        o = s.taboption('bypass', form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
         o.retain = true;
         o.rmempty = false;
         o.value('1-65535', _('All Port'));
         o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
-        o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
+        o = s.taboption('bypass', form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
         o.retain = true;
         o.rmempty = false;
         o.value('1-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
-        o.depends('transparent_proxy', '1');
 
         o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
         o = s.option(widgets.NetworkSelect, 'wan6_interfaces', _('WAN6 Interfaces'));
         o.multiple = true;
         o.optional = true;
         o.retain = true;
         o.rmempty = false;
-        o.depends('transparent_proxy', '1');
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
