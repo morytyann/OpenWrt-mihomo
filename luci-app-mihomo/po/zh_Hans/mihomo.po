@@ -274,12 +274,6 @@ msgstr "DNS 端口"
 msgid "DNS Mode"
 msgstr "DNS 模式"
 
-msgid "Fake-IP"
-msgstr "Fake-IP"
-
-msgid "Redir-Host"
-msgstr "Redir-Host"
-
 msgid "Fake-IP Range"
 msgstr "Fake-IP 范围"
 

@@ -383,9 +383,9 @@ return view.extend({
 
         o = s.taboption('tun', form.ListValue, 'tun_stack', _('Stack'));
         o.retain = true;
-        o.value('system', _('System'));
-        o.value('gvisor', _('gVisor'));
-        o.value('mixed', _('Mixed'));
+        o.value('system', 'System');
+        o.value('gvisor', 'gVisor');
+        o.value('mixed', 'Mixed');
 
         o = s.taboption('tun', form.Value, 'tun_mtu', _('MTU'));
         o.placeholder = '9000';
@@ -411,8 +411,8 @@ return view.extend({
         o.placeholder = '1053';
 
         o = s.taboption('dns', form.ListValue, 'dns_mode', _('DNS Mode'));
-        o.value('fake-ip', _('Fake-IP'));
-        o.value('redir-host', _('Redir-Host'));
+        o.value('fake-ip', 'Fake-IP');
+        o.value('redir-host', 'Redir-Host');
 
         o = s.taboption('dns', form.Value, 'fake_ip_range', _('Fake-IP Range'));
         o.datatype = 'cidr4';
