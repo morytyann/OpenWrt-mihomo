@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/etc/mihomo/constants.sh
+. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
 
 action=$1
 shift

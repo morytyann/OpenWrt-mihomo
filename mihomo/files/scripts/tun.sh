@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . $IPKG_INSTROOT/lib/functions.sh
-. $IPKG_INSTROOT/etc/mihomo/constants.sh
+. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
 
 load_config() {
 	config_load mihomo
