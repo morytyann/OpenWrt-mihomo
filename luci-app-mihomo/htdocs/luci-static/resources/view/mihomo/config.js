@@ -235,13 +235,13 @@ return view.extend({
         o.value('1-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
 
-        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
+        o = s.taboption('bypass', widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
         o.retain = true;
         o.rmempty = false;
 
-        o = s.option(widgets.NetworkSelect, 'wan6_interfaces', _('WAN6 Interfaces'));
+        o = s.taboption('bypass', widgets.NetworkSelect, 'wan6_interfaces', _('WAN6 Interfaces'));
         o.multiple = true;
         o.optional = true;
         o.retain = true;
