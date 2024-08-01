@@ -77,6 +77,9 @@ tun_gso_max_size=$(uci -q get mihomo.mixin.tun_gso_max_size); [ -z "$tun_gso_max
 # add mihomo.mixin.tun_endpoint_independent_nat
 tun_endpoint_independent_nat=$(uci -q get mihomo.mixin.tun_endpoint_independent_nat); [ -z "$tun_endpoint_independent_nat" ] && uci set mihomo.mixin.tun_endpoint_independent_nat=0
 
+# add mihomo.config.test_profile
+test_profile=$(uci -q get mihomo.config.test_profile); [ -z "$test_profile" ] && uci set mihomo.config.test_profile=1
+
 # commit
 uci commit mihomo
 

@@ -157,6 +157,9 @@ return view.extend({
         o = s.option(form.Flag, 'mixin', _('Mixin'));
         o.rmempty = false;
 
+        o = s.option(form.Flag, 'test_profile', _('Test Profile'));
+        o.rmempty = false;
+
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
 
         o = s.option(form.Flag, 'transparent_proxy', _('Transparent Proxy'));

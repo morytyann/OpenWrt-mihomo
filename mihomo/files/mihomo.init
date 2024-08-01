@@ -23,11 +23,12 @@ start_service() {
 	log "Starting..."
 	# get config
 	## app config
-	local scheduled_restart cron_expression profile mixin
+	local scheduled_restart cron_expression profile mixin test_profile
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	config_get profile "config" "profile"
-	config_get_bool mixin "config" "mixin" 1
+	config_get_bool mixin "config" "mixin" 0
+	config_get_bool test_profile "config" "test_profile" 0
 	## mixin config
 	### general
 	local mode match_process outbound_interface unify_delay tcp_concurrent tcp_keep_alive_interval log_level
@@ -201,12 +202,14 @@ start_service() {
 		fi
 	fi
 	# test profile
-	log "Profile testing..."
-	if ($PROG -d "$RUN_DIR" -t >> "$RUN_CORE_LOG_PATH" 2>&1); then
-		log "Profile test passed!"
-	else
-		log "Profile test failed! Exiting..."
-		return
+	if [ "$test_profile" == 1 ]; then
+		log "Profile testing..."
+		if ($PROG -d "$RUN_DIR" -t >> "$RUN_CORE_LOG_PATH" 2>&1); then
+			log "Profile test passed!"
+		else
+			log "Profile test failed! Exiting..."
+			return
+		fi
 	fi
 	# start core
 	procd_open_instance core
@@ -531,7 +534,7 @@ mixin_sniff() {
 	local enabled protocol overwrite_dest
 	config_get_bool enabled "$section" "enabled" 0
 	config_get protocol "$section" "protocol"
-	config_get_bool overwrite_dest "$section" "overwrite_dest"
+	config_get_bool overwrite_dest "$section" "overwrite_dest" 0
 
 	if [ "$enabled" == 0 ]; then
 		return

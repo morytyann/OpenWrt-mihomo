@@ -52,6 +52,9 @@ msgstr "上传配置文件"
 msgid "Mixin"
 msgstr "混入"
 
+msgid "Test Profile"
+msgstr "检查配置文件"
+
 msgid "Proxy Config"
 msgstr "代理配置"
 
