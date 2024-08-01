@@ -9,7 +9,7 @@ uci -q batch <<-EOF > /dev/null
 	set firewall.mihomo=include
 	set firewall.mihomo.type=script
 	set firewall.mihomo.path=$TUN_SH
-    set firewall.mihomo.fw4_compatible=1
+	set firewall.mihomo.fw4_compatible=1
 	commit firewall
 EOF
 
@@ -29,7 +29,6 @@ uci set mihomo.mixin.api_secret="$random"
 uci set mihomo.@authentication[0].password="$random"
 
 # set mihomo.proxy.wan_interfaces
-uci del mihomo.proxy.wan_interfaces
 uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
 
 # set mihomo.mixin.outbound_interface

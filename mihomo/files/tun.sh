@@ -10,14 +10,14 @@ load_config() {
 }
 
 accept_tun() {
-    nft insert rule inet fw4 input iifname "$TUN_DEVICE" counter accept
-    nft insert rule inet fw4 forward oifname "$TUN_DEVICE" counter accept
-    nft insert rule inet fw4 forward iifname "$TUN_DEVICE" counter accept
+	nft insert rule inet fw4 input iifname "$TUN_DEVICE" counter accept
+	nft insert rule inet fw4 forward oifname "$TUN_DEVICE" counter accept
+	nft insert rule inet fw4 forward iifname "$TUN_DEVICE" counter accept
 }
 
 load_config
 if [[ "$enabled" == 0 || "$transparent_proxy_mode" != "tun" ]]; then
-    return
+	return
 fi
 
 accept_tun

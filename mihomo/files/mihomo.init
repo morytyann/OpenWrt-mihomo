@@ -247,7 +247,7 @@ start_service() {
 			fi
 		elif [ "$transparent_proxy_mode" == "tun" ]; then
 			ip tuntap add dev "$TUN_DEVICE" mode tun vnet_hdr
-            ip link set "$TUN_DEVICE" up
+			ip link set "$TUN_DEVICE" up
 			ip route add default dev "$TUN_DEVICE" table "$FW_TABLE" scope link
 			ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 			$TUN_SH
@@ -382,7 +382,7 @@ cleanup() {
 	# delete hijack
 	ip rule del table "$FW_TABLE" > /dev/null 2>&1
 	ip route flush table "$FW_TABLE" > /dev/null 2>&1
-	ip tuntap del dev "$TUN_DEVICE" mode tun  > /dev/null 2>&1
+	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
 	nft delete table ip mihomo > /dev/null 2>&1
 	nft delete table ip6 mihomo > /dev/null 2>&1
 	local handles handle
