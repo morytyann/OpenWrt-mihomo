@@ -240,7 +240,7 @@ start_service() {
 		# transparent proxy
 		log "Transparent Proxy: Start hijack."
 		if [ "$transparent_proxy_mode" == "tproxy" ]; then
-			ip route add default dev lo table "$FW_TABLE" scope host
+			ip route add local default dev lo table "$FW_TABLE"
 			ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 			if [ "$ipv4_proxy" == 1 ]; then
 				nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
@@ -251,7 +251,7 @@ start_service() {
 		elif [ "$transparent_proxy_mode" == "tun" ]; then
 			ip tuntap add dev "$TUN_DEVICE" mode tun vnet_hdr
 			ip link set "$TUN_DEVICE" up
-			ip route add default dev "$TUN_DEVICE" table "$FW_TABLE" scope link
+			ip route add unicast default dev "$TUN_DEVICE" table "$FW_TABLE"
 			ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 			$TUN_SH
 			if [ "$ipv4_proxy" == 1 ]; then
