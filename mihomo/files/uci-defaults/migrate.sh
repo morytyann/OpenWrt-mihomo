@@ -60,7 +60,7 @@ ipv6_proxy=$(uci -q get mihomo.proxy.ipv6_proxy); [ -z "$ipv6_proxy" ] && uci se
 access_control_mode=$(uci -q get mihomo.proxy.access_control_mode); [ -z "$access_control_mode" ] && uci set mihomo.proxy.access_control_mode="all"
 
 # add mihomo.proxy.transparent_proxy_mode
-transparent_proxy_mode=$(uci -q get mihomo.proxy.transparent_proxy_mode); [ -z "$transparent_proxy_mode" ] && uci set transparent_proxy_mode="tproxy"
+transparent_proxy_mode=$(uci -q get mihomo.proxy.transparent_proxy_mode); [ -z "$transparent_proxy_mode" ] && uci set mihomo.proxy.transparent_proxy_mode="tproxy"
 
 # add mihomo.mixin.tun_stack
 tun_stack=$(uci -q get mihomo.mixin.tun_stack); [ -z "$tun_stack" ] && uci set mihomo.mixin.tun_stack="system"
