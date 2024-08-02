@@ -240,24 +240,28 @@ start_service() {
 		# transparent proxy
 		log "Transparent Proxy: Start hijack."
 		if [ "$transparent_proxy_mode" == "tproxy" ]; then
-			ip route add local default dev lo table "$FW_TABLE"
-			ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 			if [ "$ipv4_proxy" == 1 ]; then
+				ip route add local default dev lo table "$FW_TABLE"
+				ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 				nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
+				ip -6 route add local default dev lo table "$FW_TABLE"
+				ip -6 rule add fwmark "$FW_MARK" table "$FW_TABLE"
 				nft -f "$HIJACK6_NFT" -D FW_MARK="$FW_MARK" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 			fi
 		elif [ "$transparent_proxy_mode" == "tun" ]; then
 			ip tuntap add dev "$TUN_DEVICE" mode tun vnet_hdr
 			ip link set "$TUN_DEVICE" up
-			ip route add unicast default dev "$TUN_DEVICE" table "$FW_TABLE"
-			ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 			$TUN_SH
 			if [ "$ipv4_proxy" == 1 ]; then
+				ip route add unicast default dev "$TUN_DEVICE" table "$FW_TABLE"
+				ip rule add fwmark "$FW_MARK" table "$FW_TABLE"
 				nft -f "$HIJACK_TUN_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
+				ip -6 route add unicast default dev "$TUN_DEVICE" table "$FW_TABLE"
+				ip -6 rule add fwmark "$FW_MARK" table "$FW_TABLE"
 				nft -f "$HIJACK6_TUN_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 			fi
 		fi
@@ -385,6 +389,8 @@ cleanup() {
 	# delete hijack
 	ip rule del table "$FW_TABLE" > /dev/null 2>&1
 	ip route flush table "$FW_TABLE" > /dev/null 2>&1
+	ip -6 rule del table "$FW_TABLE" > /dev/null 2>&1
+	ip -6 route flush table "$FW_TABLE" > /dev/null 2>&1
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
 	nft delete table ip mihomo > /dev/null 2>&1
 	nft delete table ip6 mihomo > /dev/null 2>&1
