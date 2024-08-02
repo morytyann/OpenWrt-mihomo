@@ -5,11 +5,11 @@
 A project contains mihomo packages for OpenWrt.
 
 ## Feature
- - Transparent Proxy
+ - Transparent Proxy (TPROXY/TUN, IPv4 and/or IPv6)
  - Access Control
- - Profile Mixin
  - Compatible with Multiple WAN
- - Edit Profile in LuCI
+ - Profile Mixin
+ - Profile Editor
  - Scheduled Restart
 
 ## Usage
@@ -18,15 +18,13 @@ See [Wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki)
 
 ## How does it work
 
-1. Download dependency files if need.
-2. Get mixin config.
-3. Mixin and Update profile.
-4. Run mihomo.
-5. Run hijack prepare script.
-6. Add exclusions. (wan inbound, firewall rule/redirect, UPnP)
-7. Add router hijack.
-8. Add lan hijack with access control.
-9. Add cron for scheduled restart.
+1. Mixin and Update profile.
+2. Run mihomo.
+3. Run hijack prepare script.
+4. Add exclusions. (wan/wan6 inbound, firewall rule/redirect, UPnP)
+5. Add router hijack.
+6. Add lan hijack with access control.
+7. Set scheduled restart.
 
 Note that the steps above may change base on config.
 
@@ -51,8 +49,9 @@ The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 - yq
 - firewall4
 - kmod-nft-tproxy
+- ip-full
+- kmod-tun
 
 ## Warning
 
 - Only support firewall4 and will never support firewall3
-- Will only support IPv4 for a long time
