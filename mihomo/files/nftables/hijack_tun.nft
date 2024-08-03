@@ -95,7 +95,6 @@ table ip mihomo {
 
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
-		meta l4proto { tcp, udp } iifname $TUN_DEVICE counter return
 		ip daddr @reserved_ip counter return
 		ip daddr @wan_ip counter return
 		ip daddr @china_ip counter return
@@ -103,6 +102,7 @@ table ip mihomo {
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
 		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
+		meta l4proto { tcp, udp } iifname $TUN_DEVICE meta mark $FW_MARK counter return
 		jump proxy
 	}
 

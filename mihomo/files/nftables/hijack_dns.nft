@@ -30,19 +30,18 @@ table inet mihomo {
 	chain allow_dns_hijack {
 		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter redirect to :$DNS_PORT
 		meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip6 counter redirect to :$DNS_PORT
-		meta nfproto { ipv4, ipv6 } meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
 	}
 
 	chain block_dns_hijack {
 		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter return
         meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip6 counter return
-		meta nfproto { ipv4, ipv6 } meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
-		meta nfproto { ipv4, ipv6 } meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
 	}
 
 	chain router_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip daddr 127.0.0.1 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
-		meta l4proto { tcp, udp } th dport 53 ip6 daddr [::1] meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 oifname lo meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
 	}
 
 	chain dstnat {

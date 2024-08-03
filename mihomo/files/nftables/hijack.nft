@@ -102,7 +102,7 @@ table ip mihomo {
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
 		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
-		meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } iifname lo meta mark $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
 		jump proxy
 	}
 

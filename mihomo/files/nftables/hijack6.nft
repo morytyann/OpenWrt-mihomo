@@ -87,7 +87,7 @@ table ip6 mihomo {
 		ip6 daddr @china_ip counter return
 		meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
-		meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } iifname lo meta mark $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
 		jump proxy
 	}
 
