@@ -99,7 +99,7 @@ start_service() {
 	config_get_bool router_proxy "proxy" "router_proxy" 0
 	config_get access_control_mode "proxy" "access_control_mode"
 	config_get_bool dns_hijack "proxy" "dns_hijack" 0
-		config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
+	config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
 	config_get acl_tcp_dport "proxy" "acl_tcp_dport" "1-65535"
 	config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
 	# download profile
