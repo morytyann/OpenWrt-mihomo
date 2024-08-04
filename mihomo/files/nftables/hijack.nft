@@ -70,29 +70,6 @@ table ip mihomo {
 		auto-merge
 	}
 
-	chain dns_hijack {
-
-	}
-
-	chain all_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-	}
-
-	chain allow_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter redirect to :$DNS_PORT
-		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
-	}
-
-	chain block_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter return
-		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
-		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-	}
-
-	chain router_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip daddr 127.0.0.1 meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
-	}
-
 	chain proxy {
 
 	}
@@ -116,15 +93,6 @@ table ip mihomo {
 		meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
 	}
 
-	chain dstnat {
-		type nat hook prerouting priority dstnat + 1; policy accept;
-		jump dns_hijack
-	}
-
-	chain nat_output {
-		type nat hook output priority filter; policy accept;
-	}
-
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
 		ip daddr @reserved_ip counter return
@@ -134,7 +102,7 @@ table ip mihomo {
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
 		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
-		meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } iifname lo meta mark $FW_MARK tproxy to 127.0.0.1:$TPROXY_PORT counter accept
 		jump proxy
 	}
 

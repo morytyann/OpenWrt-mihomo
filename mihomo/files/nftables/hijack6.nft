@@ -39,7 +39,7 @@ table ip6 mihomo {
 		auto-merge
 	}
 
-	set acl_ip {
+	set acl_ip6 {
 		type ipv6_addr
 		flags interval
 		auto-merge
@@ -57,29 +57,6 @@ table ip6 mihomo {
 		auto-merge
 	}
 
-	chain dns_hijack {
-
-	}
-
-	chain all_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-	}
-
-	chain allow_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip counter redirect to :$DNS_PORT
-		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
-	}
-
-	chain block_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip counter return
-		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
-		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
-	}
-
-	chain router_dns_hijack {
-		meta l4proto { tcp, udp } th dport 53 ip6 daddr [::1] meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
-	}
-
 	chain proxy {
 
 	}
@@ -89,27 +66,18 @@ table ip6 mihomo {
 	}
 
 	chain allow_proxy {
-		meta l4proto { tcp, udp } ip6 saddr @acl_ip meta mark set $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } ip6 saddr @acl_ip6 meta mark set $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
 		meta l4proto { tcp, udp } ether saddr @acl_mac meta mark set $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
 	}
 
 	chain block_proxy {
-		meta l4proto { tcp, udp } ip6 saddr @acl_ip counter return
+		meta l4proto { tcp, udp } ip6 saddr @acl_ip6 counter return
 		meta l4proto { tcp, udp } ether saddr @acl_mac counter return
 		meta l4proto { tcp, udp } meta mark set $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
 	}
 
 	chain router_proxy {
 		meta l4proto { tcp, udp } meta mark set $FW_MARK counter accept
-	}
-
-	chain dstnat {
-		type nat hook prerouting priority dstnat + 1; policy accept;
-		jump dns_hijack
-	}
-
-	chain nat_output {
-		type nat hook output priority filter; policy accept;
 	}
 
 	chain mangle_prerouting {
@@ -119,7 +87,7 @@ table ip6 mihomo {
 		ip6 daddr @china_ip counter return
 		meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
-		meta l4proto { tcp, udp } iifname "lo" meta mark $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } iifname lo meta mark $FW_MARK tproxy to [::1]:$TPROXY_PORT counter accept
 		jump proxy
 	}
 

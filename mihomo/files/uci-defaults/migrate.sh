@@ -80,6 +80,15 @@ tun_endpoint_independent_nat=$(uci -q get mihomo.mixin.tun_endpoint_independent_
 # add mihomo.config.test_profile
 test_profile=$(uci -q get mihomo.config.test_profile); [ -z "$test_profile" ] && uci set mihomo.config.test_profile=1
 
+# add mihomo.mixin.dns_ipv6
+dns_ipv6=$(uci -q get mihomo.mixin.dns_ipv6); [ -z "$dns_ipv6" ] && uci set mihomo.mixin.dns_ipv6=0
+
+# add mihomo.mixin.hosts
+hosts=$(uci -q get mihomo.mixin.hosts); [ -z "$hosts" ] && uci set mihomo.mixin.hosts=$(uci -q get mihomo.mixin.dns_hosts)
+
+# add mihomo.mixin.geoip_asn_url
+geoip_asn_url=$(uci -q get mihomo.mixin.geoip_asn_url); [ -z "$geoip_asn_url" ] && uci set mihomo.mixin.geoip_asn_url="https://mirror.ghproxy.com/https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb"
+
 # commit
 uci commit mihomo
 

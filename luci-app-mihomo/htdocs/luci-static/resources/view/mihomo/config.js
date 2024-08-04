@@ -168,31 +168,25 @@ return view.extend({
         o.rmempty = false;
 
         o = s.taboption('transparent_proxy', form.ListValue, 'transparent_proxy_mode', _('Mode'));
-        o.retain = true;
         o.rmempty = false;
         o.value('tproxy', _('TPROXY Mode'));
         o.value('tun', _('TUN Mode'));
 
         o = s.taboption('transparent_proxy', form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('transparent_proxy', form.Flag, 'ipv6_proxy', _('IPv6 Proxy'));
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('transparent_proxy', form.Flag, 'router_proxy', _('Router Proxy'));
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('transparent_proxy', form.Flag, 'dns_hijack', _('DNS Hijack'));
-        o.retain = true;
         o.rmempty = false;
 
         s.tab('access_control', _('Access Control'));
 
         o = s.taboption('access_control', form.ListValue, 'access_control_mode', _('Mode'));
-        o.retain = true;
         o.rmempty = false;
         o.value('all', _('All Mode'));
         o.value('allow', _('Allow Mode'));
@@ -220,17 +214,14 @@ return view.extend({
         s.tab('bypass', _('Bypass'));
 
         o = s.taboption('bypass', form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'));
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('bypass', form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
-        o.retain = true;
         o.rmempty = false;
         o.value('1-65535', _('All Port'));
         o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
 
         o = s.taboption('bypass', form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
-        o.retain = true;
         o.rmempty = false;
         o.value('1-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
@@ -238,13 +229,11 @@ return view.extend({
         o = s.taboption('bypass', widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('bypass', widgets.NetworkSelect, 'wan6_interfaces', _('WAN6 Interfaces'));
         o.multiple = true;
         o.optional = true;
-        o.retain = true;
         o.rmempty = false;
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
@@ -362,7 +351,7 @@ return view.extend({
         o = s.taboption('inbound', form.Flag, 'authentication', _('Authentication'));
         o.rmempty = false;
 
-        o = s.taboption('inbound', form.SectionValue, 'authentications', form.TableSection, 'authentication', _('Edit Authentications'));
+        o = s.taboption('inbound', form.SectionValue, '_authentications', form.TableSection, 'authentication', _('Edit Authentications'));
         o.retain = true;
         o.depends('authentication', '1');
 
@@ -381,26 +370,21 @@ return view.extend({
         s.tab('tun', _('TUN Config'));
 
         o = s.taboption('tun', form.ListValue, 'tun_stack', _('Stack'));
-        o.retain = true;
         o.value('system', 'System');
         o.value('gvisor', 'gVisor');
         o.value('mixed', 'Mixed');
 
         o = s.taboption('tun', form.Value, 'tun_mtu', _('MTU'));
         o.placeholder = '9000';
-        o.retain = true;
 
         o = s.taboption('tun', form.Flag, 'tun_gso', _('GSO'));
-        o.retain = true;
         o.rmempty = false;
 
         o = s.taboption('tun', form.Value, 'tun_gso_max_size', _('GSO Max Size'));
         o.placeholder = '65536';
-        o.retain = true;
         o.depends('tun_gso', '1');
 
         o = s.taboption('tun', form.Flag, 'tun_endpoint_independent_nat', _('Endpoint Independent NAT'));
-        o.retain = true;
         o.rmempty = false;
 
         s.tab('dns', _('DNS Config'));
@@ -433,15 +417,21 @@ return view.extend({
         o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
 
+        o = s.taboption('dns', form.Flag, 'dns_ipv6', _('IPv6'));
+        o.rmempty = false;
+
         o = s.taboption('dns', form.Flag, 'dns_system_hosts', _('Use System Hosts'));
         o.rmempty = false;
 
         o = s.taboption('dns', form.Flag, 'dns_hosts', _('Use Hosts'));
         o.rmempty = false;
 
-        o = s.taboption('dns', form.SectionValue, 'hosts', form.TableSection, 'host', _('Edit Hosts'));
+        o = s.taboption('dns', form.Flag, 'hosts', _('Overwrite Hosts'));
+        o.rmempty = false;
+
+        o = s.taboption('dns', form.SectionValue, '_hosts', form.TableSection, 'host', _('Edit Hosts'));
         o.retain = true;
-        o.depends('dns_hosts', '1');
+        o.depends('hosts', '1');
 
         o.subsection.anonymous = true;
         o.subsection.addremove = true;
@@ -457,7 +447,7 @@ return view.extend({
         o = s.taboption('dns', form.Flag, 'dns_nameserver', _('Overwrite Nameserver'));
         o.rmempty = false;
 
-        o = s.taboption('dns', form.SectionValue, 'nameservers', form.TableSection, 'nameserver', _('Edit Nameservers'));
+        o = s.taboption('dns', form.SectionValue, '_dns_nameserver', form.TableSection, 'nameserver', _('Edit Nameservers'));
         o.retain = true;
         o.depends('dns_nameserver', '1');
 
@@ -479,7 +469,7 @@ return view.extend({
         o = s.taboption('dns', form.Flag, 'dns_fallback_filter', _('Overwrite Fallback Filter'));
         o.rmempty = false;
 
-        o = s.taboption('dns', form.SectionValue, 'fallback_filters', form.TableSection, 'fallback_filter', _('Edit Fallback Filters'));
+        o = s.taboption('dns', form.SectionValue, '_dns_fallback_filters', form.TableSection, 'fallback_filter', _('Edit Fallback Filters'));
         o.retain = true;
         o.depends('dns_fallback_filter', '1');
 
@@ -501,7 +491,7 @@ return view.extend({
         o = s.taboption('dns', form.Flag, 'dns_nameserver_policy', _('Overwrite Nameserver Policy'));
         o.rmempty = false;
 
-        o = s.taboption('dns', form.SectionValue, 'nameserver_policies', form.TableSection, 'nameserver_policy', _('Edit Nameserver Policies'));
+        o = s.taboption('dns', form.SectionValue, '_dns_nameserver_policies', form.TableSection, 'nameserver_policy', _('Edit Nameserver Policies'));
         o.retain = true;
         o.depends('dns_nameserver_policy', '1');
 
@@ -544,7 +534,7 @@ return view.extend({
         o.retain = true;
         o.depends('sniffer', '1');
 
-        o = s.taboption('sniffer', form.SectionValue, 'sniffs', form.TableSection, 'sniff', _('Sniff By Protocol'));
+        o = s.taboption('sniffer', form.SectionValue, '_sniffer_sniffs', form.TableSection, 'sniff', _('Sniff By Protocol'));
         o.retain = true;
         o.depends('sniffer', '1');
 
@@ -576,13 +566,16 @@ return view.extend({
         o.value('standard', _('Standard Loader'));
         o.value('memconservative', _('Memory Conservative Loader'));
 
+        o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
+        o.rmempty = false;
+
         o = s.taboption('geox', form.Value, 'geoip_mmdb_url', _('GeoIP(MMDB) Url'));
         o.rmempty = false;
 
         o = s.taboption('geox', form.Value, 'geoip_dat_url', _('GeoIP(DAT) Url'));
         o.rmempty = false;
 
-        o = s.taboption('geox', form.Value, 'geosite_url', _('GeoSite Url'));
+        o = s.taboption('geox', form.Value, 'geoip_asn_url', _('GeoIP(ASN) Url'));
         o.rmempty = false;
 
         o = s.taboption('geox', form.Flag, 'geox_auto_update', _('GeoX Auto Update'));
@@ -603,6 +596,9 @@ return view.extend({
         };
         o.write = function (section_id, formvalue) {
             return fs.write(mixinPath, formvalue);
+        };
+        o.remove = function (section_id) {
+            return fs.write(mixinPath);
         };
 
         return m.render();

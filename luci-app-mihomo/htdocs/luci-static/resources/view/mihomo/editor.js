@@ -5,6 +5,7 @@
 'require fs';
 
 const profilesDir = '/etc/mihomo/profiles';
+const runProfilePath = '/etc/mihomo/run/config.yaml'
 
 function listProfiles() {
     return L.resolveDefault(fs.list(profilesDir), []);
@@ -29,8 +30,10 @@ return view.extend({
         o.optional = true;
 
         for (const profile of profiles) {
-            o.value(profilesDir + '/' + profile.name, profile.name);
+            o.value(profilesDir + '/' + profile.name, _('File:') + profile.name);
         }
+        o.value(runProfilePath, _('Profile for Startup'));
+
         o.write = function (section_id, formvalue) {
             return true;
         };
@@ -45,6 +48,10 @@ return view.extend({
         o.write = function (section_id, formvalue) {
             const path = m.lookupOption('mihomo.editor._profile')[0].formvalue('editor');
             return fs.write(path, formvalue);
+        };
+        o.remove = function (section_id) {
+            const path = m.lookupOption('mihomo.editor._profile')[0].formvalue('editor');
+            return fs.write(path);
         };
 
         return m.render();

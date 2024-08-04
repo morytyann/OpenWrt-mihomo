@@ -1,0 +1,55 @@
+#!/usr/sbin/nft -f
+
+table inet mihomo {
+	set acl_ip {
+		type ipv4_addr
+		flags interval
+		auto-merge
+	}
+
+	set acl_ip6 {
+		type ipv6_addr
+		flags interval
+		auto-merge
+	}
+
+	set acl_mac {
+		type ether_addr
+		flags interval
+		auto-merge
+	}
+
+	chain dns_hijack {
+
+	}
+
+	chain all_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+	}
+
+	chain allow_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip6 counter redirect to :$DNS_PORT
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter redirect to :$DNS_PORT
+	}
+
+	chain block_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 ip saddr @acl_ip counter return
+        meta l4proto { tcp, udp } th dport 53 ip6 saddr @acl_ip6 counter return
+		meta l4proto { tcp, udp } th dport 53 ether saddr @acl_mac counter return
+		meta l4proto { tcp, udp } th dport 53 counter redirect to :$DNS_PORT
+	}
+
+	chain router_dns_hijack {
+		meta l4proto { tcp, udp } th dport 53 oifname lo meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
+	}
+
+	chain dstnat {
+		type nat hook prerouting priority dstnat + 1; policy accept;
+		jump dns_hijack
+	}
+
+	chain nat_output {
+		type nat hook output priority filter; policy accept;
+	}
+}
