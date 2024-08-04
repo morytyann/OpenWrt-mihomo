@@ -1,13 +1,14 @@
 #!/bin/sh /etc/rc.common
 
 START=99
+STOP=10
 USE_PROCD=1
 
 . $IPKG_INSTROOT/lib/functions/network.sh
 . $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
 
 start_service() {
-	# clear log 
+	# clear log
 	clear_all_log
 	# load config
 	config_load mihomo
@@ -159,33 +160,33 @@ start_service() {
 
 		if [ "$authentication" == 1 ]; then
 			yq -M -i 'del(.authentication)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_authentication "authentication"
+			config_foreach mixin_authentications "authentication"
 		fi
 		if [ "$fake_ip_filter" == 1 ]; then
 			yq -M -i 'del(.dns.fake-ip-filter)' "$RUN_PROFILE_PATH"
-			config_list_foreach "mixin" "fake_ip_filters" mixin_fake_ip_filter
+			config_list_foreach "mixin" "fake_ip_filters" mixin_fake_ip_filters
 		fi
 		if [ "$hosts" == 1 ]; then
 			yq -M -i 'del(.hosts)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_host "host"
+			config_foreach mixin_hosts "host"
 		fi
 		if [ "$dns_nameserver" == 1 ]; then
 			yq -M -i 'del(.dns.default-nameserver) | del(.dns.proxy-server-nameserver) | del(.dns.nameserver) | del(.dns.fallback)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_nameserver "nameserver"
+			config_foreach mixin_nameservers "nameserver"
 		fi
 		if [ "$dns_fallback_filter" == 1 ]; then
 			yq -M -i '.dns.fallback-filter.geoip = true | del(.dns.fallback-filter.geoip-code) | del(.dns.fallback-filter.geosite) | del(.dns.fallback-filter.ipcidr) | del(.dns.fallback-filter.domain)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_fallback_filter "fallback_filter"
+			config_foreach mixin_fallback_filters "fallback_filter"
 		fi
 		if [ "$dns_nameserver_policy" == 1 ]; then
 			yq -M -i 'del(.dns.nameserver-policy)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_nameserver_policy "nameserver_policy"
+			config_foreach mixin_nameserver_policies "nameserver_policy"
 		fi
 		if [ "$sniffer" == 1 ]; then
 			yq -M -i 'del(.sniffer.force-domain) | del(.sniffer.skip-domain) | del(.sniffer.sniff)' "$RUN_PROFILE_PATH"
 			config_list_foreach "mixin" "sniffer_force_domain_name" mixin_sniffer_domain_name "force-domain"
 			config_list_foreach "mixin" "sniffer_ignore_domain_name" mixin_sniffer_domain_name "skip-domain"
-			config_foreach mixin_sniff "sniff"
+			config_foreach mixin_sniffs "sniff"
 		fi
 		# mixin file
 		if [ -s "$MIXIN_FILE_PATH" ]; then
@@ -223,6 +224,8 @@ start_service() {
 	procd_set_param file "$RUN_PROFILE_PATH"
 	procd_set_param reload_signal HUP
 	procd_set_param respawn
+	procd_set_param user "$MIHOMO_USER"
+	procd_set_param group "$MIHOMO_GROUP"
 
 	procd_add_jail core procfs
 	procd_add_jail_mount "$PROG"
@@ -230,8 +233,6 @@ start_service() {
 	procd_add_jail_mount_rw "$RUN_DIR"
 	procd_add_jail_mount_rw /dev/net
 	procd_set_param capabilities /etc/capabilities/mihomo.json
-	procd_set_param user "$MIHOMO_USER"
-	procd_set_param group "$MIHOMO_GROUP"
 	procd_set_param no_new_privs 1
 
 	procd_close_instance
@@ -311,13 +312,13 @@ start_service() {
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
 		if [ "$ipv4_proxy" == 1 ]; then
-			add_wan_inbound_exclusion
-			add_firewall_exclusion
-			add_upnp_exclusion
+			add_wan_inbound_exclusions
+			add_firewall_exclusions
+			add_upnp_exclusions
 		fi
 		if [ "$ipv6_proxy" == 1 ]; then
-			add_wan6_inbound_exclusion
-			add_firewall6_exclusion
+			add_wan6_inbound_exclusions
+			add_firewall6_exclusions
 		fi
 		# reload config
 		config_load mihomo
@@ -447,7 +448,7 @@ download_ui() {
 	fi
 }
 
-mixin_authentication() {
+mixin_authentications() {
 	local section="$1"
 
 	local enabled username password
@@ -462,11 +463,11 @@ mixin_authentication() {
 	authentication="$username:$password" yq -M -i '.authentication += [env(authentication)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_fake_ip_filter() {
+mixin_fake_ip_filters() {
 	domain_name="$1" yq -M -i '.dns.fake-ip-filter += [env(domain_name)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_host() {
+mixin_hosts() {
 	local section="$1"
 
 	local enabled domain_name
@@ -477,14 +478,14 @@ mixin_host() {
 		return
 	fi
 
-	config_list_foreach "$section" "ip" do_mixin_host "$domain_name"
+	config_list_foreach "$section" "ip" mixin_host "$domain_name"
 }
 
-do_mixin_host() {
+mixin_host() {
 	ip="$1" domain_name="$2" yq -M -i '.hosts.[env(domain_name)] += [env(ip)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_nameserver() {
+mixin_nameservers() {
 	local section="$1"
 
 	local enabled type
@@ -495,14 +496,14 @@ mixin_nameserver() {
 		return
 	fi
 
-	config_list_foreach "$section" "nameserver" do_mixin_nameserver "$type"
+	config_list_foreach "$section" "nameserver" mixin_nameserver "$type"
 }
 
-do_mixin_nameserver() {
+mixin_nameserver() {
 	nameserver="$1" type="$2" yq -M -i '.dns.[env(type)] += [env(nameserver)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_fallback_filter() {
+mixin_fallback_filters() {
 	local section="$1"
 
 	local enabled
@@ -513,14 +514,14 @@ mixin_fallback_filter() {
 		return
 	fi
 
-	config_list_foreach "$section" "value" do_mixin_fallback_filter "$type"
+	config_list_foreach "$section" "value" mixin_fallback_filter "$type"
 }
 
-do_mixin_fallback_filter() {
+mixin_fallback_filter() {
 	value="$1" type="$2" yq -M -i '.dns.fallback-filter.[env(type)] += [env(value)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_nameserver_policy() {
+mixin_nameserver_policies() {
 	local section="$1"
 
 	local enabled matcher
@@ -531,10 +532,10 @@ mixin_nameserver_policy() {
 		return
 	fi
 
-	config_list_foreach "$section" "nameserver" do_mixin_nameserver_policy "$matcher"
+	config_list_foreach "$section" "nameserver" mixin_nameserver_policy "$matcher"
 }
 
-do_mixin_nameserver_policy() {
+mixin_nameserver_policy() {
 	nameserver="$1" matcher="$2" yq -M -i '.dns.nameserver-policy.[env(matcher)] += [env(nameserver)]' "$RUN_PROFILE_PATH"
 }
 
@@ -542,7 +543,7 @@ mixin_sniffer_domain_name() {
 	domain_name="$1" type="$2" yq -M -i '.sniffer.[env(type)] += [env(domain_name)]' "$RUN_PROFILE_PATH"
 }
 
-mixin_sniff() {
+mixin_sniffs() {
 	local section="$1"
 
 	local enabled protocol overwrite_dest
@@ -555,10 +556,10 @@ mixin_sniff() {
 	fi
 
 	protocol="$protocol" overwrite_dest="$overwrite_dest" yq -M -i '.sniffer.sniff.[env(protocol)].override-destination = env(overwrite_dest) == 1' "$RUN_PROFILE_PATH"
-	config_list_foreach "$section" "port" do_mixin_sniff "$protocol"
+	config_list_foreach "$section" "port" mixin_sniff "$protocol"
 }
 
-do_mixin_sniff() {
+mixin_sniff() {
 	port="$1" protocol="$2" yq -M -i '.sniffer.sniff.[env(protocol)].ports += [env(port)]' "$RUN_PROFILE_PATH"
 }
 
@@ -590,12 +591,12 @@ add_acl_mac6() {
 	nft add element ip6 $FW_TABLE acl_mac \{ "$1" \}
 }
 
-add_wan_inbound_exclusion() {
+add_wan_inbound_exclusions() {
 	config_load mihomo
-	config_list_foreach "proxy" "wan_interfaces" do_add_wan_inbound_exclusion
+	config_list_foreach "proxy" "wan_interfaces" add_wan_inbound_exclusion
 }
 
-do_add_wan_inbound_exclusion() {
+add_wan_inbound_exclusion() {
 	local wan_ip
 	network_get_ipaddr wan_ip $1
 	if [ -n "$wan_ip" ]; then
@@ -603,7 +604,7 @@ do_add_wan_inbound_exclusion() {
 	fi
 }
 
-add_firewall_exclusion() {
+add_firewall_exclusions() {
 	config_load firewall
 	config_foreach add_firewall_rule_exclusion "rule"
 	config_foreach add_firewall_redirect_exclusion "redirect"
@@ -698,7 +699,7 @@ add_firewall_redirect_exclusion() {
 	fi
 }
 
-add_upnp_exclusion() {
+add_upnp_exclusions() {
 	procd_open_instance upnp_watcher
 	procd_set_param command /bin/sh -c "$UPNP_WATCHER_SH"
 	procd_set_param data timestamp=$(date +%s)
@@ -706,12 +707,12 @@ add_upnp_exclusion() {
 	procd_close_instance
 }
 
-add_wan6_inbound_exclusion() {
+add_wan6_inbound_exclusions() {
 	config_load mihomo
-	config_list_foreach "proxy" "wan6_interfaces" do_add_wan6_inbound_exclusion
+	config_list_foreach "proxy" "wan6_interfaces" add_wan6_inbound_exclusion
 }
 
-do_add_wan6_inbound_exclusion() {
+add_wan6_inbound_exclusion() {
 	local wan6_prefix
 	network_get_prefixes6 wan6_prefix $1
 	if [ -n "$wan6_prefix" ]; then
@@ -719,7 +720,7 @@ do_add_wan6_inbound_exclusion() {
 	fi
 }
 
-add_firewall6_exclusion() {
+add_firewall6_exclusions() {
 	config_load firewall
 	config_foreach add_firewall6_rule_exclusion "rule"
 }
