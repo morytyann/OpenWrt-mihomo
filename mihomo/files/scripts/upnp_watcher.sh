@@ -33,6 +33,7 @@ fi
 add_upnp_exclusion
 
 while true; do
-	inotifywait -e create,modify --include $(basename "$upnp_lease_file") $(dirname "$upnp_lease_file")
-	add_upnp_exclusion
+	if (inotifywait -t 300 -e create,modify --include "$(basename "$upnp_lease_file")" "$(dirname "$upnp_lease_file")"); then
+		add_upnp_exclusion
+	fi
 done
