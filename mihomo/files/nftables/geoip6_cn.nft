@@ -1,7 +1,7 @@
 #!/usr/sbin/nft -f
 
-table ip6 mihomo {
-	set china_ip {
+table inet mihomo {
+	set china_ip6 {
 		type ipv6_addr
 		flags interval
 		elements = {

@@ -89,6 +89,28 @@ hosts=$(uci -q get mihomo.mixin.hosts); [ -z "$hosts" ] && uci set mihomo.mixin.
 # add mihomo.mixin.geoip_asn_url
 geoip_asn_url=$(uci -q get mihomo.mixin.geoip_asn_url); [ -z "$geoip_asn_url" ] && uci set mihomo.mixin.geoip_asn_url="https://mirror.ghproxy.com/https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb"
 
+# add mihomo.proxy.ipv4_dns_hijack
+ipv4_dns_hijack=$(uci -q get mihomo.proxy.ipv4_dns_hijack); [ -z "$ipv4_dns_hijack" ] && uci set mihomo.proxy.ipv4_dns_hijack=$(uci -q get mihomo.proxy.dns_hijack)
+
+# add mihomo.proxy.ipv6_dns_hijack
+ipv6_dns_hijack=$(uci -q get mihomo.proxy.ipv6_dns_hijack); [ -z "$ipv6_dns_hijack" ] && uci set mihomo.proxy.ipv6_dns_hijack=$(uci -q get mihomo.proxy.dns_hijack)
+
+# delete mihomo.proxy.dns_hijack
+dns_hijack=$(uci -q get mihomo.proxy.dns_hijack); [ -n "$dns_hijack" ] && uci del mihomo.proxy.dns_hijack
+
+# get mihomo.proxy.access_control_mode
+access_control_mode=$(uci -q get mihomo.proxy.access_control_mode)
+
+# add mihomo.proxy.lan_proxy
+lan_proxy=$(uci -q get mihomo.proxy.lan_proxy); [ -z "$lan_proxy" ] && {
+	if [ "$access_control_mode" == "forbid" ]; then
+		uci set mihomo.proxy.lan_proxy=0
+		uci set mihomo.proxy.access_control_mode="all"
+	else
+		uci set mihomo.proxy.lan_proxy=1
+	fi
+}
+
 # commit
 uci commit mihomo
 
