@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . $IPKG_INSTROOT/lib/functions.sh
+. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
 
 load_config() {
 	config_load upnpd
@@ -21,7 +22,7 @@ add_upnp_exclusion() {
 		lease_proto=$(echo "$line" | awk -F ':' '{print tolower($1)}')
 		lease_src_ip=$(echo "$line" | awk -F ':' '{print $3}')
 		lease_src_port=$(echo "$line" | awk -F ':' '{print $4}')
-		nft add element ip mihomo upnp_exclusion \{ "$lease_proto" . "$lease_src_ip" . "$lease_src_port" timeout "${timeout}s" \}
+		nft add element inet $FW_TABLE upnp_exclusion \{ "$lease_proto" . "$lease_src_ip" . "$lease_src_port" timeout "${timeout}s" \}
 	done < "$upnp_lease_file"
 }
 

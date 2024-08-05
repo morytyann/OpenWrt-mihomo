@@ -82,6 +82,12 @@ msgstr "TPROXY 模式"
 msgid "TUN Mode"
 msgstr "TUN 模式"
 
+msgid "IPv4 DNS Hijack"
+msgstr "IPv4 DNS 劫持"
+
+msgid "IPv6 DNS Hijack"
+msgstr "IPv6 DNS 劫持"
+
 msgid "IPv4 Proxy"
 msgstr "IPv4 代理"
 
@@ -91,8 +97,8 @@ msgstr "IPv6 代理"
 msgid "Router Proxy"
 msgstr "路由器代理"
 
-msgid "DNS Hijack"
-msgstr "DNS 劫持"
+msgid "Lan Proxy"
+msgstr "局域网代理"
 
 msgid "Access Control"
 msgstr "访问控制"
@@ -105,9 +111,6 @@ msgstr "白名单模式"
 
 msgid "Block Mode"
 msgstr "黑名单模式"
-
-msgid "Forbid Mode"
-msgstr "禁止模式"
 
 msgid "Bypass"
 msgstr "绕过"

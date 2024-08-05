@@ -30,6 +30,20 @@ start_service() {
 	config_get profile "config" "profile"
 	config_get_bool mixin "config" "mixin" 0
 	config_get_bool test_profile "config" "test_profile" 0
+	## proxy config
+	local transparent_proxy transparent_proxy_mode ipv4_dns_hijack ipv6_dns_hijack ipv4_proxy ipv6_proxy router_proxy lan_proxy access_control_mode bypass_china_mainland_ip acl_tcp_dport acl_udp_dport
+	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
+	config_get transparent_proxy_mode "proxy" "transparent_proxy_mode"
+	config_get_bool ipv4_dns_hijack "proxy" "ipv4_dns_hijack" 0
+	config_get_bool ipv6_dns_hijack "proxy" "ipv6_dns_hijack" 0
+	config_get_bool ipv4_proxy "proxy" "ipv4_proxy" 0
+	config_get_bool ipv6_proxy "proxy" "ipv6_proxy" 0
+	config_get_bool router_proxy "proxy" "router_proxy" 0
+	config_get_bool lan_proxy "proxy" "lan_proxy" 0
+	config_get access_control_mode "proxy" "access_control_mode"
+	config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
+	config_get acl_tcp_dport "proxy" "acl_tcp_dport" "1-65535"
+	config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
 	## mixin config
 	### general
 	local mode match_process outbound_interface unify_delay tcp_concurrent tcp_keep_alive_interval log_level
@@ -40,8 +54,14 @@ start_service() {
 	config_get_bool tcp_concurrent "mixin" "tcp_concurrent" 0
 	config_get tcp_keep_alive_interval "mixin" "tcp_keep_alive_interval" 600
 	config_get log_level "mixin" "log_level"
-	#### api
-	local api_port api_secret selection_cache
+	### external control
+	local ui_razord ui_razord_url ui_yacd ui_yacd_url ui_metacubexd ui_metacubexd_url api_port api_secret selection_cache
+	config_get_bool ui_razord "mixin" "ui_razord" 0
+	config_get ui_razord_url "mixin" "ui_razord_url"
+	config_get_bool ui_yacd "mixin" "ui_yacd" 0
+	config_get ui_yacd_url "mixin" "ui_yacd_url"
+	config_get_bool ui_metacubexd "mixin" "ui_metacubexd" 0
+	config_get ui_metacubexd_url "mixin" "ui_metacubexd_url"
 	config_get api_port "mixin" "api_port" "9090"
 	config_get api_secret "mixin" "api_secret" "666666"
 	config_get_bool selection_cache "mixin" "selection_cache" 0
@@ -91,30 +111,11 @@ start_service() {
 	config_get geoip_asn_url "mixin" "geoip_asn_url"
 	config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
-	## proxy config
-	local transparent_proxy transparent_proxy_mode ipv4_proxy ipv6_proxy router_proxy access_control_mode dns_hijack bypass_china_mainland_ip acl_tcp_dport acl_udp_dport
-	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
-	config_get transparent_proxy_mode "proxy" "transparent_proxy_mode"
-	config_get_bool ipv4_proxy "proxy" "ipv4_proxy" 0
-	config_get_bool ipv6_proxy "proxy" "ipv6_proxy" 0
-	config_get_bool router_proxy "proxy" "router_proxy" 0
-	config_get access_control_mode "proxy" "access_control_mode"
-	config_get_bool dns_hijack "proxy" "dns_hijack" 0
-	config_get_bool bypass_china_mainland_ip "proxy" "bypass_china_mainland_ip" 0
-	config_get acl_tcp_dport "proxy" "acl_tcp_dport" "1-65535"
-	config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
 	# download profile
 	log "Download profile."
 	curl -s -L -o "$RUN_PROFILE_PATH" "$profile"
 	# download ui
 	log "Download UI."
-	local ui_razord ui_razord_url ui_yacd ui_yacd_url ui_metacubexd ui_metacubexd_url
-	config_get_bool ui_razord "mixin" "ui_razord" 0
-	config_get ui_razord_url "mixin" "ui_razord_url"
-	config_get_bool ui_yacd "mixin" "ui_yacd" 0
-	config_get ui_yacd_url "mixin" "ui_yacd_url"
-	config_get_bool ui_metacubexd "mixin" "ui_metacubexd" 0
-	config_get ui_metacubexd_url "mixin" "ui_metacubexd_url"
 	download_ui "$ui_razord" "$ui_razord_url" "$RUN_UI_DIR" "Razord-meta-gh-pages" "razord"
 	download_ui "$ui_yacd" "$ui_yacd_url" "$RUN_UI_DIR" "Yacd-meta-gh-pages" "yacd"
 	download_ui "$ui_metacubexd" "$ui_metacubexd_url" "$RUN_UI_DIR" "metacubexd-gh-pages" "metacubexd"
@@ -241,42 +242,53 @@ start_service() {
 	procd_set_param command /bin/sh -c "$PROFILE_WATCHER_SH"
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
+	# transparent proxy
 	if [ "$transparent_proxy" == 1 ]; then
 		log "Transparent Proxy is enabled."
 		log "Transparent Proxy: Start hijack."
-		# transparent proxy
+		# prepare
 		if [ "$transparent_proxy_mode" == "tproxy" ]; then
-			log "Transparent Proxy: Using TPROXY Mode."
+			log "Transparent Proxy: Using TPROXY mode."
 			if [ "$ipv4_proxy" == 1 ]; then
 				ip route add local default dev lo table "$ROUTE_TABLE"
 				ip rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
-				nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
 				ip -6 route add local default dev lo table "$ROUTE_TABLE"
 				ip -6 rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
-				nft -f "$HIJACK6_NFT" -D FW_MARK="$FW_MARK" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port"
 			fi
 		elif [ "$transparent_proxy_mode" == "tun" ]; then
-			log "Transparent Proxy: Using TUN Mode."
+			log "Transparent Proxy: Using TUN mode."
 			ip tuntap add dev "$TUN_DEVICE" mode tun vnet_hdr
 			ip link set "$TUN_DEVICE" up
 			$TUN_SH
 			if [ "$ipv4_proxy" == 1 ]; then
 				ip route add unicast default dev "$TUN_DEVICE" table "$ROUTE_TABLE"
 				ip rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
-				nft -f "$HIJACK_TUN_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
 				ip -6 route add unicast default dev "$TUN_DEVICE" table "$ROUTE_TABLE"
 				ip -6 rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
-				nft -f "$HIJACK6_TUN_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port"
 			fi
 		fi
+		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# dns hijack
-		if [ "$dns_hijack" == 1 ]; then
-			log "Transparent Proxy: DNS Hijack is enabled, all dns request will redirect to the core."
-			nft -f "$HIJACK_DNS_NFT" -D MIHOMO_USER="$MIHOMO_USER" -D DNS_PORT="$dns_port"
+		if [ "$ipv4_dns_hijack" == 1 ]; then
+			log "Transparent Proxy: IPv4 DNS Hijack is enabled, IPv4 dns request will redirect to the core."
+			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv4 }
+		fi
+		if [ "$ipv6_dns_hijack" == 1 ]; then
+			log "Transparent Proxy: IPv6 DNS Hijack is enabled, IPv6 dns request will redirect to the core."
+			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv6 }
+		fi
+		# proxy
+		if [ "$ipv4_proxy" == 1 ]; then
+			log "Transparent Proxy: IPv4 Proxy is enabled, set proxy for IPv4 traffic."
+			nft add element inet $FW_TABLE proxy_nfproto { ipv4 }
+		fi
+		if [ "$ipv6_proxy" == 1 ]; then
+			log "Transparent Proxy: IPv6 Proxy is enabled, set proxy for IPv6 traffic."
+			nft add element inet $FW_TABLE proxy_nfproto { ipv6 }
 		fi
 		# bypass china mainland ip
 		if [ "$bypass_china_mainland_ip" == 1 ]; then
@@ -291,77 +303,43 @@ start_service() {
 		# destination port to proxy
 		log "Transparent Proxy: Destination TCP Port to Proxy: $acl_tcp_dport."
 		log "Transparent Proxy: Destination UDP Port to Proxy: $acl_udp_dport."
-		nft add element ip $FW_TABLE fake_ip \{ "$fake_ip_range" \}
+		nft add element inet $FW_TABLE fake_ip \{ "$fake_ip_range" \}
 		local acl_dport
-		if [ "$ipv4_proxy" == 1 ]; then
-			for acl_dport in $acl_tcp_dport; do
-				nft add element ip $FW_TABLE acl_dport \{ "tcp" . "$acl_dport" \}
-			done
-			for acl_dport in $acl_udp_dport; do
-				nft add element ip $FW_TABLE acl_dport \{ "udp" . "$acl_dport" \}
-			done
-		fi
-		if [ "$ipv6_proxy" == 1 ]; then
-			for acl_dport in $acl_tcp_dport; do
-				nft add element ip6 $FW_TABLE acl_dport \{ "tcp" . "$acl_dport" \}
-			done
-			for acl_dport in $acl_udp_dport; do
-				nft add element ip6 $FW_TABLE acl_dport \{ "udp" . "$acl_dport" \}
-			done
-		fi
+		for acl_dport in $acl_tcp_dport; do
+			nft add element inet $FW_TABLE acl_dport \{ "tcp" . "$acl_dport" \}
+		done
+		for acl_dport in $acl_udp_dport; do
+			nft add element inet $FW_TABLE acl_dport \{ "udp" . "$acl_dport" \}
+		done
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
-		if [ "$ipv4_proxy" == 1 ]; then
-			add_wan_inbound_exclusions
-			add_firewall_exclusions
-			add_upnp_exclusions
-		fi
-		if [ "$ipv6_proxy" == 1 ]; then
-			add_wan6_inbound_exclusions
-			add_firewall6_exclusions
-		fi
+		add_wan_inbound_exclusions
+		add_firewall_exclusions
+		add_upnp_exclusions
 		# reload config
 		config_load mihomo
 		# router proxy
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
-			if [ "$dns_hijack" == 1 ]; then
-				nft add rule inet $FW_TABLE nat_output jump router_dns_hijack
-			fi
-			if [ "$ipv4_proxy" == 1 ]; then
-				nft add rule ip $FW_TABLE mangle_output jump router_proxy
-			fi
-			if [ "$ipv6_proxy" == 1 ]; then
-				nft add rule ip6 $FW_TABLE mangle_output jump router_proxy
-			fi
+			nft add rule inet $FW_TABLE nat_output jump router_dns_hijack
+			nft add rule inet $FW_TABLE mangle_output jump router_reroute
 		fi
-		# access control
-		if [ "$access_control_mode" == "all" ]; then
-			log "Transparent Proxy: Access Control is using all mode, set proxy for all client."
-		elif [ "$access_control_mode" == "allow" ]; then
-			log "Transparent Proxy: Access Control is using allow mode, set proxy for client which is in acl."
-		elif [ "$access_control_mode" == "block" ]; then
-			log "Transparent Proxy: Access Control is using block mode, set proxy for client which is not in acl."
-		elif [ "$access_control_mode" == "forbid" ]; then
-			log "Transparent Proxy: Access Control is using forbid mode, do not set proxy for any client."
-		fi
-		if [ "$access_control_mode" != 'forbid' ]; then
-			if [ "$dns_hijack" == 1 ]; then
-				config_list_foreach "proxy" "acl_ip" add_acl_ip_dns
-				config_list_foreach "proxy" "acl_ip6" add_acl_ip6_dns
-				config_list_foreach "proxy" "acl_mac" add_acl_mac_dns
-				nft add rule inet $FW_TABLE dns_hijack jump ${access_control_mode}_dns_hijack
+		# lan proxy
+		if [ "$lan_proxy" == 1 ]; then
+			log "Transparent Proxy: Lan Proxy is enabled, set proxy for lan."
+			# access control
+			if [ "$access_control_mode" == "all" ]; then
+				log "Transparent Proxy: Access Control is using all mode, set proxy for all client."
+			elif [ "$access_control_mode" == "allow" ]; then
+				log "Transparent Proxy: Access Control is using allow mode, set proxy for client which is in acl."
+			elif [ "$access_control_mode" == "block" ]; then
+				log "Transparent Proxy: Access Control is using block mode, set proxy for client which is not in acl."
 			fi
-			if [ "$ipv4_proxy" == 1 ]; then
-				config_list_foreach "proxy" "acl_ip" add_acl_ip
-				config_list_foreach "proxy" "acl_mac" add_acl_mac
-				nft add rule ip $FW_TABLE proxy jump ${access_control_mode}_proxy
-			fi
-			if [ "$ipv6_proxy" == 1 ]; then
-				config_list_foreach "proxy" "acl_ip6" add_acl_ip6
-				config_list_foreach "proxy" "acl_mac" add_acl_mac6
-				nft add rule ip6 $FW_TABLE proxy jump ${access_control_mode}_proxy
-			fi
+			config_list_foreach "proxy" "acl_ip" add_acl_ip
+			config_list_foreach "proxy" "acl_ip6" add_acl_ip6
+			config_list_foreach "proxy" "acl_mac" add_acl_mac
+			nft add rule inet $FW_TABLE dstnat jump ${access_control_mode}_dns_hijack
+			nft add rule inet $FW_TABLE mangle_prerouting jump ${access_control_mode}_${transparent_proxy_mode}
 		fi
 	fi
 	# cron
@@ -400,8 +378,6 @@ cleanup() {
 	ip -6 rule del table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
-	nft delete table ip $FW_TABLE > /dev/null 2>&1
-	nft delete table ip6 $FW_TABLE > /dev/null 2>&1
 	nft delete table inet $FW_TABLE > /dev/null 2>&1
 	local handles handle
 	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "input" and .expr[0].match.right == "tun") | .handle')
@@ -563,44 +539,37 @@ mixin_sniff() {
 	port="$1" protocol="$2" yq -M -i '.sniffer.sniff.[env(protocol)].ports += [env(port)]' "$RUN_PROFILE_PATH"
 }
 
-add_acl_ip_dns() {
+add_acl_ip() {
 	nft add element inet $FW_TABLE acl_ip \{ "$1" \}
 }
 
-add_acl_ip6_dns() {
+add_acl_ip6() {
 	nft add element inet $FW_TABLE acl_ip6 \{ "$1" \}
 }
 
-add_acl_mac_dns() {
-	nft add element inet $FW_TABLE acl_mac \{ "$1" \}
-}
-
-add_acl_ip() {
-	nft add element ip $FW_TABLE acl_ip \{ "$1" \}
-}
-
 add_acl_mac() {
-	nft add element ip $FW_TABLE acl_mac \{ "$1" \}
-}
-
-add_acl_ip6() {
-	nft add element ip6 $FW_TABLE acl_ip6 \{ "$1" \}
-}
-
-add_acl_mac6() {
-	nft add element ip6 $FW_TABLE acl_mac \{ "$1" \}
+	nft add element inet $FW_TABLE acl_mac \{ "$1" \}
 }
 
 add_wan_inbound_exclusions() {
 	config_load mihomo
 	config_list_foreach "proxy" "wan_interfaces" add_wan_inbound_exclusion
+	config_list_foreach "proxy" "wan6_interfaces" add_wan6_inbound_exclusion
 }
 
 add_wan_inbound_exclusion() {
 	local wan_ip
 	network_get_ipaddr wan_ip $1
 	if [ -n "$wan_ip" ]; then
-		nft add element ip $FW_TABLE wan_ip \{ "$wan_ip" \}
+		nft add element inet $FW_TABLE wan_ip \{ "$wan_ip" \}
+	fi
+}
+
+add_wan6_inbound_exclusion() {
+	local wan6_prefix
+	network_get_prefixes6 wan6_prefix $1
+	if [ -n "$wan6_prefix" ]; then
+		nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
 	fi
 }
 
@@ -613,17 +582,28 @@ add_firewall_exclusions() {
 add_firewall_rule_exclusion() {
 	local section="$1"
 
-	local enabled name proto src dest dest_ip dest_port family
+	local enabled name family proto src dest dest_ip dest_port
 	config_get_bool enabled "$section" "enabled" 1
 	config_get name "$section" "name"
+	config_get family "$section" "family"
 	config_get proto "$section" "proto"
 	config_get src "$section" "src"
 	config_get dest "$section" "dest"
 	config_get dest_port "$section" "dest_port"
-	config_get family "$section" "family"
 
-	if [[ "$enabled" == 0 || -z "$src" || -n "$dest" || -z "$dest_port" || "$family" == "ipv6" ]]; then
+	if [[ "$enabled" == 0 || -z "$src" || -n "$dest" || -z "$dest_port" ]]; then
 		return
+	fi
+
+	local ipv4=0
+	local ipv6=0
+	if [ "$family" == "ipv4" ]; then
+		ipv4=1
+	elif [ "$family" == "ipv6" ]; then
+		ipv6=1
+	else [ -z "$family" ]
+		ipv4=1
+		ipv6=1
 	fi
 
 	local tcp=0
@@ -638,16 +618,24 @@ add_firewall_rule_exclusion() {
 		done
 	fi
 
-	if [ "$tcp" == 1 ]; then
-		for port in $dest_port; do
-			nft add element ip $FW_TABLE router_exclusion \{ tcp . "$port" \}
-		done
-	fi
-	if [ "$udp" == 1 ]; then
-		for port in $dest_port; do
-			nft add element ip $FW_TABLE router_exclusion \{ udp . "$port" \}
-		done
-	fi
+	for port in $dest_port; do
+		if [ "$ipv4" == 1 ]; then
+			if [ "$tcp" == 1 ]; then
+				nft add element inet $FW_TABLE router_exclusion \{ ipv4 . tcp . "$port" \}
+			fi
+			if [ "$udp" == 1 ]; then
+				nft add element inet $FW_TABLE router_exclusion \{ ipv4 . udp . "$port" \}
+			fi
+		fi
+		if [ "$ipv6" == 1 ]; then
+			if [ "$tcp" == 1 ]; then
+				nft add element inet $FW_TABLE router_exclusion \{ ipv6 . tcp . "$port" \}
+			fi
+			if [ "$udp" == 1 ]; then
+				nft add element inet $FW_TABLE router_exclusion \{ ipv6 . udp . "$port" \}
+			fi
+		fi
+	done
 }
 
 add_firewall_redirect_exclusion() {
@@ -684,17 +672,17 @@ add_firewall_redirect_exclusion() {
 
 	if [[ -z "$dest" || -z "$dest_ip" ]]; then
 		if [ "$tcp" == 1 ]; then
-			nft add element ip $FW_TABLE router_exclusion \{ tcp . "$dest_port" \}
+			nft add element inet $FW_TABLE router_exclusion \{ ipv4 . tcp . "$dest_port" \}
 		fi
 		if [ "$udp" == 1 ]; then
-			nft add element ip $FW_TABLE router_exclusion \{ udp . "$dest_port" \}
+			nft add element inet $FW_TABLE router_exclusion \{ ipv4 . udp . "$dest_port" \}
 		fi
 	else
 		if [ "$tcp" == 1 ]; then
-			nft add element ip $FW_TABLE redirect_exclusion \{ tcp . "$dest_ip" . "$dest_port" \}
+			nft add element inet $FW_TABLE redirect_exclusion \{ tcp . "$dest_ip" . "$dest_port" \}
 		fi
 		if [ "$udp" == 1 ]; then
-			nft add element ip $FW_TABLE redirect_exclusion \{ udp . "$dest_ip" . "$dest_port" \}
+			nft add element inet $FW_TABLE redirect_exclusion \{ udp . "$dest_ip" . "$dest_port" \}
 		fi
 	fi
 }
@@ -705,62 +693,4 @@ add_upnp_exclusions() {
 	procd_set_param data timestamp=$(date +%s)
 	procd_set_param respawn 3600 5 0
 	procd_close_instance
-}
-
-add_wan6_inbound_exclusions() {
-	config_load mihomo
-	config_list_foreach "proxy" "wan6_interfaces" add_wan6_inbound_exclusion
-}
-
-add_wan6_inbound_exclusion() {
-	local wan6_prefix
-	network_get_prefixes6 wan6_prefix $1
-	if [ -n "$wan6_prefix" ]; then
-		nft add element ip6 $FW_TABLE wan_ip \{ "$wan6_prefix" \}
-	fi
-}
-
-add_firewall6_exclusions() {
-	config_load firewall
-	config_foreach add_firewall6_rule_exclusion "rule"
-}
-
-add_firewall6_rule_exclusion() {
-	local section="$1"
-
-	local enabled name proto src dest dest_ip dest_port family
-	config_get_bool enabled "$section" "enabled" 1
-	config_get name "$section" "name"
-	config_get proto "$section" "proto"
-	config_get src "$section" "src"
-	config_get dest "$section" "dest"
-	config_get dest_port "$section" "dest_port"
-	config_get family "$section" "family"
-
-	if [[ "$enabled" == 0 || -z "$src" || -n "$dest" || -z "$dest_port" || "$family" == "ipv4" ]]; then
-		return
-	fi
-
-	local tcp=0
-	local udp=0
-	if [[ -z "$proto" || "$proto" == "all" ]]; then
-		tcp=1
-		udp=1
-	else
-		for p in $proto; do
-			[ "$p" == "tcp" ] && tcp=1
-			[ "$p" == "udp" ] && udp=1
-		done
-	fi
-
-	if [ "$tcp" == 1 ]; then
-		for port in $dest_port; do
-			nft add element ip6 $FW_TABLE router_exclusion \{ tcp . "$port" \}
-		done
-	fi
-	if [ "$udp" == 1 ]; then
-		for port in $dest_port; do
-			nft add element ip6 $FW_TABLE router_exclusion \{ udp . "$port" \}
-		done
-	fi
 }

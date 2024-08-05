@@ -172,6 +172,12 @@ return view.extend({
         o.value('tproxy', _('TPROXY Mode'));
         o.value('tun', _('TUN Mode'));
 
+        o = s.taboption('transparent_proxy', form.Flag, 'ipv4_dns_hijack', _('IPv4 DNS Hijack'));
+        o.rmempty = false;
+
+        o = s.taboption('transparent_proxy', form.Flag, 'ipv6_dns_hijack', _('IPv6 DNS Hijack'));
+        o.rmempty = false;
+
         o = s.taboption('transparent_proxy', form.Flag, 'ipv4_proxy', _('IPv4 Proxy'));
         o.rmempty = false;
 
@@ -181,7 +187,7 @@ return view.extend({
         o = s.taboption('transparent_proxy', form.Flag, 'router_proxy', _('Router Proxy'));
         o.rmempty = false;
 
-        o = s.taboption('transparent_proxy', form.Flag, 'dns_hijack', _('DNS Hijack'));
+        o = s.taboption('transparent_proxy', form.Flag, 'lan_proxy', _('Lan Proxy'));
         o.rmempty = false;
 
         s.tab('access_control', _('Access Control'));
@@ -191,7 +197,6 @@ return view.extend({
         o.value('all', _('All Mode'));
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
-        o.value('forbid', _('Forbid Mode'));
 
         o = s.taboption('access_control', form.DynamicList, 'acl_ip', 'IP');
         o.datatype = 'ipmask4';

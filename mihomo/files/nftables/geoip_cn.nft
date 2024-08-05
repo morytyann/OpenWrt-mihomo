@@ -1,6 +1,6 @@
 #!/usr/sbin/nft -f
 
-table ip mihomo {
+table inet mihomo {
 	set china_ip {
 		type ipv4_addr
 		flags interval

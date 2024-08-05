@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
 PKG_VERSION:=1.18.7
-PKG_RELEASE:=151
+PKG_RELEASE:=152
 PKG_BUILD_TIME=$(shell date -u -Iseconds)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -56,10 +56,6 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/scripts/tun.sh $(1)/etc/mihomo/scripts/tun.sh
 
 	$(INSTALL_BIN) $(CURDIR)/files/nftables/hijack.nft $(1)/etc/mihomo/nftables/hijack.nft
-	$(INSTALL_BIN) $(CURDIR)/files/nftables/hijack6.nft $(1)/etc/mihomo/nftables/hijack6.nft
-	$(INSTALL_BIN) $(CURDIR)/files/nftables/hijack_tun.nft $(1)/etc/mihomo/nftables/hijack_tun.nft
-	$(INSTALL_BIN) $(CURDIR)/files/nftables/hijack6_tun.nft $(1)/etc/mihomo/nftables/hijack6_tun.nft
-	$(INSTALL_BIN) $(CURDIR)/files/nftables/hijack_dns.nft $(1)/etc/mihomo/nftables/hijack_dns.nft
 	$(INSTALL_BIN) $(CURDIR)/files/nftables/geoip_cn.nft $(1)/etc/mihomo/nftables/geoip_cn.nft
 	$(INSTALL_BIN) $(CURDIR)/files/nftables/geoip6_cn.nft $(1)/etc/mihomo/nftables/geoip6_cn.nft
 
