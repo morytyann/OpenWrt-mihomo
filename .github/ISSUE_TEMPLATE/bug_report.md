@@ -26,7 +26,7 @@ If applicable, add screenshots to help explain your problem.
 **Enviroment (please complete the following information):**
  - OS: [e.g. OpenWrt, ImmortalWrt]
  - Version [e.g. 23.05.4]
- - Architecture [e.g. x86-64, aarch64_generic]
+ - Architecture [e.g. x86_64, aarch64_generic]
 
 **Additional context**
 Add any other context about the problem here.
