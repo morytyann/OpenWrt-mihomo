@@ -111,9 +111,13 @@ start_service() {
 	config_get geoip_asn_url "mixin" "geoip_asn_url"
 	config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
+	# get version
+	local app_version core_version
+	app_version=$(opkg list-installed | grep "luci-app-mihomo" | cut -d " " -f 3)
+	core_version=$(mihomo -v | grep "Mihomo" | cut -d " " -f 3)
 	# download profile
 	log "Download profile."
-	curl -s -L -o "$RUN_PROFILE_PATH" "$profile"
+	curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: luci-app-mihomo/$app_version mihomo/$core_version clash.meta/$core_version" "$profile"
 	# download ui
 	log "Download UI."
 	download_ui "$ui_razord" "$ui_razord_url" "$RUN_UI_DIR" "Razord-meta-gh-pages" "razord"
