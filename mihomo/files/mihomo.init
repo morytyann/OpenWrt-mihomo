@@ -197,7 +197,7 @@ start_service() {
 	if [ "$transparent_proxy_mode" == "tproxy" ]; then
 		yq -M -i '.tun.enable = false' "$RUN_PROFILE_PATH"
 	elif [ "$transparent_proxy_mode" == "tun" ]; then
-		yq -M -i '.tun.enable = true | .tun.auto-route = false | .tun.auto-redirect = false' "$RUN_PROFILE_PATH"
+		yq -M -i '.tun.enable = true | .tun.auto-route = false | .tun.auto-redirect = false | .tun.auto-detect-interface = false' "$RUN_PROFILE_PATH"
 	fi
 	if [ -n "$outbound_interface" ]; then
 		local outbound_device

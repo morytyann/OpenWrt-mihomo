@@ -31,9 +31,6 @@ uci set mihomo.@authentication[0].password="$random"
 # set mihomo.proxy.wan_interfaces
 uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
 
-# set mihomo.mixin.outbound_interface
-uci set mihomo.mixin.outbound_interface="$wan_interface"
-
 # remove mihomo.config.init
 uci del mihomo.config.init
 
