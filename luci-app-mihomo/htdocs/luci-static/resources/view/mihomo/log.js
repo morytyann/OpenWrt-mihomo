@@ -50,7 +50,7 @@ return view.extend({
         o = s.taboption('app_log', form.TextValue, '_app_log');
         o.rows = 25;
         o.wrap = false;
-        o.cfgvalue = function (section_id) {
+        o.load = function (section_id) {
             return appLog;
         };
         o.write = function (section_id, formvalue) {
@@ -83,7 +83,7 @@ return view.extend({
         o = s.taboption('core_log', form.TextValue, '_core_log');
         o.rows = 25;
         o.wrap = false;
-        o.cfgvalue = function (section_id) {
+        o.load = function (section_id) {
             return coreLog;
         };
         o.write = function (section_id, formvalue) {

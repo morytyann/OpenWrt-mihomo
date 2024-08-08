@@ -613,7 +613,7 @@ return view.extend({
 
         o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
         o.rows = 25;
-        o.cfgvalue = function (section_id) {
+        o.load = function (section_id) {
             return L.resolveDefault(fs.read_direct(mixinPath));
         };
         o.write = function (section_id, formvalue) {
