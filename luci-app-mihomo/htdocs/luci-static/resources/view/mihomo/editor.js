@@ -60,7 +60,7 @@ return view.extend({
     },
     handleSaveApply: function (ev, mode) {
         return this.handleSave(ev).finally(function() {
-            fs.exec_direct('/usr/libexec/mihomo-call', ['service', mode === 0 ? 'reload' : 'restart']);
+            fs.exec_direct('/usr/libexec/mihomo-call', ['service', mode === '0' ? 'reload' : 'restart']);
         });
     },
     handleReset: null
