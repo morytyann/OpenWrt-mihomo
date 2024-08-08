@@ -29,7 +29,7 @@ function listProfiles() {
 
 async function getServiceStatus() {
     try {
-        return (await callServiceList('mihomo'))['mihomo']['instances']['core']['running'];
+        return (await callServiceList('mihomo'))['mihomo']['instances']['mihomo']['running'];
     } catch (ignored) {
         return false;
     }
