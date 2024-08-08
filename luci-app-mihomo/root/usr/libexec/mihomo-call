@@ -23,6 +23,16 @@ case "$action" in
 			;;
 		esac
 	;;
+	service)
+		case "$1" in
+			reload)
+				/etc/init.d/mihomo reload
+			;;
+			restart)
+				/etc/init.d/mihomo restart
+			;;
+		esac
+	;;
 	version)
 		case "$1" in
 			app)

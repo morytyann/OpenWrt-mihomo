@@ -5,6 +5,7 @@
 'require fs';
 
 const profilesDir = '/etc/mihomo/profiles';
+const mixinPath = '/etc/mihomo/mixin.yaml';
 const runProfilePath = '/etc/mihomo/run/config.yaml'
 
 function listProfiles() {
@@ -32,6 +33,7 @@ return view.extend({
         for (const profile of profiles) {
             o.value(profilesDir + '/' + profile.name, _('File:') + profile.name);
         }
+        o.value(mixinPath, _('File for Mixin'));
         o.value(runProfilePath, _('Profile for Startup'));
 
         o.write = function (section_id, formvalue) {
@@ -56,6 +58,10 @@ return view.extend({
 
         return m.render();
     },
-    handleSaveApply: null,
+    handleSaveApply: function (ev, mode) {
+        return this.handleSave(ev).finally(function() {
+            fs.exec_direct('/usr/libexec/mihomo-call', ['service', mode === 0 ? 'reload' : 'restart']);
+        });
+    },
     handleReset: null
 });

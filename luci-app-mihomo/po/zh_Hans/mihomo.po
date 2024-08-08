@@ -397,6 +397,9 @@ msgstr "混入文件内容"
 msgid "Editor"
 msgstr "编辑器"
 
+msgid "File for Mixin"
+msgstr "用于混入的文件"
+
 msgid "Profile for Startup"
 msgstr "用于启动的配置文件"
 
