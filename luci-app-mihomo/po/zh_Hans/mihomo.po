@@ -262,6 +262,9 @@ msgstr "栈"
 msgid "Device"
 msgstr "设备"
 
+msgid "MTU"
+msgstr "最大传输单元"
+
 msgid "GSO"
 msgstr "通用分段卸载"
 

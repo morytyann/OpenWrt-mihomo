@@ -41,9 +41,6 @@ network_find_wan wan_interface
 # add mihomo.proxy.wan_interfaces
 wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces" ] && uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
 
-# add mihomo.mixin.outbound_interface
-outbound_interface=$(uci -q get mihomo.mixin.outbound_interface); [ -z "$outbound_interface" ] && uci set mihomo.mixin.outbound_interface="$wan_interface"
-
 # add mihomo.proxy.acl_tcp_dport
 acl_tcp_dport=$(uci -q get mihomo.proxy.acl_tcp_dport); [ -z "$acl_tcp_dport" ] && uci set mihomo.proxy.acl_tcp_dport="1-65535"
 
