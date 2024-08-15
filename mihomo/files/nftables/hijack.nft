@@ -106,6 +106,12 @@ table inet mihomo {
 		auto-merge
 	}
 
+	set redirect_exclusion6 {
+		type inet_proto . ipv6_addr . inet_service
+		flags interval
+		auto-merge
+	}
+
 	set upnp_exclusion {
 		type inet_proto . ipv4_addr . inet_service
 		flags interval, timeout
@@ -195,11 +201,12 @@ table inet mihomo {
 		ip6 daddr @wan_ip6 counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
-		meta nfproto ipv4 meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
+		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
 		meta nfproto ipv6 meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
-		meta nfproto ipv4 meta l4proto . ip saddr . th sport @redirect_exclusion counter return
-		meta nfproto ipv4 meta l4proto . ip saddr . th sport @upnp_exclusion counter return
+		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
+		meta l4proto . ip6 saddr . th sport @redirect_exclusion6 counter return
+		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
 	}
 
 	chain mangle_output {
@@ -211,7 +218,7 @@ table inet mihomo {
 		ip6 daddr @wan_ip6 counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
-		meta nfproto ipv4 meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
+		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
 		meta nfproto ipv6 meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
 		meta nfproto . meta l4proto . th sport @router_exclusion counter return

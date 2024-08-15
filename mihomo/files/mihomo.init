@@ -632,9 +632,10 @@ add_firewall_rule_exclusion() {
 	config_get proto "$section" "proto"
 	config_get src "$section" "src"
 	config_get dest "$section" "dest"
+	config_get dest_ip "$section" "dest_ip"
 	config_get dest_port "$section" "dest_port"
 
-	if [[ "$enabled" == 0 || -z "$src" || -n "$dest" || -z "$dest_port" ]]; then
+	if [[ "$enabled" == 0 || -z "$src" || -z "$dest_port" ]]; then
 		return
 	fi
 
@@ -647,38 +648,44 @@ add_firewall_rule_exclusion() {
 	else [ -z "$family" ]
 		ipv4=1
 		ipv6=1
+		family="ipv4 ipv6"
 	fi
 
-	local tcp=0
-	local udp=0
 	if [[ -z "$proto" || "$proto" == "all" ]]; then
-		tcp=1
-		udp=1
-	else
-		for p in $proto; do
-			[ "$p" == "tcp" ] && tcp=1
-			[ "$p" == "udp" ] && udp=1
-		done
+		proto="tcp udp"
 	fi
 
-	for port in $dest_port; do
+	if [ -z "$dest" ]; then
+		local f p s
+		for f in $family; do
+			for p in $proto; do
+				for s in $dest_port; do
+					nft add element inet $FW_TABLE router_exclusion \{ "$f" . "$p" . "$s" \}
+				done
+			done
+		done
+	else
+		# TODO: Check IP Version
+		local p i s
 		if [ "$ipv4" == 1 ]; then
-			if [ "$tcp" == 1 ]; then
-				nft add element inet $FW_TABLE router_exclusion \{ ipv4 . tcp . "$port" \}
-			fi
-			if [ "$udp" == 1 ]; then
-				nft add element inet $FW_TABLE router_exclusion \{ ipv4 . udp . "$port" \}
-			fi
+			for p in $proto; do
+				for i in $dest_ip; do
+					for s in $dest_port; do
+						nft add element inet $FW_TABLE redirect_exclusion \{ "$p" . "$i" . "$s" \} > /dev/null 2>&1
+					done
+				done
+			done
 		fi
 		if [ "$ipv6" == 1 ]; then
-			if [ "$tcp" == 1 ]; then
-				nft add element inet $FW_TABLE router_exclusion \{ ipv6 . tcp . "$port" \}
-			fi
-			if [ "$udp" == 1 ]; then
-				nft add element inet $FW_TABLE router_exclusion \{ ipv6 . udp . "$port" \}
-			fi
+			for p in $proto; do
+				for i in $dest_ip; do
+					for s in $dest_port; do
+						nft add element inet $FW_TABLE redirect_exclusion6 \{ "$p" . "$i" . "$s" \} > /dev/null 2>&1
+					done
+				done
+			done
 		fi
-	done
+	fi
 }
 
 add_firewall_redirect_exclusion() {

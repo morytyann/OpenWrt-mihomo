@@ -89,15 +89,19 @@ return view.extend({
     
         s = m.section(form.NamedSection, 'status', 'status', _('Status'));
 
-        o = s.option(form.DummyValue, '_app_version', _('App Version'));
-        o.cfgvalue = function (section_id) {
-            return E('input', { 'style': 'border: unset;', 'readonly': 'readonly', 'value': appVersion.trim() });
+        o = s.option(form.Value, '_app_version', _('App Version'));
+        o.readonly = true;
+        o.load = function (section_id) {
+            return appVersion.trim();
         };
+        o.write = function () {};
 
-        o = s.option(form.DummyValue, '_core_version', _('Core Version'));
-        o.cfgvalue = function (section_id) {
-            return E('input', { 'style': 'border: unset;', 'readonly': 'readonly', 'value': coreVersion.trim() });
+        o = s.option(form.Value, '_core_version', _('Core Version'));
+        o.readonly = true;
+        o.load = function (section_id) {
+            return coreVersion.trim();
         };
+        o.write = function () {};
 
         o = s.option(form.DummyValue, '_core_status', _('Core Status'));
         o.cfgvalue = function (section_id) {
@@ -122,6 +126,27 @@ return view.extend({
         o.onclick = function () {
             return mihomo.restart();
         };
+
+        o = s.option(form.Button, 'razord', '-');
+        o.inputtitle = _('Open Razord');
+        o.onclick = function () {
+            mihomo.openDashboard(this.option);
+        };
+        o.depends('mihomo.mixin.ui_razord', '1');
+
+        o = s.option(form.Button, 'yacd', '-');
+        o.inputtitle = _('Open YACD');
+        o.onclick = function () {
+            mihomo.openDashboard(this.option);
+        };
+        o.depends('mihomo.mixin.ui_yacd', '1');
+
+        o = s.option(form.Button, 'metacubexd', '-');
+        o.inputtitle = _('Open MetaCubeXD');
+        o.onclick = function () {
+            mihomo.openDashboard(this.option);
+        };
+        o.depends('mihomo.mixin.ui_metacubexd', '1');
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
@@ -374,32 +399,11 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'razord', '-');
-        o.inputtitle = _('Open Razord');
-        o.onclick = function () {
-            mihomo.openDashboard(this.option);
-        };
-        o.depends('ui_razord', '1');
-
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'yacd', '-');
-        o.inputtitle = _('Open YACD');
-        o.onclick = function () {
-            mihomo.openDashboard(this.option);
-        };
-        o.depends('ui_yacd', '1');
-
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
-
-        o = s.taboption('external_control', form.Button, 'metacubexd', '-');
-        o.inputtitle = _('Open MetaCubeXD');
-        o.onclick = function () {
-            mihomo.openDashboard(this.option);
-        };
-        o.depends('ui_metacubexd', '1');
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
@@ -627,7 +631,7 @@ return view.extend({
         so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'port', _('Port'));
-        so.datatype = 'port';
+        so.datatype = 'portrange';
 
         so = o.subsection.option(form.Flag, 'overwrite_dest', _('Overwrite Destination'));
         so.rmempty = false;
