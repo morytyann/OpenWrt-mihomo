@@ -28,6 +28,15 @@ msgstr "运行中"
 msgid "Not Running"
 msgstr "未在运行"
 
+msgid "Reload"
+msgstr "重新加载"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "Usage"
+msgstr "使用说明"
+
 msgid "Enable"
 msgstr "启用"
 
@@ -145,6 +154,33 @@ msgstr "订阅名称"
 msgid "Subscription Url"
 msgstr "订阅链接"
 
+msgid "Convert Config"
+msgstr "订阅转换配置"
+
+msgid "User Agent"
+msgstr "用户代理（UA）"
+
+msgid "Backend"
+msgstr "后端地址"
+
+msgid "Template"
+msgstr "模板"
+
+msgid "Advanced Config"
+msgstr "进阶配置"
+
+msgid "Include"
+msgstr "包含节点"
+
+msgid "Exclude"
+msgstr "排除节点"
+
+msgid "Use Emoji"
+msgstr "使用 Emoji"
+
+msgid "Insert Node Type"
+msgstr "插入节点类型"
+
 msgid "Mixin Config"
 msgstr "混入配置"
 
@@ -183,9 +219,6 @@ msgstr "日志级别"
 
 msgid "External Control Config"
 msgstr "外部控制配置"
-
-msgid "Open"
-msgstr "打开"
 
 msgid "Use Razord"
 msgstr "使用 Razord 面板"
@@ -393,6 +426,9 @@ msgstr "小时"
 
 msgid "Mixin File Content"
 msgstr "混入文件内容"
+
+msgid "Please go to the editor tab to edit the file for mixin"
+msgstr "请前往编辑器标签编辑用于混入的文件"
 
 msgid "Editor"
 msgstr "编辑器"

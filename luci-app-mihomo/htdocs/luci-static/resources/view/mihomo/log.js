@@ -3,28 +3,13 @@
 'require view';
 'require fs';
 'require poll';
-
-function getAppLog() {
-    return L.resolveDefault(fs.read_direct('/etc/mihomo/run/app.log'));
-}
-
-function clearAppLog() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['clear', 'app_log']));
-}
-
-function getCoreLog() {
-    return L.resolveDefault(fs.read_direct('/etc/mihomo/run/core.log'));
-}
-
-function clearCoreLog() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['clear', 'core_log']));
-}
+'require tools.mihomo as mihomo'
 
 return view.extend({
     load: function () {
         return Promise.all([
-            getAppLog(),
-            getCoreLog()
+            mihomo.getAppLog(),
+            mihomo.getCoreLog()
         ]);
     },
     render: function (data) {
@@ -44,7 +29,7 @@ return view.extend({
         o.inputtitle = _('Clear Log');
         o.onclick = function () {
             m.lookupOption('mihomo.log._app_log')[0].getUIElement('log').setValue('');
-            return clearAppLog();
+            return mihomo.clearAppLog();
         };
 
         o = s.taboption('app_log', form.TextValue, '_app_log');
@@ -58,7 +43,7 @@ return view.extend({
         };
         poll.add(L.bind(function () {
             const option = this;
-            return L.resolveDefault(getAppLog()).then(function (log) {
+            return L.resolveDefault(mihomo.getAppLog()).then(function (log) {
                 option.getUIElement('log').setValue(log);
             });
         }, o));
@@ -77,7 +62,7 @@ return view.extend({
         o.inputtitle = _('Clear Log');
         o.onclick = function () {
             m.lookupOption('mihomo.log._core_log')[0].getUIElement('log').setValue('');
-            return clearCoreLog();
+            return mihomo.clearCoreLog();
         };
 
         o = s.taboption('core_log', form.TextValue, '_core_log');
@@ -91,7 +76,7 @@ return view.extend({
         };
         poll.add(L.bind(function () {
             const option = this;
-            return L.resolveDefault(getCoreLog()).then(function (log) {
+            return L.resolveDefault(mihomo.getCoreLog()).then(function (log) {
                 option.getUIElement('log').setValue(log);
             });
         }, o));

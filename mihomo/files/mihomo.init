@@ -111,13 +111,57 @@ start_service() {
 	config_get geoip_asn_url "mixin" "geoip_asn_url"
 	config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
-	# get version
-	local app_version core_version
-	app_version=$(opkg list-installed | grep "luci-app-mihomo" | cut -d " " -f 3)
-	core_version=$(mihomo -v | grep "Mihomo" | cut -d " " -f 3)
-	# download profile
-	log "Download profile."
-	curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: luci-app-mihomo/$app_version mihomo/$core_version clash.meta/$core_version" "$profile"
+	# get profile
+	if [[ "$profile" == "file:"* ]]; then
+		local profile_name; profile_name=$(basename ${profile/file:/})
+		cp -f "$PROFILES_DIR/$profile_name" "$RUN_PROFILE_PATH"
+		log "Use Profile: $profile_name"
+	elif [[ "$profile" == "subscription:"* ]]; then
+		local subscription_section; subscription_section="${profile/subscription:/}"
+		# subscription
+		local subscription_name subscription_url subscription_user_agent
+		config_get subscription_name "$subscription_section" "name"
+		config_get subscription_url "$subscription_section" "url"
+		config_get subscription_user_agent "$subscription_section" "user_agent"
+		# convert
+		local subscription_convert subscription_convert_backend subscription_convert_template
+		config_get_bool subscription_convert "$subscription_section" "convert" 0
+		config_get subscription_convert_backend "$subscription_section" "convert_backend"
+		config_get subscription_convert_template "$subscription_section" "convert_template"
+		# convert advanced
+		local subscription_convert_advanced subscription_convert_include subscription_convert_exclude subscription_convert_emoji subscription_convert_insert_node_type
+		config_get_bool subscription_convert_advanced "$subscription_section" "convert_advanced" 0
+		config_get subscription_convert_include "$subscription_section" "convert_include"
+		config_get subscription_convert_exclude "$subscription_section" "convert_exclude"
+		config_get_bool subscription_convert_emoji "$subscription_section" "convert_emoji" 0
+		config_get_bool subscription_convert_insert_node_type "$subscription_section" "convert_insert_node_type" 0
+		# generate url
+		local url
+		if [ "$subscription_convert" == 0 ]; then
+			url="$subscription_url"
+		else
+			url="$subscription_convert_backend?target=clash&url=$(echo -n $subscription_url | yq -M -o uri)"
+			if [ -n "$subscription_convert_template" ]; then
+				url="$url&config=$(echo -n $subscription_convert_template | yq -M -o uri)"
+			fi
+			if [ "$subscription_convert_advanced" == 1 ]; then
+				if [ -n "$subscription_convert_include" ]; then
+					url="$url&include=$(echo -n $subscription_convert_include | yq -M -o uri)"
+				fi
+				if [ -n "$subscription_convert_exclude" ]; then
+					url="$url&exclude=$(echo -n $subscription_convert_exclude | yq -M -o uri)"
+				fi
+				url="$url&emoji=$([ "$subscription_convert_emoji" == 1 ] && echo -n "true" || echo -n "false")"
+				url="$url&append_type=$([ "$subscription_convert_insert_node_type" == 1 ] && echo -n "true" || echo -n "false")"
+			fi
+		fi
+		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $user_agent" "$url"
+		log "Use Subscription: $subscription_name"
+	elif [[ "$profile" == "http:"* || "$profile" == "https:"* ]]; then
+		local url; url=$profile
+		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: mihomo clash.meta clash" "$url"
+		log "Use Url: $url"
+	fi
 	# download ui
 	log "Download UI."
 	download_ui "$ui_razord" "$ui_razord_url" "$RUN_UI_DIR" "Razord-meta-gh-pages" "razord"
@@ -195,7 +239,7 @@ start_service() {
 		fi
 		# mixin file
 		if [ -s "$MIXIN_FILE_PATH" ]; then
-			yq ea -M -i 'select(fi == 0) * select(fi == 1)' "$RUN_PROFILE_PATH" "$MIXIN_FILE_PATH"
+			yq ea -M -i '. as $item ireduce ({}; . * $item ) | ... comments=""' "$RUN_PROFILE_PATH" "$MIXIN_FILE_PATH"
 		fi
 	fi
 	if [ "$transparent_proxy_mode" == "tproxy" ]; then

@@ -7,76 +7,50 @@
 'require rpc';
 'require poll';
 'require tools.widgets as widgets';
+'require tools.mihomo as mihomo'
 
-const profilesDir = '/etc/mihomo/profiles';
-const runProfilePath = '/etc/mihomo/run/config.yaml';
-const mixinPath = '/etc/mihomo/mixin.yaml';
+const convertBackends = [
+    'https://api.dler.io/sub',
+    'https://sub.id9.cc/sub',
+    'https://sub.xeton.dev/sub',
+    'http://127.0.0.1:25500/sub',
+];
 
-const callServiceList = rpc.declare({
-    object: 'service',
-    method: 'list',
-    params: ['name'],
-    expect: { '': {} }
-});
-
-function loadConfig() {
-    return uci.load('mihomo');
-}
-
-function listProfiles() {
-    return L.resolveDefault(fs.list(profilesDir), []);
-}
-
-async function getServiceStatus() {
-    try {
-        return (await callServiceList('mihomo'))['mihomo']['instances']['mihomo']['running'];
-    } catch (ignored) {
-        return false;
-    }
-}
-
-function getHostHints(){
-    return L.resolveDefault(network.getHostHints(), { hosts: {} });
-}
-
-function getAppVersion() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'app']));
-}
-
-function getCoreVersion() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']));
-}
-
-function loadProfile() {
-    return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['load', 'profile'], 'json'), {});
-}
-
-async function openDashboard(type) {
-    const running = await getServiceStatus();
-    if (running) {
-        const profile = await loadProfile();
-        const apiListen = profile['external-controller'];
-        if (apiListen) {
-            const apiPort = apiListen.split(':')[1];
-            const apiSecret = profile['secret'] || '';
-            let url;
-            if (type === 'razord') {
-                url = `http://${window.location.hostname}:${apiPort}/ui/razord/#/?host=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-            } else if (type === 'yacd') {
-                url = `http://${window.location.hostname}:${apiPort}/ui/yacd/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-            } else if (type === 'metacubexd') {
-                url = `http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-            } else {
-                return;
-            }
-            window.open(url, '_blank');
-        } else {
-            alert(_('External Control is not configured.'));
-        }
-    } else {
-        alert(_('Service is not running.'));
-    }
-}
+const convertTemplates = [
+    {name: 'ACL4SSR', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR.ini'},
+    {name: 'ACL4SSR_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_AdblockPlus.ini'},
+    {name: 'ACL4SSR_BackCN', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_BackCN.ini'},
+    {name: 'ACL4SSR_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini.ini'},
+    {name: 'ACL4SSR_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_Fallback.ini'},
+    {name: 'ACL4SSR_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_MultiMode.ini'},
+    {name: 'ACL4SSR_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_NoAuto.ini'},
+    {name: 'ACL4SSR_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoApple.ini'},
+    {name: 'ACL4SSR_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto.ini'},
+    {name: 'ACL4SSR_NoAuto_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple.ini'},
+    {name: 'ACL4SSR_NoAuto_NoApple_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple_NoMicrosoft.ini'},
+    {name: 'ACL4SSR_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoMicrosoft.ini'},
+    {name: 'ACL4SSR_Online', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini'},
+    {name: 'ACL4SSR_Online_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini'},
+    {name: 'ACL4SSR_Online_Full', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini'},
+    {name: 'ACL4SSR_Online_Full_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini'},
+    {name: 'ACL4SSR_Online_Full_Google', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini'},
+    {name: 'ACL4SSR_Online_Full_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini'},
+    {name: 'ACL4SSR_Online_Full_Netflix', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini'},
+    {name: 'ACL4SSR_Online_Full_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini'},
+    {name: 'ACL4SSR_Online_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini'},
+    {name: 'ACL4SSR_Online_Mini_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini'},
+    {name: 'ACL4SSR_Online_Mini_Ai', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Ai.ini'},
+    {name: 'ACL4SSR_Online_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini'},
+    {name: 'ACL4SSR_Online_Mini_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini'},
+    {name: 'ACL4SSR_Online_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini'},
+    {name: 'ACL4SSR_Online_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini'},
+    {name: 'ACL4SSR_Online_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini'},
+    {name: 'ACL4SSR_Online_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini'},
+    {name: 'ACL4SSR_Online_NoReject', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini'},
+    {name: 'ACL4SSR_WithChinaIp', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp.ini'},
+    {name: 'ACL4SSR_WithChinaIp_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp_WithGFW.ini'},
+    {name: 'ACL4SSR_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithGFW.ini'},
+];
 
 function renderStatus(running) {
     return updateStatus(E('input', { id: 'core_status', style: 'border: unset; font-style: italic; font-weight: bold;', readonly: '' }), running);
@@ -93,12 +67,12 @@ function updateStatus(element, running) {
 return view.extend({
     load: function () {
         return Promise.all([
-            loadConfig(),
-            listProfiles(),
-            getAppVersion(),
-            getCoreVersion(),
-            getServiceStatus(),
-            getHostHints(),
+            uci.load('mihomo'),
+            mihomo.listProfiles(),
+            mihomo.appVersion(),
+            mihomo.coreVersion(),
+            mihomo.status(),
+            network.getHostHints(),
         ]);
     },
     render: function (data) {
@@ -111,18 +85,18 @@ return view.extend({
 
         let m, s, o, so;
 
-        m = new form.Map('mihomo', _('Mihomo'), _('Mihomo is a rule based proxy in Go.'));
-
+        m = new form.Map('mihomo', _('Mihomo'), `${_('Mihomo is a rule based proxy in Go.')} <a href="https://github.com/morytyann/OpenWrt-mihomo/wiki" target="_blank">${_('Usage')}</a>`);
+    
         s = m.section(form.NamedSection, 'status', 'status', _('Status'));
 
         o = s.option(form.DummyValue, '_app_version', _('App Version'));
         o.cfgvalue = function (section_id) {
-            return E('input', { style: 'border: unset;', readonly: 'readonly', value: appVersion.trim() });
+            return E('input', { 'style': 'border: unset;', 'readonly': 'readonly', 'value': appVersion.trim() });
         };
 
         o = s.option(form.DummyValue, '_core_version', _('Core Version'));
         o.cfgvalue = function (section_id) {
-            return E('input', { style: 'border: unset;', readonly: 'readonly', value: coreVersion.trim() });
+            return E('input', { 'style': 'border: unset;', 'readonly': 'readonly', 'value': coreVersion.trim() });
         };
 
         o = s.option(form.DummyValue, '_core_status', _('Core Status'));
@@ -130,10 +104,24 @@ return view.extend({
             return renderStatus(running);
         };
         poll.add(function () {
-            return L.resolveDefault(getServiceStatus()).then(function (running) {
+            return L.resolveDefault(mihomo.status()).then(function (running) {
                 updateStatus(document.getElementById('core_status'), running);
             });
         });
+
+        o = s.option(form.Button, 'reload', '-');
+        o.inputstyle = 'action';
+        o.inputtitle = _('Reload');
+        o.onclick = function () {
+            return mihomo.reload();
+        };
+
+        o = s.option(form.Button, 'restart', '-');
+        o.inputstyle = 'negative';
+        o.inputtitle = _('Restart');
+        o.onclick = function () {
+            return mihomo.restart();
+        };
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
@@ -148,18 +136,19 @@ return view.extend({
         o.rmempty = false;
         o.depends('scheduled_restart', '1');
 
-        o = s.option(form.ListValue, 'profile', _('Choose Profile'));
+        o = s.option(form.Value, 'profile', _('Choose Profile'));
+        o.rmempty = false;
 
         for (const profile of profiles) {
-            o.value('file:' + profilesDir + '/' + profile.name, _('File:') + profile.name);
+            o.value('file:' + profile.name, _('File:') + profile.name);
         }
 
         for (const subscription of subscriptions) {
-            o.value(subscription.url, _('Subscription:') + subscription.name);
+            o.value('subscription:' + subscription['.name'], _('Subscription:') + subscription.name);
         }
 
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
-        o.root_directory = profilesDir;
+        o.root_directory = mihomo.profilesDir;
 
         o = s.option(form.Flag, 'mixin', _('Mixin'));
         o.rmempty = false;
@@ -213,7 +202,7 @@ return view.extend({
 
         for (const mac in hosts) {
             const host = hosts[mac];
-            for (const ip of host.ipaddrs){
+            for (const ip of host.ipaddrs) {
                 const hint = host.name || mac;
                 o.value(ip, hint ? '%s (%s)'.format(ip, hint) : ip);
             }
@@ -227,7 +216,7 @@ return view.extend({
 
         for (const mac in hosts) {
             const host = hosts[mac];
-            for (const ip of host.ip6addrs){
+            for (const ip of host.ip6addrs) {
                 const hint = host.name || mac;
                 o.value(ip, hint ? '%s (%s)'.format(ip, hint) : ip);
             }
@@ -270,15 +259,80 @@ return view.extend({
         o.optional = true;
         o.rmempty = false;
 
-        s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
+        s = m.section(form.GridSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
         s.anonymous = true;
 
-        o = s.option(form.Value, 'name', _('Subscription Name'));
+        s.tab('subscription', _('Subscription Config'));
+
+        o = s.taboption('subscription', form.Value, 'name', _('Subscription Name'));
+        o.rmempty = false;
+        o.width = '10%';
+
+        o = s.taboption('subscription', form.Value, 'url', _('Subscription Url'));
         o.rmempty = false;
 
-        o = s.option(form.Value, 'url', _('Subscription Url'));
+        o = s.taboption('subscription', form.Value, 'user_agent', _('User Agent'));
+        o.default = 'mihomo';
         o.rmempty = false;
+        o.modalonly = true;
+        o.value('mihomo');
+        o.value('clash.meta');
+        o.value('clash');
+
+        s.tab('convert', _('Convert Config'));
+
+        o = s.taboption('convert', form.Flag, 'convert', _('Enable'));
+        o.modalonly = true;
+        o.rmempty = false;
+
+        o = s.taboption('convert', form.Value, 'convert_backend', _('Backend'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('convert', '1');
+
+        for (const backend of convertBackends) {
+            o.value(backend);
+        }
+
+        o = s.taboption('convert', form.Value, 'convert_template', _('Template'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('convert', '1');
+
+        for (const template of convertTemplates) {
+            o.value(template.url, template.name);
+        }
+
+        o = s.taboption('convert', form.Flag, 'convert_advanced', _('Advanced Config'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends('convert', '1');
+
+        o = s.taboption('convert', form.Value, 'convert_include', _('Include'));
+        o.modalonly = true;
+        o.retain = true;
+        o.depends({'convert': '1', 'convert_advanced': '1'});
+    
+        o = s.taboption('convert', form.Value, 'convert_exclude', _('Exclude'));
+        o.modalonly = true;
+        o.retain = true;
+        o.depends({'convert': '1', 'convert_advanced': '1'});
+
+        o = s.taboption('convert', form.Flag, 'convert_emoji', _('Use Emoji'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends({'convert': '1', 'convert_advanced': '1'});
+
+        o = s.taboption('convert', form.Flag, 'convert_insert_node_type', _('Insert Node Type'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends({'convert': '1', 'convert_advanced': '1'});
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
@@ -320,30 +374,30 @@ return view.extend({
         o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_razord', _('Open Razord'));
-        o.inputtitle = _('Open');
+        o = s.taboption('external_control', form.Button, 'razord', '-');
+        o.inputtitle = _('Open Razord');
         o.onclick = function () {
-            openDashboard('razord');
+            mihomo.openDashboard(this.option);
         };
         o.depends('ui_razord', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_yacd', _('Open YACD'));
-        o.inputtitle = _('Open');
+        o = s.taboption('external_control', form.Button, 'yacd', '-');
+        o.inputtitle = _('Open YACD');
         o.onclick = function () {
-            openDashboard('yacd');
+            mihomo.openDashboard(this.option);
         };
         o.depends('ui_yacd', '1');
 
         o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Button, 'open_ui_metacubexd', _('Open MetaCubeXD'));
-        o.inputtitle = _('Open');
+        o = s.taboption('external_control', form.Button, 'metacubexd', '-');
+        o.inputtitle = _('Open MetaCubeXD');
         o.onclick = function () {
-            openDashboard('metacubexd');
+            mihomo.openDashboard(this.option);
         };
         o.depends('ui_metacubexd', '1');
 
@@ -609,19 +663,9 @@ return view.extend({
         o.retain = true;
         o.depends('geox_auto_update', '1');
 
-        s.tab('mixin_file_content', _('Mixin File Content'));
+        s.tab('mixin_file_content', _('Mixin File Content'), _('Please go to the editor tab to edit the file for mixin'));
 
-        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
-        o.rows = 25;
-        o.load = function (section_id) {
-            return L.resolveDefault(fs.read_direct(mixinPath));
-        };
-        o.write = function (section_id, formvalue) {
-            return fs.write(mixinPath, formvalue);
-        };
-        o.remove = function (section_id) {
-            return fs.write(mixinPath);
-        };
+        o = s.taboption('mixin_file_content', form.HiddenValue, '_mixin_file_content');
 
         return m.render();
     }
