@@ -45,7 +45,6 @@ The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 
 - ca-bundle
 - curl
-- inotifywait
 - yq
 - firewall4
 - kmod-nft-tproxy
