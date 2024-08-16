@@ -23,7 +23,6 @@ RUN_UI_DIR="$RUN_DIR/ui"
 
 # scripts
 SH_DIR="$HOME_DIR/scripts"
-UPNP_WATCHER_SH="$SH_DIR/upnp_watcher.sh"
 TUN_SH="$SH_DIR/tun.sh"
 
 # nftables

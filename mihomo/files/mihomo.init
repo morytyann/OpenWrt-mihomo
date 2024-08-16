@@ -357,10 +357,6 @@ start_service() {
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
 		add_wan_inbound_exclusions
-		add_firewall_exclusions
-		add_upnp_exclusions
-		# reload config
-		config_load mihomo
 		# router proxy
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
@@ -403,7 +399,7 @@ reload_service() {
 }
 
 service_triggers() {
-	procd_add_reload_trigger "mihomo" "firewall" "upnpd"
+	procd_add_reload_trigger "mihomo"
 
 	config_load mihomo
 	config_list_foreach "proxy" "wan_interfaces" add_reload_interface_trigger
@@ -595,7 +591,6 @@ add_acl_mac() {
 }
 
 add_wan_inbound_exclusions() {
-	config_load mihomo
 	config_list_foreach "proxy" "wan_interfaces" add_wan_inbound_exclusion
 	config_list_foreach "proxy" "wan6_interfaces" add_wan6_inbound_exclusion
 }
@@ -614,133 +609,4 @@ add_wan6_inbound_exclusion() {
 	if [ -n "$wan6_prefix" ]; then
 		nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
 	fi
-}
-
-add_firewall_exclusions() {
-	config_load firewall
-	config_foreach add_firewall_rule_exclusion "rule"
-	config_foreach add_firewall_redirect_exclusion "redirect"
-}
-
-add_firewall_rule_exclusion() {
-	local section="$1"
-
-	local enabled name family proto src dest dest_ip dest_port
-	config_get_bool enabled "$section" "enabled" 1
-	config_get name "$section" "name"
-	config_get family "$section" "family"
-	config_get proto "$section" "proto"
-	config_get src "$section" "src"
-	config_get dest "$section" "dest"
-	config_get dest_ip "$section" "dest_ip"
-	config_get dest_port "$section" "dest_port"
-
-	if [[ "$enabled" == 0 || -z "$src" || -z "$dest_port" ]]; then
-		return
-	fi
-
-	local ipv4=0
-	local ipv6=0
-	if [ "$family" == "ipv4" ]; then
-		ipv4=1
-	elif [ "$family" == "ipv6" ]; then
-		ipv6=1
-	else [ -z "$family" ]
-		ipv4=1
-		ipv6=1
-		family="ipv4 ipv6"
-	fi
-
-	if [[ -z "$proto" || "$proto" == "all" ]]; then
-		proto="tcp udp"
-	fi
-
-	if [ -z "$dest" ]; then
-		local f p s
-		for f in $family; do
-			for p in $proto; do
-				for s in $dest_port; do
-					nft add element inet $FW_TABLE router_exclusion \{ "$f" . "$p" . "$s" \}
-				done
-			done
-		done
-	else
-		# TODO: Check IP Version
-		local p i s
-		if [ "$ipv4" == 1 ]; then
-			for p in $proto; do
-				for i in $dest_ip; do
-					for s in $dest_port; do
-						nft add element inet $FW_TABLE redirect_exclusion \{ "$p" . "$i" . "$s" \} > /dev/null 2>&1
-					done
-				done
-			done
-		fi
-		if [ "$ipv6" == 1 ]; then
-			for p in $proto; do
-				for i in $dest_ip; do
-					for s in $dest_port; do
-						nft add element inet $FW_TABLE redirect_exclusion6 \{ "$p" . "$i" . "$s" \} > /dev/null 2>&1
-					done
-				done
-			done
-		fi
-	fi
-}
-
-add_firewall_redirect_exclusion() {
-	local section="$1"
-
-	local enabled name proto src_dport dest dest_ip dest_port
-	config_get_bool enabled "$section" "enabled" 1
-	config_get name "$section" "name"
-	config_get proto "$section" "proto"
-	config_get src_dport "$section" "src_dport"
-	config_get dest "$section" "dest"
-	config_get dest_ip "$section" "dest_ip"
-	config_get dest_port "$section" "dest_port"
-
-	if [ "$enabled" == 0 ]; then
-		return
-	fi
-
-	local tcp=0
-	local udp=0
-	if [[ -z "$proto" || "$proto" == "all" ]]; then
-		tcp=1
-		udp=1
-	else
-		for p in $proto; do
-			[ "$p" == "tcp" ] && tcp=1
-			[ "$p" == "udp" ] && udp=1
-		done
-	fi
-
-	if [ -z "$dest_port" ]; then
-		dest_port="$src_dport"
-	fi
-
-	if [[ -z "$dest" || -z "$dest_ip" ]]; then
-		if [ "$tcp" == 1 ]; then
-			nft add element inet $FW_TABLE router_exclusion \{ ipv4 . tcp . "$dest_port" \}
-		fi
-		if [ "$udp" == 1 ]; then
-			nft add element inet $FW_TABLE router_exclusion \{ ipv4 . udp . "$dest_port" \}
-		fi
-	else
-		if [ "$tcp" == 1 ]; then
-			nft add element inet $FW_TABLE redirect_exclusion \{ tcp . "$dest_ip" . "$dest_port" \}
-		fi
-		if [ "$udp" == 1 ]; then
-			nft add element inet $FW_TABLE redirect_exclusion \{ udp . "$dest_ip" . "$dest_port" \}
-		fi
-	fi
-}
-
-add_upnp_exclusions() {
-	procd_open_instance upnp_watcher
-	procd_set_param command /bin/sh -c "$UPNP_WATCHER_SH"
-	procd_set_param data timestamp=$(date +%s)
-	procd_set_param respawn 3600 5 0
-	procd_close_instance
 }
