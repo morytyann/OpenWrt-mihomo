@@ -3,19 +3,12 @@
 'require view';
 'require uci';
 'require fs';
-
-const profilesDir = '/etc/mihomo/profiles';
-const mixinPath = '/etc/mihomo/mixin.yaml';
-const runProfilePath = '/etc/mihomo/run/config.yaml'
-
-function listProfiles() {
-    return L.resolveDefault(fs.list(profilesDir), []);
-}
+'require tools.mihomo as mihomo'
 
 return view.extend({
     load: function () {
         return Promise.all([
-            listProfiles(),
+            mihomo.listProfiles(),
         ]);
     },
     render: function (data) {
@@ -31,10 +24,10 @@ return view.extend({
         o.optional = true;
 
         for (const profile of profiles) {
-            o.value(profilesDir + '/' + profile.name, _('File:') + profile.name);
+            o.value(mihomo.profilesDir + '/' + profile.name, _('File:') + profile.name);
         }
-        o.value(mixinPath, _('File for Mixin'));
-        o.value(runProfilePath, _('Profile for Startup'));
+        o.value(mihomo.mixinFilePath, _('File for Mixin'));
+        o.value(mihomo.runProfilePath, _('Profile for Startup'));
 
         o.write = function (section_id, formvalue) {
             return true;
@@ -60,7 +53,7 @@ return view.extend({
     },
     handleSaveApply: function (ev, mode) {
         return this.handleSave(ev).finally(function() {
-            fs.exec_direct('/usr/libexec/mihomo-call', ['service', mode === '0' ? 'reload' : 'restart']);
+            return mode === '0' ? mihomo.reload() : mihomo.restart();
         });
     },
     handleReset: null
