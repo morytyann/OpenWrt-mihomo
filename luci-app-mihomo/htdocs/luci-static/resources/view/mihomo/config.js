@@ -127,26 +127,18 @@ return view.extend({
             return mihomo.restart();
         };
 
-        o = s.option(form.Button, 'razord', '-');
-        o.inputtitle = _('Open Razord');
+        o = s.option(form.Button, 'update_dashboard', '-');
+        o.inputstyle = 'positive';
+        o.inputtitle = _('Update Dashboard');
         o.onclick = function () {
-            mihomo.openDashboard(this.option);
+            return mihomo.callMihomoAPI('POST', '/upgrade/ui');
         };
-        o.depends('mihomo.mixin.ui_razord', '1');
 
-        o = s.option(form.Button, 'yacd', '-');
-        o.inputtitle = _('Open YACD');
+        o = s.option(form.Button, 'open_dashboard', '-');
+        o.inputtitle = _('Open Dashboard');
         o.onclick = function () {
-            mihomo.openDashboard(this.option);
+            return mihomo.openDashboard();
         };
-        o.depends('mihomo.mixin.ui_yacd', '1');
-
-        o = s.option(form.Button, 'metacubexd', '-');
-        o.inputtitle = _('Open MetaCubeXD');
-        o.onclick = function () {
-            mihomo.openDashboard(this.option);
-        };
-        o.depends('mihomo.mixin.ui_metacubexd', '1');
 
         s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
 
@@ -396,13 +388,10 @@ return view.extend({
 
         s.tab('external_control', _('External Control Config'));
 
-        o = s.taboption('external_control', form.Flag, 'ui_razord', _('Use Razord'));
+        o = s.taboption('external_control', form.Value, 'ui_name', _('UI Name'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Flag, 'ui_yacd', _('Use YACD'));
-        o.rmempty = false;
-
-        o = s.taboption('external_control', form.Flag, 'ui_metacubexd', _('Use MetaCubeXD'));
+        o = s.taboption('external_control', form.Value, 'ui_url', _('UI Url'));
         o.rmempty = false;
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));

@@ -100,30 +100,6 @@ table inet mihomo {
 		auto-merge
 	}
 
-	set redirect_exclusion {
-		type inet_proto . ipv4_addr . inet_service
-		flags interval
-		auto-merge
-	}
-
-	set redirect_exclusion6 {
-		type inet_proto . ipv6_addr . inet_service
-		flags interval
-		auto-merge
-	}
-
-	set upnp_exclusion {
-		type inet_proto . ipv4_addr . inet_service
-		flags interval, timeout
-		auto-merge
-	}
-
-	set router_exclusion {
-		type nf_proto . inet_proto . inet_service
-		flags interval
-		auto-merge
-	}
-
 	chain router_dns_hijack {
 		meta nfproto @dns_hijack_nfproto meta l4proto { tcp, udp } th dport 53 oifname lo meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
 	}
@@ -199,14 +175,13 @@ table inet mihomo {
 		ip6 daddr @reserved_ip6 counter return
 		ip daddr @wan_ip counter return
 		ip6 daddr @wan_ip6 counter return
+		ct reply ip saddr @wan_ip counter return
+		ct reply ip6 saddr @wan_ip6 counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
 		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
 		meta nfproto ipv6 meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
-		meta l4proto . ip saddr . th sport @redirect_exclusion counter return
-		meta l4proto . ip6 saddr . th sport @redirect_exclusion6 counter return
-		meta l4proto . ip saddr . th sport @upnp_exclusion counter return
 	}
 
 	chain mangle_output {
@@ -216,11 +191,12 @@ table inet mihomo {
 		ip6 daddr @reserved_ip6 counter return
 		ip daddr @wan_ip counter return
 		ip6 daddr @wan_ip6 counter return
+		ct reply ip saddr @wan_ip counter return
+		ct reply ip6 saddr @wan_ip6 counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
 		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
 		meta nfproto ipv6 meta l4proto . th dport != @acl_dport counter return
 		meta l4proto { tcp, udp } th dport 53 counter return
-		meta nfproto . meta l4proto . th sport @router_exclusion counter return
 	}
 }
