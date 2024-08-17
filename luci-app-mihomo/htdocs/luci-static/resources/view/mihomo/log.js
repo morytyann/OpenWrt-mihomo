@@ -8,6 +8,7 @@
 return view.extend({
     load: function () {
         return Promise.all([
+            uci.load('mihomo'),
             mihomo.getAppLog(),
             mihomo.getCoreLog()
         ]);

@@ -108,6 +108,31 @@ lan_proxy=$(uci -q get mihomo.proxy.lan_proxy); [ -z "$lan_proxy" ] && {
 	fi
 }
 
+# add mihomo.mixin.ui_name
+ui_name=$(uci -q get mihomo.mixin.ui_name); [ -z "$ui_name" ] && uci set mihomo.mixin.ui_name="metacubexd"
+
+# add mihomo.mixin.ui_url
+ui_url=$(uci -q get mihomo.mixin.ui_url); [ -z "$ui_url" ] && uci set mihomo.mixin.ui_url="https://mirror.ghproxy.com/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+
+# delete mihomo.mixin.ui_razord
+ui_razord=$(uci -q get mihomo.mixin.ui_razord); [ -n "$ui_razord" ] && uci delete mihomo.mixin.ui_razord
+
+# delete mihomo.mixin.ui_razord_url
+ui_razord_url=$(uci -q get mihomo.mixin.ui_razord_url); [ -n "$ui_razord_url" ] && uci delete mihomo.mixin.ui_razord_url
+
+# delete mihomo.mixin.ui_yacd
+ui_yacd=$(uci -q get mihomo.mixin.ui_yacd); [ -n "$ui_yacd" ] && uci delete mihomo.mixin.ui_yacd
+
+# delete mihomo.mixin.ui_yacd_url
+ui_yacd_url=$(uci -q get mihomo.mixin.ui_yacd_url); [ -n "$ui_yacd_url" ] && uci delete mihomo.mixin.ui_yacd_url
+
+# delete mihomo.mixin.ui_metacubexd
+ui_metacubexd=$(uci -q get mihomo.mixin.ui_metacubexd); [ -n "$ui_metacubexd" ] && uci delete mihomo.mixin.ui_metacubexd
+
+# delete mihomo.mixin.ui_metacubexd_url
+ui_metacubexd_url=$(uci -q get mihomo.mixin.ui_metacubexd_url); [ -n "$ui_metacubexd_url" ] && uci delete mihomo.mixin.ui_metacubexd_url
+
+
 # commit
 uci commit mihomo
 

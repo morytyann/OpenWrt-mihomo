@@ -1,5 +1,6 @@
 'use strict';
 'require baseclass';
+'require uci';
 'require fs';
 'require rpc';
 
@@ -47,10 +48,6 @@ return baseclass.extend({
         return L.resolveDefault(fs.list(this.profilesDir), []);
     },
 
-    loadProfile: function () {
-        return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['load', 'profile'], 'json'), {});
-    },
-
     status: async function () {
         try {
             return (await this.callServiceList('mihomo'))['mihomo']['instances']['mihomo']['running'];
@@ -75,28 +72,35 @@ return baseclass.extend({
         return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']));
     },
 
-    openDashboard: async function (type) {
+    callMihomoAPI: async function (method, path, body) {
         const running = await this.status();
         if (running) {
-            const profile = await this.loadProfile();
-            const apiListen = profile['external-controller'];
-            if (apiListen) {
-                const apiPort = apiListen.split(':')[1];
-                const apiSecret = profile['secret'] || '';
-                let url;
-                if (type === 'razord') {
-                    url = `http://${window.location.hostname}:${apiPort}/ui/razord/#/?host=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-                } else if (type === 'yacd') {
-                    url = `http://${window.location.hostname}:${apiPort}/ui/yacd/?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-                } else if (type === 'metacubexd') {
-                    url = `http://${window.location.hostname}:${apiPort}/ui/metacubexd/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
-                } else {
-                    return;
-                }
-                window.open(url, '_blank');
+            const apiPort = uci.get('mihomo', 'mixin', 'api_port');
+            const apiSecret = uci.get('mihomo', 'mixin', 'api_secret');
+            const url = `http://${window.location.hostname}:${apiPort}${path}`;
+            await fetch(url, {
+                method: method,
+                headers: { 'Authorization': `Bearer ${apiSecret}` },
+                body: body
+            })
+        } else {
+            alert(_('Service is not running.'));
+        }
+    },
+
+    openDashboard: async function () {
+        const running = await this.status();
+        if (running) {
+            const uiName = uci.get('mihomo', 'mixin', 'ui_name');
+            const apiPort = uci.get('mihomo', 'mixin', 'api_port');
+            const apiSecret = uci.get('mihomo', 'mixin', 'api_secret');
+            let url;
+            if (uiName) {
+                url = `http://${window.location.hostname}:${apiPort}/ui/${uiName}/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
             } else {
-                alert(_('External Control is not configured.'));
+                url = `http://${window.location.hostname}:${apiPort}/ui/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
             }
+            window.open(url, '_blank');
         } else {
             alert(_('Service is not running.'));
         }
