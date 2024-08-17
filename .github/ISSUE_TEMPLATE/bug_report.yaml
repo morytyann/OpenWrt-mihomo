@@ -44,18 +44,21 @@ body:
     id: os_version
     attributes:
       label: 系统版本
+      description: 填写你的系统版本
     validations:
       required: true
   - type: input
     id: app_version
     attributes:
       label: 插件版本
+      description: 填写你的插件版本
     validations:
       required: true
   - type: dropdown
     id: architecture
     attributes:
       label: 硬件架构
+      description: 选择你的硬件架构
       multiple: true
       options:
           - arm_cortex-a5_vfpv4
@@ -84,41 +87,48 @@ body:
     id: description
     attributes:
       label: BUG 描述
+      description: 在此描述你的BUG
     validations:
       required: true
   - type: textarea
     id: expected_behavior
     attributes:
       label: 预期行为
+      description: 你认为的预期行为
     validations:
       required: true
   - type: textarea
     id: reproduce
     attributes:
       label: 复现步骤
+      description: 如何复现
     validations:
       required: true
   - type: textarea
     id: app_log
     attributes:
       label: 插件日志
+      description: 附上你的插件日志
     validations:
       required: false
   - type: textarea
     id: core_log
     attributes:
       label: 核心日志
+      description: 附上你的核心日志（敏感信息请脱敏）
     validations:
       required: false
   - type: textarea
     id: profile
     attributes:
       label: 配置文件
+      description: 附上你的配置文件（敏感信息请脱敏）
     validations:
       required: false
   - type: textarea
     id: additional_context
     attributes:
       label: 附加信息
+      description: 日志、截图等你觉得对解决此BUG有帮助的信息
     validations:
       required: false
