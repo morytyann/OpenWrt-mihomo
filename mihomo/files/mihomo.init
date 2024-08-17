@@ -572,17 +572,18 @@ add_wan_inbound_exclusion() {
 }
 
 add_wan6_inbound_exclusion() {
-	local wan6_ip wan6_subnet wan6_prefix
-	network_get_ipaddr6 wan6_ip $1
-	if [ -n "$wan6_ip" ]; then
-		nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_ip" \}
+	local wan6_subnets wan6_subnet
+	network_get_subnets6 wan6_subnets $1
+	if [ -n "$wan6_subnets" ]; then
+		for wan6_subnet in $wan6_subnets; do
+			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_subnet" \}
+		done
 	fi
-	network_get_subnet6 wan6_subnet $1
-	if [ -n "$wan6_subnet" ]; then
-		nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_subnet" \}
-	fi
-	network_get_prefix6 wan6_prefix $1
-	if [ -n "$wan6_prefix" ]; then
-		nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
+	local wan6_prefixes wan6_prefix
+	network_get_prefixes6 wan6_prefixes $1
+	if [ -n "$wan6_prefixes" ]; then
+		for wan6_prefix in $wan6_prefixes; do
+			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
+		done
 	fi
 }
