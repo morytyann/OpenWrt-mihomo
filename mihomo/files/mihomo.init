@@ -151,7 +151,7 @@ start_service() {
 				url="$url&append_type=$([ "$subscription_convert_insert_node_type" == 1 ] && echo -n "true" || echo -n "false")"
 			fi
 		fi
-		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $user_agent" "$url"
+		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $subscription_user_agent" "$url"
 		log "Use Subscription: $subscription_name"
 	elif [[ "$profile" == "http:"* || "$profile" == "https:"* ]]; then
 		local url; url=$profile
