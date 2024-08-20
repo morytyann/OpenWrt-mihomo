@@ -285,11 +285,11 @@ start_service() {
 			log "Transparent Proxy: Using TPROXY mode."
 			if [ "$ipv4_proxy" == 1 ]; then
 				ip route add local default dev lo table "$ROUTE_TABLE"
-				ip rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
+				ip rule add pref "$RULE_PREF" fwmark "$FW_MARK/$FW_MARK_MASK" table "$ROUTE_TABLE"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
 				ip -6 route add local default dev lo table "$ROUTE_TABLE"
-				ip -6 rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
+				ip -6 rule add pref "$RULE_PREF" fwmark "$FW_MARK/$FW_MARK_MASK" table "$ROUTE_TABLE"
 			fi
 		elif [ "$transparent_proxy_mode" == "tun" ]; then
 			log "Transparent Proxy: Using TUN mode."
@@ -298,14 +298,14 @@ start_service() {
 			$TUN_SH
 			if [ "$ipv4_proxy" == 1 ]; then
 				ip route add unicast default dev "$TUN_DEVICE" table "$ROUTE_TABLE"
-				ip rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
+				ip rule add pref "$RULE_PREF" fwmark "$FW_MARK/$FW_MARK_MASK" table "$ROUTE_TABLE"
 			fi
 			if [ "$ipv6_proxy" == 1 ]; then
 				ip -6 route add unicast default dev "$TUN_DEVICE" table "$ROUTE_TABLE"
-				ip -6 rule add fwmark "$FW_MARK" table "$ROUTE_TABLE"
+				ip -6 rule add pref "$RULE_PREF" fwmark "$FW_MARK/$FW_MARK_MASK" table "$ROUTE_TABLE"
 			fi
 		fi
-		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D FW_MARK_MASK="$FW_MARK_MASK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
 		# dns hijack
 		if [ "$ipv4_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv4 DNS Hijack is enabled, IPv4 dns request will redirect to the core."
