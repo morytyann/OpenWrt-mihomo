@@ -30,15 +30,15 @@ jobs:
         run: |
           cd mihomo_core
           mkdir -p compress
-          git archive --format=tar --output=compress/mihomo-${LATEST_HASH:0:7}.tar HEAD
-          xz -z compress/mihomo-${LATEST_HASH:0:7}.tar
+          git archive --format=tar --output=compress/mihomo-${LATEST_HASH:0:6}.tar HEAD
+          xz -z compress/mihomo-${LATEST_HASH:0:6}.tar
         env:
           LATEST_HASH: ${{ steps.get_hash.outputs.LATEST_HASH }}
 
       - name: Calculate MIRROR_HASH
         id: calc_hash
         run: |
-          MIRROR_HASH=$(sha256sum mihomo_core/compress/mihomo-${LATEST_HASH:0:7}.tar.xz | awk '{print $1}')
+          MIRROR_HASH=$(sha256sum mihomo_core/compress/mihomo-${LATEST_HASH:0:6}.tar.xz | awk '{print $1}')
           echo "MIRROR_HASH=$MIRROR_HASH" >> $GITHUB_OUTPUT
           echo "Calculated MIRROR_HASH: $MIRROR_HASH"
         env:
