@@ -36,7 +36,20 @@ jobs:
         env:
           LATEST_HASH: ${{ steps.get_hash.outputs.LATEST_HASH }}
 
+      - name: Check for changes
+        id: check_changes
+        run: |
+          CURRENT_SOURCE_VERSION=$(grep "PKG_SOURCE_VERSION:=" mihomo/Makefile | cut -d'=' -f2)
+          CURRENT_MIRROR_HASH=$(grep "PKG_MIRROR_HASH:=" mihomo/Makefile | cut -d'=' -f2)
+
+          if [ "$CURRENT_SOURCE_VERSION" != "${{ steps.get_hash.outputs.LATEST_HASH }}" ] || [ "$CURRENT_MIRROR_HASH" != "${{ steps.calc_hash.outputs.MIRROR_HASH }}" ]; then
+            echo "CHANGES_DETECTED=true" >> $GITHUB_OUTPUT
+          else
+            echo "CHANGES_DETECTED=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Update Makefile
+        if: steps.check_changes.outputs.CHANGES_DETECTED == 'true'
         run: |
           sed -i "s/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=$LATEST_HASH/" mihomo/Makefile
           sed -i "s/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$MIRROR_HASH/" mihomo/Makefile
@@ -49,6 +62,7 @@ jobs:
           rm -rf mihomo_core
 
       - name: Create Pull Request
+        if: steps.check_changes.outputs.CHANGES_DETECTED == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: Update Mihomo Package Hash to latest version
