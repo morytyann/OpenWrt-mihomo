@@ -1,0 +1,98 @@
+name: Update Mihomo Package Hash
+
+on:
+  schedule:
+    - cron: "0 16 * * *" # 每天运行 00:00 AM UTC+8
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  check-for-updates:
+    runs-on: ubuntu-latest
+    outputs:
+      latest_hash: ${{ steps.get_hash.outputs.LATEST_HASH }}
+      mirror_hash: ${{ steps.calc_hash.outputs.MIRROR_HASH }}
+      changes_detected: ${{ steps.check_changes.outputs.CHANGES_DETECTED }}
+      current_pkg_release: ${{ steps.check_changes.outputs.CURRENT_PKG_RELEASE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest commit hash of Alpha branch
+        id: get_hash
+        run: |
+          git clone --branch Alpha --single-branch --depth 1 https://github.com/MetaCubeX/mihomo.git mihomo_core
+          cd mihomo_core
+          LATEST_HASH=$(git rev-parse HEAD)
+          echo "LATEST_HASH=$LATEST_HASH" >> $GITHUB_OUTPUT
+          echo "Latest commit hash: $LATEST_HASH"
+
+      - name: Generate source archive
+        run: |
+          cd mihomo_core
+          mkdir -p compress
+          git archive --format=tar --output=compress/mihomo-${LATEST_HASH:0:6}.tar HEAD
+          xz -z compress/mihomo-${LATEST_HASH:0:6}.tar
+        env:
+          LATEST_HASH: ${{ steps.get_hash.outputs.LATEST_HASH }}
+
+      - name: Calculate MIRROR_HASH
+        id: calc_hash
+        run: |
+          MIRROR_HASH=$(sha256sum mihomo_core/compress/mihomo-${LATEST_HASH:0:6}.tar.xz | awk '{print $1}')
+          echo "MIRROR_HASH=$MIRROR_HASH" >> $GITHUB_OUTPUT
+          echo "Calculated MIRROR_HASH: $MIRROR_HASH"
+        env:
+          LATEST_HASH: ${{ steps.get_hash.outputs.LATEST_HASH }}
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          CURRENT_SOURCE_VERSION=$(grep "PKG_SOURCE_VERSION:=" mihomo/Makefile | cut -d'=' -f2)
+          CURRENT_MIRROR_HASH=$(grep "PKG_MIRROR_HASH:=" mihomo/Makefile | cut -d'=' -f2)
+          CURRENT_PKG_RELEASE=$(grep "PKG_RELEASE:=" mihomo/Makefile | cut -d'=' -f2)
+
+          echo "Current PKG_SOURCE_VERSION: $CURRENT_SOURCE_VERSION"
+          echo "Current PKG_MIRROR_HASH: $CURRENT_MIRROR_HASH"
+          echo "Current PKG_RELEASE: $CURRENT_PKG_RELEASE"
+          echo "New PKG_SOURCE_VERSION: ${{ steps.get_hash.outputs.LATEST_HASH }}"
+          echo "New PKG_MIRROR_HASH: ${{ steps.calc_hash.outputs.MIRROR_HASH }}"
+
+          echo "CURRENT_PKG_RELEASE=$CURRENT_PKG_RELEASE" >> $GITHUB_OUTPUT
+
+          if [ "$CURRENT_SOURCE_VERSION" != "${{ steps.get_hash.outputs.LATEST_HASH }}" ] || [ "$CURRENT_MIRROR_HASH" != "${{ steps.calc_hash.outputs.MIRROR_HASH }}" ]; then
+            echo "CHANGES_DETECTED=true" >> $GITHUB_OUTPUT
+            echo "Changes detected! Update required."
+          else
+            echo "CHANGES_DETECTED=false" >> $GITHUB_OUTPUT
+            echo "No changes detected. No update required."
+          fi
+
+      - name: Remove mihomo_core directory
+        run: rm -rf mihomo_core
+
+  update-and-create-pr:
+    needs: check-for-updates
+    if: needs.check-for-updates.outputs.changes_detected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update Makefile
+        run: |
+          sed -i "s/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=${{ needs.check-for-updates.outputs.latest_hash }}/" mihomo/Makefile
+          sed -i "s/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=${{ needs.check-for-updates.outputs.mirror_hash }}/" mihomo/Makefile
+          sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=1/" mihomo/Makefile
+          echo "Updated Makefile with new hashes and reset PKG_RELEASE to 1."
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: Update Mihomo Package Hash to latest version and reset PKG_RELEASE
+          title: Update Mihomo Package Hash and Reset PKG_RELEASE
+          body: |
+            This PR updates the Mihomo Package Hash to the latest version and resets PKG_RELEASE to 1.
+            - PKG_SOURCE_VERSION: ${{ needs.check-for-updates.outputs.latest_hash }}
+            - PKG_MIRROR_HASH: ${{ needs.check-for-updates.outputs.mirror_hash }}
+            - PKG_RELEASE: 1 (Previous value: ${{ needs.check-for-updates.outputs.current_pkg_release }})
+          branch: update-mihomo-package-hash
