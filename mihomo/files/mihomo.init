@@ -267,11 +267,9 @@ start_service() {
 	procd_set_param user "$MIHOMO_USER"
 	procd_set_param group "$MIHOMO_GROUP"
 
-	procd_add_jail mihomo procfs
-	procd_add_jail_mount "$PROG"
-	procd_add_jail_mount /etc/TZ /etc/hosts /etc/ssl/certs
-	procd_add_jail_mount_rw "$RUN_DIR"
-	procd_add_jail_mount_rw /dev/net
+	procd_add_jail mihomo requirejail
+	procd_add_jail_mount "$PROG" /etc/TZ /etc/hosts /etc/ssl/certs /proc
+	procd_add_jail_mount_rw "$RUN_DIR" /dev/net
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param no_new_privs 1
 
