@@ -1,5 +1,5 @@
 name: Bug Report
-description: "报告问题"
+description: "Create a report to help us improve"
 title: "[BUG]"
 labels: ["bug"]
 body:
@@ -108,6 +108,20 @@ body:
     validations:
       required: true
   - type: textarea
+    id: config
+    attributes:
+      label: 插件配置
+      description: 附上你的插件配置
+    validations:
+      required: true
+  - type: textarea
+    id: profile
+    attributes:
+      label: 配置文件
+      description: 附上你的配置文件（敏感信息请脱敏）
+    validations:
+      required: false
+  - type: textarea
     id: app_log
     attributes:
       label: 插件日志
@@ -118,14 +132,7 @@ body:
     id: core_log
     attributes:
       label: 核心日志
-      description: 附上你的核心日志（敏感信息请脱敏）
-    validations:
-      required: false
-  - type: textarea
-    id: profile
-    attributes:
-      label: 配置文件
-      description: 附上你的配置文件（敏感信息请脱敏）
+      description: 附上你的核心日志（敏感信息请脱敏，建议填写，至少使用info级别的日志）
     validations:
       required: false
   - type: textarea
