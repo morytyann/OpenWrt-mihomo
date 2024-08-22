@@ -45,7 +45,7 @@ jobs:
           echo "commit_sha=$(git -C mihomo rev-parse HEAD)" >> $GITHUB_OUTPUT
           git -C mihomo config tar.xz.command "xz -c"
           git -C mihomo archive --output=mihomo.tar.xz HEAD
-          echo "hash=$(sha256 mihomo/mihomo.tar.xz)" >> $GITHUB_OUTPUT
+          echo "checksum=$(sha256 mihomo/mihomo.tar.xz | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
   update:
     needs:
       - get_current_info
