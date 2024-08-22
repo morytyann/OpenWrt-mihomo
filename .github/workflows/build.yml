@@ -1,6 +1,11 @@
 name: Build Packages
 
 on:
+  pull_request:
+    types: 
+      - opened
+    branches:
+      - dependabot
   workflow_dispatch:
 
 jobs:
