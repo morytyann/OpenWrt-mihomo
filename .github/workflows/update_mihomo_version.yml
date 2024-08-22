@@ -23,8 +23,8 @@ jobs:
       - id: get_current_info
         name: Get Current Info
         run: |
-          echo "pkg_source_version=$(grep "PKG_SOURCE_VERSION:=" OpenWrt-mihomo/OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
-          echo "pkg_mirror_hash=$(grep "PKG_MIRROR_HASH:=" OpenWrt-mihomo/OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
+          echo "pkg_source_version=$(grep "PKG_SOURCE_VERSION:=" OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
+          echo "pkg_mirror_hash=$(grep "PKG_MIRROR_HASH:=" OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
   get_lastest_info:
     runs-on: ubuntu-latest
     outputs:
@@ -71,6 +71,7 @@ jobs:
         name: Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
+          path: OpenWrt-mihomo
           branch: dependabot
           commit-message: Update Mihomo Version to latest
           title: Update Mihomo Version to latest
