@@ -45,7 +45,7 @@ jobs:
           echo "commit_sha=$(git -C mihomo rev-parse HEAD)" >> $GITHUB_OUTPUT
           git -C mihomo config tar.xz.command "xz -c"
           git -C mihomo archive --output=mihomo.tar.xz HEAD
-          echo "checksum=$(sha256 mihomo/mihomo.tar.xz | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
+          echo "checksum=$(sha256sum mihomo/mihomo.tar.xz | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
   update:
     needs:
       - get_current_info
@@ -76,6 +76,10 @@ jobs:
           commit-message: Update Mihomo Version to latest
           title: Update Mihomo Version to latest
           body: |
-            - PKG_SOURCE_VERSION: from ${{ needs.get_current_info.outputs.pkg_source_version }} to ${{ needs.get_lastest_info.outputs.commit_sha }}
-            - PKG_MIRROR_HASH: from ${{ needs.get_current_info.outputs.pkg_mirror_hash }} to ${{ needs.get_lastest_info.outputs.checksum }}
+            From:
+            - PKG_SOURCE_VERSION: `${{ needs.get_current_info.outputs.pkg_source_version }}`
+            - PKG_MIRROR_HASH: `${{ needs.get_current_info.outputs.pkg_mirror_hash }}`
+            To:
+            - PKG_SOURCE_VERSION: `${{ needs.get_lastest_info.outputs.commit_sha }}`
+            - PKG_MIRROR_HASH: `${{ needs.get_lastest_info.outputs.checksum }}`
         
