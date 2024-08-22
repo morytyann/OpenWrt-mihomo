@@ -5,7 +5,7 @@ on:
     types: 
       - opened
     branches:
-      - dependabot
+      - main
   workflow_dispatch:
 
 jobs:
