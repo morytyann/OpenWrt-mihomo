@@ -73,12 +73,13 @@ jobs:
         with:
           path: OpenWrt-mihomo
           branch: dependabot
-          commit-message: Update Mihomo Version to latest
-          title: Update Mihomo Version to latest
+          commit-message: Update Mihomo Version
+          title: Update Mihomo Version
           body: |
             From:
             - PKG_SOURCE_VERSION: `${{ needs.get_current_info.outputs.pkg_source_version }}`
             - PKG_MIRROR_HASH: `${{ needs.get_current_info.outputs.pkg_mirror_hash }}`
+
             To:
             - PKG_SOURCE_VERSION: `${{ needs.get_lastest_info.outputs.commit_sha }}`
             - PKG_MIRROR_HASH: `${{ needs.get_lastest_info.outputs.checksum }}`
