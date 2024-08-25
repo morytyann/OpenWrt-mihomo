@@ -1,6 +1,6 @@
 {
     "admin/services/mihomo": {
-        "title": "Mihomo",
+        "title": "MihomoTProxy",
         "action": {
             "type": "alias",
             "path": "admin/services/mihomo/config"

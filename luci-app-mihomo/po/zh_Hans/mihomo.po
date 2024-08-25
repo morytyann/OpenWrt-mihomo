@@ -1,8 +1,8 @@
-msgid "Mihomo"
-msgstr "Mihomo"
+msgid "MihomoTProxy"
+msgstr "MihomoTProxy"
 
-msgid "Mihomo is a rule based proxy in Go."
-msgstr "Mihomo 是一个Go语言编写的基于规则的代理工具。"
+msgid "Transparent Proxy with Mihomo on OpenWrt."
+msgstr "在 OpenWrt 上使用 Mihomo 进行透明代理。"
 
 msgid "Usage"
 msgstr "使用说明"

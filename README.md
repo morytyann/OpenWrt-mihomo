@@ -1,8 +1,8 @@
 ![GitHub License](https://img.shields.io/github/license/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/morytyann/OpenWrt-mihomo/release.yaml?style=for-the-badge&label=release) ![GitHub Tag](https://img.shields.io/github/v/tag/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/morytyann/OpenWrt-mihomo/total?style=for-the-badge) ![GitHub Repo stars](https://img.shields.io/github/stars/morytyann/OpenWrt-mihomo?style=for-the-badge)
 
-# OpenWrt-mihomo
+# MihomoTProxy
 
-A project contains mihomo packages for OpenWrt.
+Transparent Proxy with Mihomo on OpenWrt.
 
 ## Feature
  - Transparent Proxy (TPROXY/TUN, IPv4 and/or IPv6)
@@ -31,7 +31,7 @@ Note that the steps above may change base on config.
 ## Compilation
 
 ```shell
-# add mihomo feeds
+# add feed
 echo "src-git mihomo https://github.com/morytyann/OpenWrt-mihomo.git;main" >> "feeds.conf.default"
 # update & install feeds
 ./scripts/feeds update -a
