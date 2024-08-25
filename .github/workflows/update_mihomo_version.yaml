@@ -2,7 +2,7 @@ name: Update Mihomo Version
 
 on:
   schedule:
-    - cron: "0 16 * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -64,6 +64,7 @@ jobs:
       - id: update
         name: Update
         run: |
+          sed -i "s/PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=$(date -u -d yesterday -I)/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=${{ needs.get_lastest_info.outputs.commit_sha }}/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=${{ needs.get_lastest_info.outputs.checksum }}/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=1/" OpenWrt-mihomo/mihomo/Makefile
