@@ -475,6 +475,7 @@ return view.extend({
         o.placeholder = '1053';
 
         o = s.taboption('dns', form.ListValue, 'dns_mode', _('DNS Mode'));
+        o.value('normal', 'Normal');
         o.value('fake-ip', 'Fake-IP');
         o.value('redir-host', 'Redir-Host');
 
