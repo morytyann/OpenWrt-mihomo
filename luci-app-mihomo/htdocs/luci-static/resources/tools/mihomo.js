@@ -65,11 +65,11 @@ return baseclass.extend({
     },
 
     appVersion: function () {
-        return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'app']));
+        return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'app']), 'Unknown');
     },
 
     coreVersion: function () {
-        return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']));
+        return L.resolveDefault(fs.exec_direct('/usr/libexec/mihomo-call', ['version', 'core']), 'Unknown');
     },
 
     callMihomoAPI: async function (method, path, body) {
@@ -96,9 +96,9 @@ return baseclass.extend({
             const apiSecret = uci.get('mihomo', 'mixin', 'api_secret');
             let url;
             if (uiName) {
-                url = `http://${window.location.hostname}:${apiPort}/ui/${uiName}/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
+                url = `http://${window.location.hostname}:${apiPort}/ui/${uiName}/?host=${window.location.hostname}&hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
             } else {
-                url = `http://${window.location.hostname}:${apiPort}/ui/#/setup?hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
+                url = `http://${window.location.hostname}:${apiPort}/ui/?host=${window.location.hostname}&hostname=${window.location.hostname}&port=${apiPort}&secret=${apiSecret}`;
             }
             window.open(url, '_blank');
         } else {
