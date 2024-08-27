@@ -36,7 +36,7 @@ echo "Installing..."
 opkg -V0 install mihomo_*.ipk && opkg -V0 install luci-app-mihomo_*.ipk && opkg -V0 install luci-i18n-mihomo-zh-cn_*.ipk
 if [ "$?" != 0 ]; then
 	echo "Install failed."
-    exit 1
+	exit 1
 fi
 # cleanup
 rm -f ./*mihomo_*.ipk
