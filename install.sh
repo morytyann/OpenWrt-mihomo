@@ -39,4 +39,4 @@ if [ "$?" != 0 ]; then
 	exit 1
 fi
 # cleanup
-rm -f ./*mihomo_*.ipk
+rm -f ./*mihomo*.ipk
