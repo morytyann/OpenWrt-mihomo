@@ -24,12 +24,13 @@ start_service() {
 	log "Starting..."
 	# get config
 	## app config
-	local scheduled_restart cron_expression profile mixin test_profile
+	local scheduled_restart cron_expression profile mixin test_profile fast_reload
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	config_get profile "config" "profile"
 	config_get_bool mixin "config" "mixin" 0
 	config_get_bool test_profile "config" "test_profile" 0
+	config_get_bool fast_reload "config" "fast_reload" 0
 	## proxy config
 	local transparent_proxy transparent_proxy_mode ipv4_dns_hijack ipv6_dns_hijack ipv4_proxy ipv6_proxy router_proxy lan_proxy access_control_mode bypass_china_mainland_ip acl_tcp_dport acl_udp_dport
 	config_get_bool transparent_proxy "proxy" "transparent_proxy" 0
@@ -125,12 +126,14 @@ start_service() {
 		config_get subscription_convert_backend "$subscription_section" "convert_backend"
 		config_get subscription_convert_template "$subscription_section" "convert_template"
 		# convert advanced
-		local subscription_convert_advanced subscription_convert_include subscription_convert_exclude subscription_convert_emoji subscription_convert_insert_node_type
+		local subscription_convert_advanced subscription_convert_include subscription_convert_exclude subscription_convert_udp subscription_convert_emoji subscription_convert_insert_node_type subscription_convert_expand
 		config_get_bool subscription_convert_advanced "$subscription_section" "convert_advanced" 0
 		config_get subscription_convert_include "$subscription_section" "convert_include"
 		config_get subscription_convert_exclude "$subscription_section" "convert_exclude"
+		config_get_bool subscription_convert_udp "$subscription_section" "convert_udp" 0
 		config_get_bool subscription_convert_emoji "$subscription_section" "convert_emoji" 0
 		config_get_bool subscription_convert_insert_node_type "$subscription_section" "convert_insert_node_type" 0
+		config_get_bool subscription_convert_expand "$subscription_section" "convert_expand" 0
 		# generate url
 		local url
 		if [ "$subscription_convert" == 0 ]; then
@@ -147,8 +150,10 @@ start_service() {
 				if [ -n "$subscription_convert_exclude" ]; then
 					url="$url&exclude=$(echo -n $subscription_convert_exclude | yq -M -o uri)"
 				fi
+				url="$url&udp=$([ "$subscription_convert_udp" == 1 ] && echo -n "true" || echo -n "false")"
 				url="$url&emoji=$([ "$subscription_convert_emoji" == 1 ] && echo -n "true" || echo -n "false")"
 				url="$url&append_type=$([ "$subscription_convert_insert_node_type" == 1 ] && echo -n "true" || echo -n "false")"
+				url="$url&expand=$([ "$subscription_convert_expand" == 1 ] && echo -n "true" || echo -n "false")"
 			fi
 		fi
 		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $subscription_user_agent" "$url"
@@ -262,7 +267,9 @@ start_service() {
 
 	procd_set_param command /bin/sh -c "$PROG -d $RUN_DIR >> $RUN_CORE_LOG_PATH 2>&1"
 	procd_set_param file "$RUN_PROFILE_PATH"
-	procd_set_param reload_signal HUP
+	if [ "$fast_reload" == 1 ]; then
+		procd_set_param reload_signal HUP
+	fi
 	procd_set_param respawn
 	procd_set_param user "$MIHOMO_USER"
 	procd_set_param group "$MIHOMO_GROUP"

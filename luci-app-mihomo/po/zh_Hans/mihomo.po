@@ -85,6 +85,9 @@ msgstr "混入"
 msgid "Test Profile"
 msgstr "检查配置文件"
 
+msgid "Fast Reload"
+msgstr "快速重载"
+
 msgid "Proxy Config"
 msgstr "代理配置"
 
@@ -181,11 +184,17 @@ msgstr "包含节点"
 msgid "Exclude"
 msgstr "排除节点"
 
+msgid "UDP"
+msgstr "UDP"
+
 msgid "Use Emoji"
 msgstr "使用 Emoji"
 
 msgid "Insert Node Type"
 msgstr "插入节点类型"
+
+msgid "Expand Ruleset"
+msgstr "展开规则集"
 
 msgid "Mixin Config"
 msgstr "混入配置"
