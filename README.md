@@ -12,11 +12,11 @@ Transparent Proxy with Mihomo on OpenWrt.
  - Profile Editor
  - Scheduled Restart
 
-## Install&Update
+## Install & Update
 
 `curl -s -L https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/install.sh | ash`
 
-## Usage
+## How To Use
 
 See [Wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki)
 
