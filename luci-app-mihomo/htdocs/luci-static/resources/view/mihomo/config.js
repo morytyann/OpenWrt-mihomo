@@ -17,39 +17,39 @@ const convertBackends = [
 ];
 
 const convertTemplates = [
-    {name: 'ACL4SSR', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR.ini'},
-    {name: 'ACL4SSR_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_AdblockPlus.ini'},
-    {name: 'ACL4SSR_BackCN', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_BackCN.ini'},
-    {name: 'ACL4SSR_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini.ini'},
-    {name: 'ACL4SSR_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_Fallback.ini'},
-    {name: 'ACL4SSR_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_MultiMode.ini'},
-    {name: 'ACL4SSR_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_NoAuto.ini'},
-    {name: 'ACL4SSR_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoApple.ini'},
-    {name: 'ACL4SSR_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto.ini'},
-    {name: 'ACL4SSR_NoAuto_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple.ini'},
-    {name: 'ACL4SSR_NoAuto_NoApple_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple_NoMicrosoft.ini'},
-    {name: 'ACL4SSR_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoMicrosoft.ini'},
-    {name: 'ACL4SSR_Online', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini'},
-    {name: 'ACL4SSR_Online_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini'},
-    {name: 'ACL4SSR_Online_Full', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini'},
-    {name: 'ACL4SSR_Online_Full_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini'},
-    {name: 'ACL4SSR_Online_Full_Google', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini'},
-    {name: 'ACL4SSR_Online_Full_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini'},
-    {name: 'ACL4SSR_Online_Full_Netflix', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini'},
-    {name: 'ACL4SSR_Online_Full_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini'},
-    {name: 'ACL4SSR_Online_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini'},
-    {name: 'ACL4SSR_Online_Mini_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini'},
-    {name: 'ACL4SSR_Online_Mini_Ai', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Ai.ini'},
-    {name: 'ACL4SSR_Online_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini'},
-    {name: 'ACL4SSR_Online_Mini_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini'},
-    {name: 'ACL4SSR_Online_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini'},
-    {name: 'ACL4SSR_Online_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini'},
-    {name: 'ACL4SSR_Online_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini'},
-    {name: 'ACL4SSR_Online_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini'},
-    {name: 'ACL4SSR_Online_NoReject', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini'},
-    {name: 'ACL4SSR_WithChinaIp', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp.ini'},
-    {name: 'ACL4SSR_WithChinaIp_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp_WithGFW.ini'},
-    {name: 'ACL4SSR_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithGFW.ini'},
+    { name: 'ACL4SSR', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR.ini' },
+    { name: 'ACL4SSR_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_AdblockPlus.ini' },
+    { name: 'ACL4SSR_BackCN', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_BackCN.ini' },
+    { name: 'ACL4SSR_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini.ini' },
+    { name: 'ACL4SSR_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_Fallback.ini' },
+    { name: 'ACL4SSR_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_MultiMode.ini' },
+    { name: 'ACL4SSR_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_NoAuto.ini' },
+    { name: 'ACL4SSR_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoApple.ini' },
+    { name: 'ACL4SSR_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto.ini' },
+    { name: 'ACL4SSR_NoAuto_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple.ini' },
+    { name: 'ACL4SSR_NoAuto_NoApple_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple_NoMicrosoft.ini' },
+    { name: 'ACL4SSR_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoMicrosoft.ini' },
+    { name: 'ACL4SSR_Online', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini' },
+    { name: 'ACL4SSR_Online_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini' },
+    { name: 'ACL4SSR_Online_Full', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini' },
+    { name: 'ACL4SSR_Online_Full_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini' },
+    { name: 'ACL4SSR_Online_Full_Google', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini' },
+    { name: 'ACL4SSR_Online_Full_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini' },
+    { name: 'ACL4SSR_Online_Full_Netflix', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini' },
+    { name: 'ACL4SSR_Online_Full_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini' },
+    { name: 'ACL4SSR_Online_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini' },
+    { name: 'ACL4SSR_Online_Mini_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini' },
+    { name: 'ACL4SSR_Online_Mini_Ai', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Ai.ini' },
+    { name: 'ACL4SSR_Online_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini' },
+    { name: 'ACL4SSR_Online_Mini_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini' },
+    { name: 'ACL4SSR_Online_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini' },
+    { name: 'ACL4SSR_Online_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini' },
+    { name: 'ACL4SSR_Online_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini' },
+    { name: 'ACL4SSR_Online_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini' },
+    { name: 'ACL4SSR_Online_NoReject', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini' },
+    { name: 'ACL4SSR_WithChinaIp', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp.ini' },
+    { name: 'ACL4SSR_WithChinaIp_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp_WithGFW.ini' },
+    { name: 'ACL4SSR_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithGFW.ini' },
 ];
 
 function renderStatus(running) {
@@ -86,7 +86,7 @@ return view.extend({
         let m, s, o, so;
 
         m = new form.Map('mihomo', _('MihomoTProxy'), `${_('Transparent Proxy with Mihomo on OpenWrt.')} <a href="https://github.com/morytyann/OpenWrt-mihomo/wiki" target="_blank">${_('Usage')}</a>`);
-    
+
         s = m.section(form.NamedSection, 'status', 'status', _('Status'));
 
         o = s.option(form.Value, '_app_version', _('App Version'));
@@ -94,14 +94,14 @@ return view.extend({
         o.load = function (section_id) {
             return appVersion.trim();
         };
-        o.write = function () {};
+        o.write = function () { };
 
         o = s.option(form.Value, '_core_version', _('Core Version'));
         o.readonly = true;
         o.load = function (section_id) {
             return coreVersion.trim();
         };
-        o.write = function () {};
+        o.write = function () { };
 
         o = s.option(form.DummyValue, '_core_status', _('Core Status'));
         o.cfgvalue = function (section_id) {
@@ -171,6 +171,9 @@ return view.extend({
         o.rmempty = false;
 
         o = s.option(form.Flag, 'test_profile', _('Test Profile'));
+        o.rmempty = false;
+
+        o = s.option(form.Flag, 'fast_reload', _('Fast Reload'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
@@ -332,24 +335,36 @@ return view.extend({
         o = s.taboption('convert', form.Value, 'convert_include', _('Include'));
         o.modalonly = true;
         o.retain = true;
-        o.depends({'convert': '1', 'convert_advanced': '1'});
-    
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
+
         o = s.taboption('convert', form.Value, 'convert_exclude', _('Exclude'));
         o.modalonly = true;
         o.retain = true;
-        o.depends({'convert': '1', 'convert_advanced': '1'});
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
+
+        o = s.taboption('convert', form.Flag, 'convert_udp', _('UDP'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
 
         o = s.taboption('convert', form.Flag, 'convert_emoji', _('Use Emoji'));
         o.modalonly = true;
         o.retain = true;
         o.rmempty = false;
-        o.depends({'convert': '1', 'convert_advanced': '1'});
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
 
         o = s.taboption('convert', form.Flag, 'convert_insert_node_type', _('Insert Node Type'));
         o.modalonly = true;
         o.retain = true;
         o.rmempty = false;
-        o.depends({'convert': '1', 'convert_advanced': '1'});
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
+
+        o = s.taboption('convert', form.Flag, 'convert_expand', _('Expand Ruleset'));
+        o.modalonly = true;
+        o.retain = true;
+        o.rmempty = false;
+        o.depends({ 'convert': '1', 'convert_advanced': '1' });
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
@@ -393,6 +408,9 @@ return view.extend({
 
         o = s.taboption('external_control', form.Value, 'ui_url', _('UI Url'));
         o.rmempty = false;
+        o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip', 'MetaCubeXD')
+        o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/Yacd-meta/archive/refs/heads/gh-pages.zip', 'YACD')
+        o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/Razord-meta/archive/refs/heads/gh-pages.zip', 'Razord')
 
         o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
         o.datatype = 'port';
@@ -629,8 +647,8 @@ return view.extend({
         s.tab('geox', _('GeoX Config'));
 
         o = s.taboption('geox', form.ListValue, 'geoip_format', _('GeoIP Format'));
-        o.value('dat');
-        o.value('mmdb');
+        o.value('dat', 'DAT');
+        o.value('mmdb', 'MMDB');
 
         o = s.taboption('geox', form.ListValue, 'geodata_loader', _('GeoData Loader'));
         o.value('standard', _('Standard Loader'));
