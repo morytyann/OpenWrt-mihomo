@@ -5,8 +5,7 @@
 Transparent Proxy with Mihomo on OpenWrt.
 
 > [!WARNING]
-> - Only support firewall4 and will ***never support firewall3***
-> - Only support OpenWrt 23.05 +
+> - Only support firewall4, it means your OpenWrt version needs to be 22.03 or above
 
 ## Feature
  - Transparent Proxy (TPROXY/TUN, IPv4 and/or IPv6)
