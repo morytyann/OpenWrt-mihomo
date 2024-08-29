@@ -12,7 +12,7 @@ fi
 result=0
 
 # traverse architectures
-opkg print-architecture | grep -v all | grep -v noarch | cut -d ' ' -f 2 | while read arch; do
+while read arch; do
 	echo "$arch: start"
 	# download
 	tarball="mihomo_${arch}.tar.gz"
@@ -37,7 +37,7 @@ opkg print-architecture | grep -v all | grep -v noarch | cut -d ' ' -f 2 | while
 	echo "Success Install/Update with arch: $arch"
 	result=1
 	break
-done
+done < <(opkg print-architecture | grep -v all | grep -v noarch | cut -d ' ' -f 2)
 
 if [ "$result" == 0 ]; then
 	echo "all architectures failed, maybe release is still in building, or just miss/unsupport your arch"
