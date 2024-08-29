@@ -25,38 +25,12 @@ table inet mihomo {
 		type ipv4_addr
 		flags interval
 		auto-merge
-		elements = {
-			0.0.0.0/8,
-			10.0.0.0/8,
-			127.0.0.0/8,
-			100.64.0.0/10,
-			169.254.0.0/16,
-			172.16.0.0/12,
-			192.168.0.0/16,
-			224.0.0.0/4,
-			240.0.0.0/4
-		}
 	}
 
 	set reserved_ip6 {
 		type ipv6_addr
 		flags interval
 		auto-merge
-		elements = {
-			::/128,
-			::1/128,
-			::ffff:0:0/96,
-			100::/64,
-			64:ff9b::/96,
-			2001::/32,
-			2001:10::/28,
-			2001:20::/28,
-			2001:db8::/32,
-			2002::/16,
-			fc00::/7,
-			fe80::/10,
-			ff00::/8
-		}
 	}
 
 	set wan_ip {

@@ -1,0 +1,19 @@
+#!/usr/sbin/nft -f
+
+table inet mihomo {
+	set reserved_ip {
+		type ipv4_addr
+		flags interval
+		elements = {
+			0.0.0.0/8,
+			10.0.0.0/8,
+			127.0.0.0/8,
+			100.64.0.0/10,
+			169.254.0.0/16,
+			172.16.0.0/12,
+			192.168.0.0/16,
+			224.0.0.0/4,
+			240.0.0.0/4
+		}
+	}
+}

@@ -29,6 +29,8 @@ return view.extend({
         }
         o.value(mihomo.mixinFilePath, _('File for Mixin'));
         o.value(mihomo.runProfilePath, _('Profile for Startup'));
+        o.value(mihomo.reservedIPNFT, _('File for Reserved IP'));
+        o.value(mihomo.reservedIP6NFT, _('File for Reserved IP6'));
 
         o.write = function (section_id, formvalue) {
             return true;

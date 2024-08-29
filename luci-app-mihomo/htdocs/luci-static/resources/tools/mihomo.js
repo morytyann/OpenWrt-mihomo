@@ -11,6 +11,9 @@ const runDir = `${homeDir}/run`;
 const runAppLogPath = `${runDir}/app.log`;
 const runCoreLogPath = `${runDir}/core.log`;
 const runProfilePath = `${runDir}/config.yaml`;
+const nftDir = `${homeDir}/nftables`;
+const reservedIPNFT = `${nftDir}/reserved_ip.nft`;
+const reservedIP6NFT = `${nftDir}/reserved_ip6.nft`;
 
 return baseclass.extend({
     homeDir: homeDir,
@@ -20,6 +23,8 @@ return baseclass.extend({
     runAppLogPath: runAppLogPath,
     runCoreLogPath: runCoreLogPath,
     runProfilePath: runProfilePath,
+    reservedIPNFT: reservedIPNFT,
+    reservedIP6NFT: reservedIP6NFT,
 
     callServiceList: rpc.declare({
         object: 'service',

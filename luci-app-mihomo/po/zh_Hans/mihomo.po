@@ -439,6 +439,12 @@ msgstr "用于混入的文件"
 msgid "Profile for Startup"
 msgstr "用于启动的配置文件"
 
+msgid "File for Reserved IP"
+msgstr "IPv4 保留地址"
+
+msgid "File for Reserved IP6"
+msgstr "IPv6 保留地址"
+
 msgid "Log"
 msgstr "日志"
 
