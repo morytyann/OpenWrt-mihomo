@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/lib/functions/network.sh
+. "$IPKG_INSTROOT/lib/functions/network.sh"
 
 # delete mihomo.proxy.routing_mark
 routing_mark=$(uci -q get mihomo.proxy.routing_mark); [ -n "$routing_mark" ] && uci del mihomo.proxy.routing_mark

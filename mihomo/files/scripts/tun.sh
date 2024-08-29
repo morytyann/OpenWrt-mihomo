@@ -1,7 +1,7 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/lib/functions.sh
-. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
+. "$IPKG_INSTROOT/lib/functions.sh"
+. "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
 load_config() {
 	config_load mihomo
@@ -16,6 +16,7 @@ accept_tun() {
 }
 
 load_config
+
 if [[ "$enabled" == 0 || "$transparent_proxy_mode" != "tun" ]]; then
 	return
 fi

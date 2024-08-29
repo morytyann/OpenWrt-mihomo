@@ -1,7 +1,7 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/lib/functions/network.sh
-. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
+. "$IPKG_INSTROOT/lib/functions/network.sh"
+. "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
 # add firewall include for tun
 uci -q batch <<-EOF > /dev/null

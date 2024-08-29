@@ -4,8 +4,8 @@ START=99
 STOP=10
 USE_PROCD=1
 
-. $IPKG_INSTROOT/lib/functions/network.sh
-. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
+. "$IPKG_INSTROOT/lib/functions/network.sh"
+. "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
 start_service() {
 	# clear log
@@ -111,7 +111,7 @@ start_service() {
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
 	# get profile
 	if [[ "$profile" == "file:"* ]]; then
-		local profile_name; profile_name=$(basename ${profile/file:/})
+		local profile_name; profile_name=$(basename "${profile/file:/}")
 		cp -f "$PROFILES_DIR/$profile_name" "$RUN_PROFILE_PATH"
 		log "Use Profile: $profile_name"
 	elif [[ "$profile" == "subscription:"* ]]; then
@@ -140,16 +140,16 @@ start_service() {
 		if [ "$subscription_convert" == 0 ]; then
 			url="$subscription_url"
 		else
-			url="$subscription_convert_backend?target=clash&url=$(echo -n $subscription_url | yq -M -o uri)"
+			url="$subscription_convert_backend?target=clash&url=$(echo -n "$subscription_url" | yq -M -o uri)"
 			if [ -n "$subscription_convert_template" ]; then
-				url="$url&config=$(echo -n $subscription_convert_template | yq -M -o uri)"
+				url="$url&config=$(echo -n "$subscription_convert_template" | yq -M -o uri)"
 			fi
 			if [ "$subscription_convert_advanced" == 1 ]; then
 				if [ -n "$subscription_convert_include" ]; then
-					url="$url&include=$(echo -n $subscription_convert_include | yq -M -o uri)"
+					url="$url&include=$(echo -n "$subscription_convert_include" | yq -M -o uri)"
 				fi
 				if [ -n "$subscription_convert_exclude" ]; then
-					url="$url&exclude=$(echo -n $subscription_convert_exclude | yq -M -o uri)"
+					url="$url&exclude=$(echo -n "$subscription_convert_exclude" | yq -M -o uri)"
 				fi
 				url="$url&udp=$([ "$subscription_convert_udp" == 1 ] && echo -n "true" || echo -n "false")"
 				url="$url&emoji=$([ "$subscription_convert_emoji" == 1 ] && echo -n "true" || echo -n "false")"
@@ -317,20 +317,20 @@ start_service() {
 		# dns hijack
 		if [ "$ipv4_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv4 DNS Hijack is enabled, IPv4 dns request will redirect to the core."
-			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv4 }
+			nft add element inet "$FW_TABLE" dns_hijack_nfproto \{ ipv4 \}
 		fi
 		if [ "$ipv6_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv6 DNS Hijack is enabled, IPv6 dns request will redirect to the core."
-			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv6 }
+			nft add element inet "$FW_TABLE" dns_hijack_nfproto \{ ipv6 \}
 		fi
 		# proxy
 		if [ "$ipv4_proxy" == 1 ]; then
 			log "Transparent Proxy: IPv4 Proxy is enabled, set proxy for IPv4 traffic."
-			nft add element inet $FW_TABLE proxy_nfproto { ipv4 }
+			nft add element inet "$FW_TABLE" proxy_nfproto \{ ipv4 \}
 		fi
 		if [ "$ipv6_proxy" == 1 ]; then
 			log "Transparent Proxy: IPv6 Proxy is enabled, set proxy for IPv6 traffic."
-			nft add element inet $FW_TABLE proxy_nfproto { ipv6 }
+			nft add element inet "$FW_TABLE" proxy_nfproto \{ ipv6 \}
 		fi
 		# bypass china mainland ip
 		if [ "$bypass_china_mainland_ip" == 1 ]; then
@@ -345,13 +345,13 @@ start_service() {
 		# destination port to proxy
 		log "Transparent Proxy: Destination TCP Port to Proxy: $acl_tcp_dport."
 		log "Transparent Proxy: Destination UDP Port to Proxy: $acl_udp_dport."
-		nft add element inet $FW_TABLE fake_ip \{ "$fake_ip_range" \}
+		nft add element inet "$FW_TABLE" fake_ip \{ "$fake_ip_range" \}
 		local acl_dport
 		for acl_dport in $acl_tcp_dport; do
-			nft add element inet $FW_TABLE acl_dport \{ "tcp" . "$acl_dport" \}
+			nft add element inet "$FW_TABLE" acl_dport \{ "tcp" . "$acl_dport" \}
 		done
 		for acl_dport in $acl_udp_dport; do
-			nft add element inet $FW_TABLE acl_dport \{ "udp" . "$acl_dport" \}
+			nft add element inet "$FW_TABLE" acl_dport \{ "udp" . "$acl_dport" \}
 		done
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
@@ -359,8 +359,8 @@ start_service() {
 		# router proxy
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
-			nft add rule inet $FW_TABLE nat_output jump router_dns_hijack
-			nft add rule inet $FW_TABLE mangle_output jump router_reroute
+			nft add rule inet "$FW_TABLE" nat_output jump router_dns_hijack
+			nft add rule inet "$FW_TABLE" mangle_output jump router_reroute
 		fi
 		# lan proxy
 		if [ "$lan_proxy" == 1 ]; then
@@ -376,8 +376,8 @@ start_service() {
 			config_list_foreach "proxy" "acl_ip" add_acl_ip
 			config_list_foreach "proxy" "acl_ip6" add_acl_ip6
 			config_list_foreach "proxy" "acl_mac" add_acl_mac
-			nft add rule inet $FW_TABLE dstnat jump ${access_control_mode}_dns_hijack
-			nft add rule inet $FW_TABLE mangle_prerouting jump ${access_control_mode}_${transparent_proxy_mode}
+			nft add rule inet "$FW_TABLE" dstnat jump "${access_control_mode}_dns_hijack"
+			nft add rule inet "$FW_TABLE" mangle_prerouting jump "${access_control_mode}_${transparent_proxy_mode}"
 		fi
 	fi
 	# cron
@@ -417,7 +417,7 @@ cleanup() {
 	ip -6 rule del table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
-	nft delete table inet $FW_TABLE > /dev/null 2>&1
+	nft delete table inet "$FW_TABLE" > /dev/null 2>&1
 	local handles handle
 	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "input" and .expr[0].match.right == "tun") | .handle')
 	for handle in $handles; do
@@ -557,15 +557,15 @@ mixin_sniff() {
 }
 
 add_acl_ip() {
-	nft add element inet $FW_TABLE acl_ip \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_ip \{ "$1" \}
 }
 
 add_acl_ip6() {
-	nft add element inet $FW_TABLE acl_ip6 \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_ip6 \{ "$1" \}
 }
 
 add_acl_mac() {
-	nft add element inet $FW_TABLE acl_mac \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_mac \{ "$1" \}
 }
 
 add_wan_inbound_exclusions() {
@@ -574,26 +574,28 @@ add_wan_inbound_exclusions() {
 }
 
 add_wan_inbound_exclusion() {
+	local wan; wan=$1
 	local wan_ip
-	network_get_ipaddr wan_ip $1
+	network_get_ipaddr wan_ip "$wan"
 	if [ -n "$wan_ip" ]; then
-		nft add element inet $FW_TABLE wan_ip \{ "$wan_ip" \}
+		nft add element inet "$FW_TABLE" wan_ip \{ "$wan_ip" \}
 	fi
 }
 
 add_wan6_inbound_exclusion() {
+	local wan6; wan6=$1
 	local wan6_subnets wan6_subnet
-	network_get_subnets6 wan6_subnets $1
+	network_get_subnets6 wan6_subnets "$wan6"
 	if [ -n "$wan6_subnets" ]; then
 		for wan6_subnet in $wan6_subnets; do
-			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_subnet" \}
+			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_subnet" \}
 		done
 	fi
 	local wan6_prefixes wan6_prefix
-	network_get_prefixes6 wan6_prefixes $1
+	network_get_prefixes6 wan6_prefixes "$wan6"
 	if [ -n "$wan6_prefixes" ]; then
 		for wan6_prefix in $wan6_prefixes; do
-			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
+			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_prefix" \}
 		done
 	fi
 }
