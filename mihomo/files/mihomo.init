@@ -384,6 +384,7 @@ start_service() {
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
 		log "Add crontab for scheduled restart."
 		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+		/etc/init.d/cron restart
 	fi
 	log "Start Successful!"
 }
@@ -428,6 +429,7 @@ cleanup() {
 	done
 	# delete cron
 	sed -i '/#mihomo/d' "/etc/crontabs/root" > /dev/null 2>&1
+	/etc/init.d/cron restart
 }
 
 log() {
