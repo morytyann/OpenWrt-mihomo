@@ -3,40 +3,46 @@
 # MihomoTProxy's installer
 
 # check env
-echo "Checking..."
-if [ ! -x "/bin/opkg" ]; then
-	echo "Only supports OpenWrt!"
+if [[ ! -x "/bin/opkg" || ! -x "/sbin/fw4" ]]; then
+	echo "Only supports OpenWrt build with firewall4!"
 	exit 1
 fi
-if [ ! -x "/usr/sbin/nft" ]; then
-	echo "Only support firewall4 with nftables!"
-	exit 1
+
+# define result
+result=0
+
+# traverse architectures
+opkg print-architecture | grep -v all | grep -v noarch | cut -d ' ' -f 2 | while read arch; do
+	echo "$arch: start"
+	# download
+	tarball="mihomo_${arch}.tar.gz"
+	echo "$arch: download tarball"
+	curl -s -L -o "$tarball" "https://mirror.ghproxy.com/https://github.com/morytyann/OpenWrt-mihomo/releases/latest/download/$tarball"
+	if [ "$?" != 0 ]; then
+		continue
+	fi
+	# extract
+	echo "$arch: extract tarball"
+	tar -zxf "$tarball" > /dev/null 2>&1
+	if [ "$?" != 0 ]; then
+		continue
+	fi
+	# install
+	echo "$arch: install ipks"
+	opkg install mihomo_*.ipk > /dev/null 2>&1 && opkg install luci-app-mihomo_*.ipk > /dev/null 2>&1 && opkg install luci-i18n-mihomo-zh-cn_*.ipk > /dev/null 2>&1
+	if [ "$?" != 0 ]; then
+		continue
+	fi
+ 	# success
+	echo "Success Install/Update with arch: $arch"
+	result=1
+	break
+done
+
+if [ "$result" == 0 ]; then
+	echo "all architectures failed, maybe release is still in building, or just miss/unsupport your arch"
 fi
-# get arch
-arch=$(opkg print-architecture | grep -v all | grep -v noarch | head -n 1 | cut -d ' ' -f 2)
-# define tarball
-tarball="mihomo_${arch}.tar.gz"
-# download
-echo "Downloading..."
-curl -L -s -o "$tarball" "https://mirror.ghproxy.com/https://github.com/morytyann/OpenWrt-mihomo/releases/latest/download/$tarball"
-if [ "$?" != 0 ]; then
-	echo "Download failed, check your internet connectivity."
-	exit 1
-fi
-# extract
-echo "Extracting..."
-tar -zxf "$tarball"
-if [ "$?" != 0 ]; then
-	echo "Extract failed, broken compressed file?"
-	exit 1
-fi
-rm -f "./$tarball"
-# install
-echo "Installing..."
-opkg -V0 install mihomo_*.ipk && opkg -V0 install luci-app-mihomo_*.ipk && opkg -V0 install luci-i18n-mihomo-zh-cn_*.ipk
-if [ "$?" != 0 ]; then
-	echo "Install failed."
-	exit 1
-fi
+
 # cleanup
+rm -f ./mihomo_*.tar.gz
 rm -f ./*mihomo*.ipk
