@@ -370,6 +370,13 @@ return view.extend({
 
         s.tab('general', _('General Config'));
 
+        o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
+        o.value('silent');
+        o.value('error');
+        o.value('warning');
+        o.value('info');
+        o.value('debug');
+
         o = s.taboption('general', form.ListValue, 'mode', _('Proxy Mode'));
         o.value('general', _('Global Mode'));
         o.value('rule', _('Rule Mode'));
@@ -384,6 +391,9 @@ return view.extend({
         o.optional = true;
         o.rmempty = false;
 
+        o = s.taboption('general', form.Flag, 'ipv6', _('IPv6'));
+        o.rmempty = false;
+
         o = s.taboption('general', form.Flag, 'unify_delay', _('Unify Delay'));
         o.rmempty = false;
 
@@ -393,13 +403,6 @@ return view.extend({
         o = s.taboption('general', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
         o.placeholder = '600';
-
-        o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
-        o.value('silent');
-        o.value('error');
-        o.value('warning');
-        o.value('info');
-        o.value('debug');
 
         s.tab('external_control', _('External Control Config'));
 

@@ -7,10 +7,12 @@
                 "service": [ "list" ]
             },
             "file": {
-                "/etc/mihomo/mixin.yaml": ["read"],
                 "/etc/mihomo/profiles/*.yaml": ["read"],
                 "/etc/mihomo/profiles/*.yml": ["read"],
+                "/etc/mihomo/mixin.yaml": ["read"],
                 "/etc/mihomo/run/config.yaml": ["read"],
+                "/etc/mihomo/nftables/reserved_ip.nft": ["read"],
+                "/etc/mihomo/nftables/reserved_ip6.nft": ["read"],
                 "/etc/mihomo/run/*.log": ["read"],
                 "/usr/libexec/mihomo-call": ["exec"]
             }
@@ -18,10 +20,12 @@
         "write": {
             "uci": [ "mihomo" ],
             "file": {
-                "/etc/mihomo/mixin.yaml": ["write"],
                 "/etc/mihomo/profiles/*.yaml": ["write"],
                 "/etc/mihomo/profiles/*.yml": ["write"],
-                "/etc/mihomo/run/config.yaml": ["write"]
+                "/etc/mihomo/mixin.yaml": ["write"],
+                "/etc/mihomo/run/config.yaml": ["write"],
+                "/etc/mihomo/nftables/reserved_ip.nft": ["write"],
+                "/etc/mihomo/nftables/reserved_ip6.nft": ["write"]
             }
         }
     }

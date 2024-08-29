@@ -47,10 +47,11 @@ start_service() {
 	config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
 	## mixin config
 	### general
-	local mode match_process outbound_interface unify_delay tcp_concurrent tcp_keep_alive_interval log_level
+	local mode match_process outbound_interface ipv6 unify_delay tcp_concurrent tcp_keep_alive_interval log_level
 	config_get mode "mixin" "mode"
 	config_get match_process "mixin" "match_process"
 	config_get outbound_interface "mixin" "outbound_interface"
+	config_get_bool ipv6 "mixin" "ipv6" 0
 	config_get_bool unify_delay "mixin" "unify_delay" 0
 	config_get_bool tcp_concurrent "mixin" "tcp_concurrent" 0
 	config_get tcp_keep_alive_interval "mixin" "tcp_keep_alive_interval" 600
@@ -167,13 +168,13 @@ start_service() {
 	if [ "$mixin" == 0 ]; then
 		log "Mixin is disabled, only mixin neccesary config."
 		# do mixin
-		log_level="$log_level" \
+		log_level="$log_level" ipv6="$ipv6" \
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
 		http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
 		yq -M -i '
-		.log-level = env(log_level) | .ipv6 = true |
+		.log-level = env(log_level) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
@@ -182,7 +183,7 @@ start_service() {
 	else
 		log "Mixin is enabled, mixin all config."
 		# do mixin
-		mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" log_level="$log_level" \
+		log_level="$log_level" mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" ipv6="$ipv6" \
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" selection_cache="$selection_cache" \
 		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
@@ -192,7 +193,7 @@ start_service() {
 		geoip_format="$geoip_format" geodata_loader="$geodata_loader" geosite_url="$geosite_url" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geoip_asn_url="$geoip_asn_url" \
 		geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
 		yq -M -i '
-		.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) | .log-level = env(log_level) | .ipv6 = true |
+		.log-level = env(log_level) | .mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
 		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
@@ -311,6 +312,8 @@ start_service() {
 			fi
 		fi
 		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D FW_MARK_MASK="$FW_MARK_MASK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		nft -f "$RESERVED_IP_NFT"
+		nft -f "$RESERVED_IP6_NFT"
 		# dns hijack
 		if [ "$ipv4_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv4 DNS Hijack is enabled, IPv4 dns request will redirect to the core."
@@ -381,6 +384,7 @@ start_service() {
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
 		log "Add crontab for scheduled restart."
 		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+		/etc/init.d/cron restart
 	fi
 	log "Start Successful!"
 }
@@ -425,6 +429,7 @@ cleanup() {
 	done
 	# delete cron
 	sed -i '/#mihomo/d' "/etc/crontabs/root" > /dev/null 2>&1
+	/etc/init.d/cron restart
 }
 
 log() {
