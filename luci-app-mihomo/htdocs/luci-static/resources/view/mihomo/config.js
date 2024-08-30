@@ -187,7 +187,22 @@ return view.extend({
         o.rmempty = false;
         o.value('tproxy', _('TPROXY Mode'));
         o.value('tun', _('TUN Mode'));
+        
+        var redirect_tcp = s.taboption('transparent_proxy', form.Flag, 'redirect_tcp', _('Redirect TCP'));
+        redirect_tcp.rmempty = false;
+        redirect_tcp.depends('transparent_proxy_mode', 'tun');
 
+        o.onchange = function (ev, section_id) {
+            var val = ev.target.value;
+            if (val === 'tun') {
+                redirect_tcp.updateDefaultValue('1');
+                redirect_tcp.setVisible(true);
+            } else {
+                redirect_tcp.updateDefaultValue('0');
+                redirect_tcp.setVisible(false);
+            }
+        }
+        
         o = s.taboption('transparent_proxy', form.Flag, 'ipv4_dns_hijack', _('IPv4 DNS Hijack'));
         o.rmempty = false;
 
