@@ -277,7 +277,7 @@ start_service() {
 
 	procd_add_jail mihomo requirejail
 	procd_add_jail_mount "$PROG" /etc/TZ /etc/localtime /etc/hosts /etc/ssl/certs /proc
-	procd_add_jail_mount_rw "$RUN_DIR" /dev/net
+	procd_add_jail_mount_rw "$LOG_DIR" "$RUN_DIR" /dev/net
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param no_new_privs 1
 
@@ -426,8 +426,10 @@ log() {
 }
 
 clear_all_log() {
-	echo -n > "$RUN_APP_LOG_PATH"
-	echo -n > "$RUN_CORE_LOG_PATH"
+	rm -rf $LOG_DIR
+	mkdir -p $LOG_DIR
+	touch $LOG_DIR/$LOG_FILE_APP $LOG_DIR/$LOG_FILE_CORE
+	ln -sf $LOG_DIR/$LOG_FILE_APP $LOG_DIR/$LOG_FILE_CORE $RUN_DIR
 }
 
 mixin_authentications() {
