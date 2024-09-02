@@ -33,12 +33,6 @@ table inet mihomo {
 		auto-merge
 	}
 
-	set wan_device {
-		type ifname
-		flags interval
-		auto-merge
-	}
-
 	set fake_ip {
 		type ipv4_addr
 		flags interval
@@ -137,13 +131,12 @@ table inet mihomo {
 
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
-		meta nfproto @proxy_nfproto meta l4proto { tcp, udp } iifname lo meta mark & $FW_MARK_MASK == $FW_MARK tproxy to :$TPROXY_PORT counter accept comment "For Router TPROXY"
-		meta nfproto @proxy_nfproto meta l4proto { tcp, udp } iifname $TUN_DEVICE meta mark & $FW_MARK_MASK == $FW_MARK counter return comment "For Router TUN"
+		meta l4proto { tcp, udp } iifname lo meta mark & $FW_MARK_MASK == $FW_MARK tproxy to :$TPROXY_PORT counter accept
+		meta l4proto { tcp, udp } iifname $TUN_DEVICE counter return
 		fib daddr type local counter return
+		ct direction reply counter return
 		ip daddr @reserved_ip counter return
 		ip6 daddr @reserved_ip6 counter return
-		iifname @wan_device counter return
-		ct direction reply oifname @wan_device counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
 		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return
@@ -155,10 +148,9 @@ table inet mihomo {
 		type route hook output priority mangle; policy accept;
 		meta skuid $MIHOMO_USER counter return
 		fib daddr type local counter return
+		ct direction reply counter return
 		ip daddr @reserved_ip counter return
 		ip6 daddr @reserved_ip6 counter return
-		iifname @wan_device counter return
-		ct direction reply oifname @wan_device counter return
 		ip daddr @china_ip counter return
 		ip6 daddr @china_ip6 counter return
 		meta l4proto . th dport != @acl_dport ip daddr != @fake_ip counter return

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. "$IPKG_INSTROOT/lib/functions/network.sh"
+. "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
 # delete mihomo.proxy.routing_mark
 routing_mark=$(uci -q get mihomo.proxy.routing_mark); [ -n "$routing_mark" ] && uci del mihomo.proxy.routing_mark
@@ -34,12 +34,6 @@ log=$(uci -q get mihomo.log); [ -z "$log" ] && uci set mihomo.log=log
 
 # add mihomo.proxy.bypass_china_mainland_ip
 bypass_china_mainland_ip=$(uci -q get mihomo.proxy.bypass_china_mainland_ip); [ -z "$bypass_china_mainland_ip" ] && uci set mihomo.proxy.bypass_china_mainland_ip=0
-
-# get wan interface
-network_find_wan wan_interface
-
-# add mihomo.proxy.wan_interfaces
-wan_interfaces=$(uci -q get mihomo.proxy.wan_interfaces); [ -z "$wan_interfaces" ] && uci add_list mihomo.proxy.wan_interfaces="$wan_interface"
 
 # add mihomo.proxy.acl_tcp_dport
 acl_tcp_dport=$(uci -q get mihomo.proxy.acl_tcp_dport); [ -z "$acl_tcp_dport" ] && uci set mihomo.proxy.acl_tcp_dport="1-65535"
