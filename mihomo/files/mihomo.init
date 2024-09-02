@@ -353,9 +353,6 @@ start_service() {
 		for acl_dport in $acl_udp_dport; do
 			nft add element inet "$FW_TABLE" acl_dport \{ "udp" . "$acl_dport" \}
 		done
-		# exclusion
-		log "Transparent Proxy: Add exclusions."
-		add_wan_inbound_exclusions
 		# router proxy
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
@@ -400,14 +397,6 @@ reload_service() {
 
 service_triggers() {
 	procd_add_reload_trigger "mihomo"
-
-	config_load mihomo
-	config_list_foreach "proxy" "wan_interfaces" add_reload_interface_trigger
-	config_list_foreach "proxy" "wan6_interfaces" add_reload_interface_trigger
-}
-
-add_reload_interface_trigger() {
-	procd_add_reload_interface_trigger "$1"
 }
 
 cleanup() {
@@ -566,36 +555,4 @@ add_acl_ip6() {
 
 add_acl_mac() {
 	nft add element inet "$FW_TABLE" acl_mac \{ "$1" \}
-}
-
-add_wan_inbound_exclusions() {
-	config_list_foreach "proxy" "wan_interfaces" add_wan_inbound_exclusion
-	config_list_foreach "proxy" "wan6_interfaces" add_wan6_inbound_exclusion
-}
-
-add_wan_inbound_exclusion() {
-	local wan; wan=$1
-	local wan_ip
-	network_get_ipaddr wan_ip "$wan"
-	if [ -n "$wan_ip" ]; then
-		nft add element inet "$FW_TABLE" wan_ip \{ "$wan_ip" \}
-	fi
-}
-
-add_wan6_inbound_exclusion() {
-	local wan6; wan6=$1
-	local wan6_subnets wan6_subnet
-	network_get_subnets6 wan6_subnets "$wan6"
-	if [ -n "$wan6_subnets" ]; then
-		for wan6_subnet in $wan6_subnets; do
-			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_subnet" \}
-		done
-	fi
-	local wan6_prefixes wan6_prefix
-	network_get_prefixes6 wan6_prefixes "$wan6"
-	if [ -n "$wan6_prefixes" ]; then
-		for wan6_prefix in $wan6_prefixes; do
-			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_prefix" \}
-		done
-	fi
 }
