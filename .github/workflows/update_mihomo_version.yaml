@@ -84,4 +84,3 @@ jobs:
             To:
             - PKG_SOURCE_VERSION: `${{ needs.get_lastest_info.outputs.commit_sha }}`
             - PKG_MIRROR_HASH: `${{ needs.get_lastest_info.outputs.checksum }}`
-        
