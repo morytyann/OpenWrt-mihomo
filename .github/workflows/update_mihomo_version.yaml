@@ -57,7 +57,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: morytyann/OpenWrt-mihomo
+          repository: Matrix-CN/OpenWrt-mihomo
           ref: main
           fetch-depth: 0
           path: OpenWrt-mihomo
