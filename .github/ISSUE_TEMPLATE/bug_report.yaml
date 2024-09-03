@@ -29,8 +29,10 @@ body:
           required: true
         - label: 我已经查看过Wiki，没有找到解决办法
           required: true
-        - label: 我使用的是由本仓库代码构建插件，而不是其他Fork
+        - label: 我使用的是由本仓库代码构建的插件，而不是其他Fork
           required: true
+        - label: 我使用的是最新版的插件
+          requried: true
         - label: 这确实是插件的问题，而不是核心/面板/订阅转换服务的问题
           required: true
         - label: 我提供了正确的、有效的、可以帮助DEBUG的信息，而不是随意填写
