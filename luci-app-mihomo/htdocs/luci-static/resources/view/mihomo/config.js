@@ -164,6 +164,12 @@ return view.extend({
             o.value('subscription:' + subscription['.name'], _('Subscription:') + subscription.name);
         }
 
+        o = s.option(form.Flag, 'keep_updated', _('Keep Updated'), _('Download latest subscription/file before start.'));
+        o.rmempty = false;
+        o.depends({ profile: /^subscription:/ });
+        o.depends({ profile: /^http:/ });
+        o.depends({ profile: /^https:/ });
+
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = mihomo.profilesDir;
 

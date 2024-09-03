@@ -76,6 +76,12 @@ msgstr "文件："
 msgid "Subscription:"
 msgstr "订阅："
 
+msgid "Keep Updated"
+msgstr "保持最新"
+
+msgid "Download latest subscription/file before start."
+msgstr "启动前下载最新订阅/文件。"
+
 msgid "Upload Profile"
 msgstr "上传配置文件"
 

@@ -24,10 +24,12 @@ start_service() {
 	log "Starting..."
 	# get config
 	## app config
-	local scheduled_restart cron_expression profile mixin test_profile fast_reload
+	local scheduled_restart cron_expression profile latest_profile_url keep_updated mixin test_profile fast_reload
 	config_get scheduled_restart "config" "scheduled_restart"
 	config_get cron_expression "config" "cron_expression"
 	config_get profile "config" "profile"
+	config_get latest_profile_url "config" "latest_profile_url"
+	config_get_bool keep_updated "config" "keep_updated" 0
 	config_get_bool mixin "config" "mixin" 0
 	config_get_bool test_profile "config" "test_profile" 0
 	config_get_bool fast_reload "config" "fast_reload" 0
@@ -157,11 +159,19 @@ start_service() {
 				url="$url&expand=$([ "$subscription_convert_expand" == 1 ] && echo -n "true" || echo -n "false")"
 			fi
 		fi
-		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $subscription_user_agent" "$url"
+		if [[ ! -f "$RUN_PROFILE_PATH" || "$keep_updated" == 1 || "$url" != "$latest_profile_url" ]]; then
+			curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: $subscription_user_agent" "$url"
+			uci_set mihomo config latest_profile_url "$url"
+			uci_commit mihomo
+		fi
 		log "Use Subscription: $subscription_name"
 	elif [[ "$profile" == "http:"* || "$profile" == "https:"* ]]; then
 		local url; url=$profile
-		curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: mihomo clash.meta clash" "$url"
+		if [[ ! -f "$RUN_PROFILE_PATH" || "$keep_updated" == 1 || "$url" != "$latest_profile_url" ]]; then
+			curl -s -o "$RUN_PROFILE_PATH" -L -H "User-Agent: mihomo clash.meta clash" "$url"
+			uci_set mihomo config latest_profile_url "$url"
+			uci_commit mihomo
+		fi
 		log "Use Url: $url"
 	fi
 	# mixin
