@@ -7,50 +7,7 @@
 'require rpc';
 'require poll';
 'require tools.widgets as widgets';
-'require tools.mihomo as mihomo'
-
-const convertBackends = [
-    'https://api.dler.io/sub',
-    'https://sub.id9.cc/sub',
-    'https://sub.xeton.dev/sub',
-    'http://127.0.0.1:25500/sub',
-];
-
-const convertTemplates = [
-    { name: 'ACL4SSR', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR.ini' },
-    { name: 'ACL4SSR_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_AdblockPlus.ini' },
-    { name: 'ACL4SSR_BackCN', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_BackCN.ini' },
-    { name: 'ACL4SSR_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini.ini' },
-    { name: 'ACL4SSR_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_Fallback.ini' },
-    { name: 'ACL4SSR_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_MultiMode.ini' },
-    { name: 'ACL4SSR_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Mini_NoAuto.ini' },
-    { name: 'ACL4SSR_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoApple.ini' },
-    { name: 'ACL4SSR_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto.ini' },
-    { name: 'ACL4SSR_NoAuto_NoApple', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple.ini' },
-    { name: 'ACL4SSR_NoAuto_NoApple_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoAuto_NoApple_NoMicrosoft.ini' },
-    { name: 'ACL4SSR_NoMicrosoft', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_NoMicrosoft.ini' },
-    { name: 'ACL4SSR_Online', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini' },
-    { name: 'ACL4SSR_Online_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini' },
-    { name: 'ACL4SSR_Online_Full', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini' },
-    { name: 'ACL4SSR_Online_Full_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini' },
-    { name: 'ACL4SSR_Online_Full_Google', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini' },
-    { name: 'ACL4SSR_Online_Full_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini' },
-    { name: 'ACL4SSR_Online_Full_Netflix', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini' },
-    { name: 'ACL4SSR_Online_Full_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini' },
-    { name: 'ACL4SSR_Online_Mini', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini' },
-    { name: 'ACL4SSR_Online_Mini_AdblockPlus', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini' },
-    { name: 'ACL4SSR_Online_Mini_Ai', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Ai.ini' },
-    { name: 'ACL4SSR_Online_Mini_Fallback', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini' },
-    { name: 'ACL4SSR_Online_Mini_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini' },
-    { name: 'ACL4SSR_Online_Mini_MultiMode', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini' },
-    { name: 'ACL4SSR_Online_Mini_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini' },
-    { name: 'ACL4SSR_Online_MultiCountry', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini' },
-    { name: 'ACL4SSR_Online_NoAuto', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini' },
-    { name: 'ACL4SSR_Online_NoReject', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini' },
-    { name: 'ACL4SSR_WithChinaIp', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp.ini' },
-    { name: 'ACL4SSR_WithChinaIp_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithChinaIp_WithGFW.ini' },
-    { name: 'ACL4SSR_WithGFW', url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_WithGFW.ini' },
-];
+'require tools.mihomo as mihomo';
 
 function renderStatus(running) {
     return updateStatus(E('input', { id: 'core_status', style: 'border: unset; font-style: italic; font-weight: bold;', readonly: '' }), running);
@@ -115,14 +72,14 @@ return view.extend({
 
         o = s.option(form.Button, 'reload', '-');
         o.inputstyle = 'action';
-        o.inputtitle = _('Reload');
+        o.inputtitle = _('Reload Service');
         o.onclick = function () {
             return mihomo.reload();
         };
 
         o = s.option(form.Button, 'restart', '-');
         o.inputstyle = 'negative';
-        o.inputtitle = _('Restart');
+        o.inputtitle = _('Restart Service');
         o.onclick = function () {
             return mihomo.restart();
         };
@@ -153,7 +110,7 @@ return view.extend({
         o.rmempty = false;
         o.depends('scheduled_restart', '1');
 
-        o = s.option(form.Value, 'profile', _('Choose Profile'));
+        o = s.option(form.ListValue, 'profile', _('Choose Profile'));
         o.rmempty = false;
 
         for (const profile of profiles) {
@@ -183,8 +140,12 @@ return view.extend({
         o = s.taboption('transparent_proxy', form.Flag, 'transparent_proxy', _('Enable'));
         o.rmempty = false;
 
-        o = s.taboption('transparent_proxy', form.ListValue, 'transparent_proxy_mode', _('Mode'));
-        o.rmempty = false;
+        o = s.taboption('transparent_proxy', form.ListValue, 'tcp_transparent_proxy_mode', _('TCP Proxy Mode'));
+        o.value('redirect', _('Redirect Mode'));
+        o.value('tproxy', _('TPROXY Mode'));
+        o.value('tun', _('TUN Mode'));
+
+        o = s.taboption('transparent_proxy', form.ListValue, 'udp_transparent_proxy_mode', _('UDP Proxy Mode'));
         o.value('tproxy', _('TPROXY Mode'));
         o.value('tun', _('TUN Mode'));
 
@@ -209,7 +170,6 @@ return view.extend({
         s.tab('access_control', _('Access Control'));
 
         o = s.taboption('access_control', form.ListValue, 'access_control_mode', _('Mode'));
-        o.rmempty = false;
         o.value('all', _('All Mode'));
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
@@ -261,103 +221,35 @@ return view.extend({
 
         o = s.taboption('bypass', form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
         o.rmempty = false;
-        o.value('1-65535', _('All Port'));
+        o.value('0-65535', _('All Port'));
         o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
 
         o = s.taboption('bypass', form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
         o.rmempty = false;
-        o.value('1-65535', _('All Port'));
+        o.value('0-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
 
-        s = m.section(form.GridSection, 'subscription', _('Subscription Config'));
+        s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
         s.anonymous = true;
 
-        s.tab('subscription', _('Subscription Config'));
-
-        o = s.taboption('subscription', form.Value, 'name', _('Subscription Name'));
+        o = s.option(form.Value, 'name', _('Subscription Name'));
         o.rmempty = false;
-        o.width = '10%';
+        o.width = '15%';
 
-        o = s.taboption('subscription', form.Value, 'url', _('Subscription Url'));
+        o = s.option(form.Value, 'url', _('Subscription Url'));
         o.rmempty = false;
 
-        o = s.taboption('subscription', form.Value, 'user_agent', _('User Agent'));
+        o = s.option(form.Value, 'user_agent', _('User Agent'));
         o.default = 'mihomo';
         o.rmempty = false;
-        o.modalonly = true;
+        o.width = '15%';
         o.value('mihomo');
         o.value('clash.meta');
         o.value('clash');
 
-        s.tab('convert', _('Convert Config'));
-
-        o = s.taboption('convert', form.Flag, 'convert', _('Enable'));
-        o.modalonly = true;
-        o.rmempty = false;
-
-        o = s.taboption('convert', form.Value, 'convert_backend', _('Backend'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends('convert', '1');
-
-        for (const backend of convertBackends) {
-            o.value(backend);
-        }
-
-        o = s.taboption('convert', form.Value, 'convert_template', _('Template'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends('convert', '1');
-
-        for (const template of convertTemplates) {
-            o.value(template.url, template.name);
-        }
-
-        o = s.taboption('convert', form.Flag, 'convert_advanced', _('Advanced Config'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends('convert', '1');
-
-        o = s.taboption('convert', form.Value, 'convert_include', _('Include'));
-        o.modalonly = true;
-        o.retain = true;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
-        o = s.taboption('convert', form.Value, 'convert_exclude', _('Exclude'));
-        o.modalonly = true;
-        o.retain = true;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
-        o = s.taboption('convert', form.Flag, 'convert_udp', _('UDP'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
-        o = s.taboption('convert', form.Flag, 'convert_emoji', _('Use Emoji'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
-        o = s.taboption('convert', form.Flag, 'convert_insert_node_type', _('Insert Node Type'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
-        o = s.taboption('convert', form.Flag, 'convert_expand', _('Expand Ruleset'));
-        o.modalonly = true;
-        o.retain = true;
-        o.rmempty = false;
-        o.depends({ 'convert': '1', 'convert_advanced': '1' });
-
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
-
+    
         s.tab('general', _('General Config'));
 
         o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
@@ -384,15 +276,13 @@ return view.extend({
         o = s.taboption('general', form.Flag, 'ipv6', _('IPv6'));
         o.rmempty = false;
 
-        o = s.taboption('general', form.Flag, 'unify_delay', _('Unify Delay'));
-        o.rmempty = false;
-
-        o = s.taboption('general', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
-        o.rmempty = false;
+        o = s.taboption('general', form.Value, 'tcp_keep_alive_idle', _('TCP Keep Alive Idle'));
+        o.datatype = 'integer';
+        o.placeholder = '600';
 
         o = s.taboption('general', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
-        o.placeholder = '600';
+        o.placeholder = '15';
 
         s.tab('external_control', _('External Control Config'));
 
@@ -505,10 +395,18 @@ return view.extend({
         o.retain = true;
         o.depends({ 'dns_mode': 'fake-ip', 'fake_ip_filter': '1' });
 
+        o = s.taboption('dns', form.ListValue, 'fake_ip_filter_mode', _('Fake-IP Filter Mode'))
+        o.value('blacklist', _('Block Mode'));
+        o.value('whitelist', _('Allow Mode'));
+        o.depends({ 'dns_mode': 'fake-ip', 'fake_ip_filter': '1' });
+
         o = s.taboption('dns', form.Flag, 'fake_ip_cache', _('Fake-IP Cache'));
         o.retain = true;
         o.rmempty = false;
         o.depends('dns_mode', 'fake-ip');
+
+        o = s.taboption('dns', form.Flag, 'dns_respect_rules', _('Respect Rules'));
+        o.rmempty = false;
 
         o = s.taboption('dns', form.Flag, 'dns_ipv6', _('IPv6'));
         o.rmempty = false;
@@ -551,35 +449,13 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.ListValue, 'type', _('Type'));
+        so.readonly = true;
         so.value('default-nameserver');
         so.value('proxy-server-nameserver');
         so.value('nameserver');
         so.value('fallback');
-        so.readonly = true;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
-
-        o = s.taboption('dns', form.Flag, 'dns_fallback_filter', _('Overwrite Fallback Filter'));
-        o.rmempty = false;
-
-        o = s.taboption('dns', form.SectionValue, '_dns_fallback_filters', form.TableSection, 'fallback_filter', _('Edit Fallback Filters'));
-        o.retain = true;
-        o.depends('dns_fallback_filter', '1');
-
-        o.subsection.anonymous = true;
-        o.subsection.addremove = false;
-
-        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
-        so.rmempty = false;
-
-        so = o.subsection.option(form.ListValue, 'type', _('Type'));
-        so.value('geoip-code', _('GeoIP'));
-        so.value('geosite', _('GeoSite'));
-        so.value('ipcidr', _('IPCIDR'));
-        so.value('domain_name', _('Domain Name'));
-        so.readonly = true;
-
-        so = o.subsection.option(form.DynamicList, 'value', _('Value'));
 
         o = s.taboption('dns', form.Flag, 'dns_nameserver_policy', _('Overwrite Nameserver Policy'));
         o.rmempty = false;
@@ -598,44 +474,6 @@ return view.extend({
         so.rmempty = false;
 
         so = o.subsection.option(form.DynamicList, 'nameserver', _('Nameserver'));
-
-        s.tab('sniffer', _('Sniffer Config'));
-
-        o = s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
-        o.rmempty = false;
-
-        o = s.taboption('sniffer', form.Flag, 'sniff_dns_mapping', _('Sniff Redir-Host'));
-        o.rmempty = false;
-
-        o = s.taboption('sniffer', form.Flag, 'sniff_pure_ip', _('Sniff Pure IP'));
-        o.rmempty = false;
-
-        o = s.taboption('sniffer', form.Flag, 'sniffer_overwrite_dest', _('Overwrite Destination'));
-        o.rmempty = false;
-
-        o = s.taboption('sniffer', form.DynamicList, 'sniffer_force_domain_name', _('Force Sniff Domain Name'));
-
-        o = s.taboption('sniffer', form.DynamicList, 'sniffer_ignore_domain_name', _('Ignore Sniff Domain Name'));
-
-        o = s.taboption('sniffer', form.SectionValue, '_sniffer_sniffs', form.TableSection, 'sniff', _('Sniff By Protocol'));
-
-        o.subsection.anonymous = true;
-        o.subsection.addremove = false;
-
-        so = o.subsection.option(form.Flag, 'enabled', _('Enable'));
-        so.rmempty = false;
-
-        so = o.subsection.option(form.ListValue, 'protocol', _('Protocol'));
-        so.value('HTTP');
-        so.value('TLS');
-        so.value('QUIC');
-        so.readonly = true;
-
-        so = o.subsection.option(form.DynamicList, 'port', _('Port'));
-        so.datatype = 'portrange';
-
-        so = o.subsection.option(form.Flag, 'overwrite_dest', _('Overwrite Destination'));
-        so.rmempty = false;
 
         s.tab('geox', _('GeoX Config'));
 

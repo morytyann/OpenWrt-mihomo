@@ -28,11 +28,11 @@ msgstr "运行中"
 msgid "Not Running"
 msgstr "未在运行"
 
-msgid "Reload"
-msgstr "重新加载"
+msgid "Reload Service"
+msgstr "重载服务"
 
-msgid "Restart"
-msgstr "重启"
+msgid "Restart Service"
+msgstr "重启服务"
 
 msgid "Update Dashboard"
 msgstr "更新面板"
@@ -94,6 +94,15 @@ msgstr "代理配置"
 msgid "Transparent Proxy"
 msgstr "透明代理"
 
+msgid "TCP Proxy Mode"
+msgstr "TCP 代理模式"
+
+msgid "UDP Proxy Mode"
+msgstr "UDP 代理模式"
+
+msgid "Redirect Mode"
+msgstr "Redirect 模式"
+
 msgid "TPROXY Mode"
 msgstr "TPROXY 模式"
 
@@ -148,12 +157,6 @@ msgstr "全部端口"
 msgid "Commonly Used Port"
 msgstr "常用端口"
 
-msgid "WAN Interfaces"
-msgstr "WAN 接口"
-
-msgid "WAN6 Interfaces"
-msgstr "WAN6 接口"
-
 msgid "Subscription Config"
 msgstr "订阅配置"
 
@@ -163,38 +166,8 @@ msgstr "订阅名称"
 msgid "Subscription Url"
 msgstr "订阅链接"
 
-msgid "Convert Config"
-msgstr "订阅转换配置"
-
 msgid "User Agent"
 msgstr "用户代理（UA）"
-
-msgid "Backend"
-msgstr "后端地址"
-
-msgid "Template"
-msgstr "模板"
-
-msgid "Advanced Config"
-msgstr "进阶配置"
-
-msgid "Include"
-msgstr "包含节点"
-
-msgid "Exclude"
-msgstr "排除节点"
-
-msgid "UDP"
-msgstr "UDP"
-
-msgid "Use Emoji"
-msgstr "使用 Emoji"
-
-msgid "Insert Node Type"
-msgstr "插入节点类型"
-
-msgid "Expand Ruleset"
-msgstr "展开规则集"
 
 msgid "Mixin Config"
 msgstr "混入配置"
@@ -220,11 +193,8 @@ msgstr "匹配进程"
 msgid "Outbound Interface"
 msgstr "出站接口"
 
-msgid "Unify Delay"
-msgstr "统一延迟"
-
-msgid "TCP Concurrent"
-msgstr "TCP 并发"
+msgid "TCP Keep Alive Idle"
+msgstr "TCP Keep Alive 空闲"
 
 msgid "TCP Keep Alive Interval"
 msgstr "TCP Keep Alive 间隔"
@@ -325,8 +295,14 @@ msgstr "覆盖 Fake-IP 过滤列表"
 msgid "Edit Fake-IP Filters"
 msgstr "编辑 Fake-IP 过滤列表"
 
+msgid "Fake-IP Filter Mode"
+msgstr "Fake-IP 过滤模式"
+
 msgid "Fake-IP Cache"
 msgstr "Fake-IP 缓存"
+
+msgid "Respect Rules"
+msgstr "遵循分流规则"
 
 msgid "Use System Hosts"
 msgstr "使用系统的 Hosts"
@@ -366,27 +342,6 @@ msgstr "编辑 DNS 服务器查询策略"
 
 msgid "Matcher"
 msgstr "匹配"
-
-msgid "Sniffer Config"
-msgstr "嗅探器配置"
-
-msgid "Sniff Redir-Host"
-msgstr "嗅探 Redir-Host 流量"
-
-msgid "Sniff Pure IP"
-msgstr "嗅探纯IP连接"
-
-msgid "Overwrite Destination"
-msgstr "将嗅探结果作为连接的目标"
-
-msgid "Force Sniff Domain Name"
-msgstr "强制嗅探的域名"
-
-msgid "Ignore Sniff Domain Name"
-msgstr "忽略嗅探的域名"
-
-msgid "Sniff By Protocol"
-msgstr "按协议嗅探"
 
 msgid "GeoX Config"
 msgstr "GeoX 配置"

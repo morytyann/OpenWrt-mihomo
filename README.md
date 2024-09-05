@@ -28,10 +28,9 @@ See [Wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki)
 1. Mixin and Update profile.
 2. Run mihomo.
 3. Run hijack prepare script.
-4. Add exclusions. (wan/wan6 inbound)
-5. Add router hijack.
-6. Add lan hijack with access control.
-7. Set scheduled restart.
+4. Add router hijack.
+5. Add lan hijack with access control.
+6. Set scheduled restart.
 
 Note that the steps above may change base on config.
 
