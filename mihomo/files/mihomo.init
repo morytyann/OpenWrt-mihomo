@@ -383,16 +383,24 @@ service_triggers() {
 }
 
 cleanup() {
-	# delete hijack
-	ip rule del table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
-	ip rule del table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	# delete routing policy
+	ip rule del ipproto tcp table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
+	ip rule del ipproto udp table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
+	ip rule del ipproto tcp table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	ip rule del ipproto udp table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	ip -6 rule del ipproto tcp table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
+	ip -6 rule del ipproto udp table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
+	ip -6 rule del ipproto tcp table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	ip -6 rule del ipproto udp table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	# delete routing table
 	ip route flush table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
 	ip route flush table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
-	ip -6 rule del table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
-	ip -6 rule del table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
+	# delete tun
+	ip link set "$TUN_DEVICE" down
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
+	# delete hijack
 	nft delete table inet "$FW_TABLE" > /dev/null 2>&1
 	local handles handle
 	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "input" and .expr[0].match.right == "tun") | .handle')
