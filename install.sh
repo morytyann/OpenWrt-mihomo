@@ -33,7 +33,7 @@ while read arch; do
 	if [ "$?" != 0 ]; then
 		continue
 	fi
- 	# success
+	# success
 	echo "Success Install/Update with arch: $arch"
 	result=1
 	break
