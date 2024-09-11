@@ -29,7 +29,7 @@ while read arch; do
 	fi
 	# install
 	echo "$arch: install ipks"
-	opkg install mihomo_*.ipk > /dev/null 2>&1 && opkg install luci-app-mihomo_*.ipk > /dev/null 2>&1 && opkg install luci-i18n-mihomo-zh-cn_*.ipk > /dev/null 2>&1
+	opkg install mihomo_*.ipk && opkg install luci-app-mihomo_*.ipk && opkg install luci-i18n-mihomo-zh-cn_*.ipk
 	if [ "$?" != 0 ]; then
 		continue
 	fi
