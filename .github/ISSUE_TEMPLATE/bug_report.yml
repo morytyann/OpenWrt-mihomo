@@ -6,7 +6,7 @@ body:
   - type: checkboxes
     id: self_check
     attributes:
-      label: 自查步骤
+      label: 自查
       description: 请按以下步骤自查，如自查后问题仍然存在，再继续提交Issue。
       options:
         - label: OpenWrt 22.03 及以上版本的系统
@@ -37,7 +37,7 @@ body:
           required: true
         - label: 我提供了正确的、有效的、可以帮助DEBUG的信息，而不是随意填写
           required: true
-        - label: 我提供的信息里不包含公网IP、MAC、节点信息等敏感信息
+        - label: 我提供的信息里不包含公网IP、MAC、代理节点等敏感信息
           required: true
   - type: dropdown
     id: os
@@ -145,6 +145,6 @@ body:
     id: additional_context
     attributes:
       label: 附加信息
-      description: 日志、截图等你觉得对解决此BUG有帮助的信息
+      description: 你觉得对解决此BUG有帮助的其它信息
     validations:
       required: false

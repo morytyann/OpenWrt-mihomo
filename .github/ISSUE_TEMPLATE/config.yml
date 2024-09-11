@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Tips
-    about: Please check if a similar Issue exists.
-    url: https://github.com/morytyann/OpenWrt-mihomo/issues?q=is%3Aissue
-  - name: 提问的智慧
-    about: 'Only For Chinese User: 建议提Issue前先看完这个。'
-    url: https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md
+  - name: How To Ask Questions The Smart Way
+    about: Read it before start a new issue
+    url: http://www.catb.org/~esr/faqs/smart-questions.html

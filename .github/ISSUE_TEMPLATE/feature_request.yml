@@ -24,13 +24,13 @@ body:
     id: how_to
     attributes:
       label: 如何实现
-      description: 你觉得应该如何实现这个功能
+      description: 应该如何实现这个功能
     validations:
       required: false
   - type: textarea
     id: additional_context
     attributes:
       label: 附加信息
-      description: 日志、截图等你觉得对添加此功能有帮助的信息
+      description: 你觉得对添加此功能有帮助的其它信息
     validations:
       required: false
