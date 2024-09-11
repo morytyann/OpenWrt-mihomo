@@ -248,12 +248,22 @@ start_service() {
 		log "Transparent Proxy: Start hijack."
 		# prepare
 		if [ "$tproxy_enable" == 1 ]; then
-			ip route add local default dev lo table "$TPROXY_ROUTE_TABLE"
+			if [ "$ipv4_proxy" == 1 ]; then
+				ip route add local default dev lo table "$TPROXY_ROUTE_TABLE"
+			fi
+			if [ "$ipv6_proxy" == 1 ]; then
+				ip -6 route add local default dev lo table "$TPROXY_ROUTE_TABLE"
+			fi
 		fi
 		if [ "$tun_enable" == 1 ]; then
 			ip tuntap add dev "$TUN_DEVICE" mode tun vnet_hdr
 			ip link set "$TUN_DEVICE" up
-			ip route add unicast default dev $TUN_DEVICE table "$TUN_ROUTE_TABLE"
+			if [ "$ipv4_proxy" == 1 ]; then
+				ip route add unicast default dev $TUN_DEVICE table "$TUN_ROUTE_TABLE"
+			fi
+			if [ "$ipv6_proxy" == 1 ]; then
+				ip -6 route add unicast default dev $TUN_DEVICE table "$TUN_ROUTE_TABLE"
+			fi
 			$TUN_SH
 		fi
 		local tcp_route_table
