@@ -2,9 +2,6 @@
 
 . "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
-# since 1.8.0
-
-
 # commit
 uci commit mihomo
 

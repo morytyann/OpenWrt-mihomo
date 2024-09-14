@@ -11,6 +11,7 @@ jobs:
     outputs:
       pkg_source_version: ${{ steps.get_current_info.outputs.pkg_source_version }}
       pkg_mirror_hash: ${{ steps.get_current_info.outputs.pkg_mirror_hash }}
+      pkg_build_version: ${{ steps.get_current_info.outputs.pkg_build_version }}
     steps:
       - id: checkout
         name: Checkout
@@ -18,17 +19,18 @@ jobs:
         with:
           repository: morytyann/OpenWrt-mihomo
           ref: main
-          fetch-depth: 0
           path: OpenWrt-mihomo
       - id: get_current_info
         name: Get Current Info
         run: |
           echo "pkg_source_version=$(grep "PKG_SOURCE_VERSION:=" OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
           echo "pkg_mirror_hash=$(grep "PKG_MIRROR_HASH:=" OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
+          echo "pkg_build_version=$(grep "PKG_BUILD_VERSION:=" OpenWrt-mihomo/mihomo/Makefile | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
   get_lastest_info:
     runs-on: ubuntu-latest
     outputs:
       commit_sha: ${{ steps.get_lastest_info.outputs.commit_sha }}
+      short_commit_sha: ${{ steps.get_lastest_info.outputs.short_commit_sha }}
       checksum: ${{ steps.get_lastest_info.outputs.checksum }}
     steps:
       - id: checkout
@@ -37,12 +39,12 @@ jobs:
         with:
           repository: 'MetaCubeX/mihomo'
           ref: 'Alpha'
-          fetch-depth: 0
           path: 'mihomo'
       - id: get_lastest_info
         name: Get Latest Info
         run: |
           echo "commit_sha=$(git -C mihomo rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "short_commit_sha=$(git -C mihomo rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           git -C mihomo config tar.xz.command "xz -c"
           git -C mihomo archive --output=mihomo.tar.xz HEAD
           echo "checksum=$(sha256sum mihomo/mihomo.tar.xz | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
@@ -59,15 +61,15 @@ jobs:
         with:
           repository: morytyann/OpenWrt-mihomo
           ref: main
-          fetch-depth: 0
           path: OpenWrt-mihomo
       - id: update
         name: Update
         run: |
+          sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=1/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=$(date -u -d yesterday -I)/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=${{ needs.get_lastest_info.outputs.commit_sha }}/" OpenWrt-mihomo/mihomo/Makefile
           sed -i "s/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=${{ needs.get_lastest_info.outputs.checksum }}/" OpenWrt-mihomo/mihomo/Makefile
-          sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=1/" OpenWrt-mihomo/mihomo/Makefile
+          sed -i "s/PKG_BUILD_VERSION:=.*/PKG_BUILD_VERSION:=alpha-${{ needs.get_lastest_info.outputs.short_commit_sha }}/" OpenWrt-mihomo/mihomo/Makefile
       - id: pr
         name: Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -77,11 +79,5 @@ jobs:
           commit-message: Update Mihomo Version
           title: Update Mihomo Version
           body: |
-            From:
-            - PKG_SOURCE_VERSION: `${{ needs.get_current_info.outputs.pkg_source_version }}`
-            - PKG_MIRROR_HASH: `${{ needs.get_current_info.outputs.pkg_mirror_hash }}`
-
-            To:
-            - PKG_SOURCE_VERSION: `${{ needs.get_lastest_info.outputs.commit_sha }}`
-            - PKG_MIRROR_HASH: `${{ needs.get_lastest_info.outputs.checksum }}`
-        
+            From: `${{ needs.get_current_info.outputs.pkg_build_version }}`
+            To: `alpha-${{ needs.get_lastest_info.outputs.short_commit_sha }}`
