@@ -16,7 +16,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-PKG_BUILD_VERSION:=alpha-$(shell printf '%.8s' $(PKG_SOURCE_VERSION))
+PKG_BUILD_VERSION:=alpha-e33d4a4
 PKG_BUILD_TIME:=$(shell date -u -Iseconds)
 
 GO_PKG:=github.com/metacubex/mihomo
@@ -31,12 +31,12 @@ define Package/mihomo
   CATEGORY:=Network
   TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
-  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +curl +yq firewall4 +kmod-nft-tproxy +ip-full +kmod-tun
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +curl +yq firewall4 +kmod-nft-tproxy +ip-full +kmod-tun +procd-ujail
   USERID:=mihomo=7890:mihomo=7890
 endef
 
 define Package/mihomo/description
- A rule based proxy in Go.
+  A rule based proxy in Go.
 endef
 
 define Package/mihomo/conffiles
