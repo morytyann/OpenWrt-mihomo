@@ -201,6 +201,7 @@ start_service() {
 			yq ea -M -i '. as $item ireduce ({}; . * $item ) | ... comments=""' "$RUN_PROFILE_PATH" "$MIXIN_FILE_PATH"
 		fi
 	fi
+	yq -M -i 'del (.bind-address)' "$RUN_PROFILE_PATH"
 	if [ "$tun_enable" == 1 ]; then
 		yq -M -i '.tun.auto-route = false | .tun.auto-redirect = false | .tun.auto-detect-interface = false | .tun.dns-hijack = []' "$RUN_PROFILE_PATH"
 	fi
@@ -408,7 +409,7 @@ cleanup() {
 	ip -6 route flush table "$TPROXY_ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$TUN_ROUTE_TABLE" > /dev/null 2>&1
 	# delete tun
-	ip link set "$TUN_DEVICE" down
+	ip link set "$TUN_DEVICE" down > /dev/null 2>&1
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
 	# delete hijack
 	nft delete table inet "$FW_TABLE" > /dev/null 2>&1
