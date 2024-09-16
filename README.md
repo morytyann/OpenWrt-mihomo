@@ -19,6 +19,10 @@ Transparent Proxy with Mihomo on OpenWrt.
 
 `curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/install.sh | ash`
 
+## Uninstall & Reset
+
+`curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/uninstall.sh | ash`
+
 ## How To Use
 
 See [Wiki](https://github.com/morytyann/OpenWrt-mihomo/wiki)
