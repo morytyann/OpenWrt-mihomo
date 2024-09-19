@@ -1,4 +1,4 @@
-![GitHub License](https://img.shields.io/github/license/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/morytyann/OpenWrt-mihomo/release.yml?style=for-the-badge&label=release) ![GitHub Tag](https://img.shields.io/github/v/tag/morytyann/OpenWrt-mihomo?style=for-the-badge) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/morytyann/OpenWrt-mihomo/total?style=for-the-badge) ![GitHub Repo stars](https://img.shields.io/github/stars/morytyann/OpenWrt-mihomo?style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/morytyann/OpenWrt-mihomo?style=for-the-badge&logo=github) ![GitHub Tag](https://img.shields.io/github/v/release/morytyann/OpenWrt-mihomo?style=for-the-badge&logo=github) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/morytyann/OpenWrt-mihomo/total?style=for-the-badge&logo=github) ![GitHub Repo stars](https://img.shields.io/github/stars/morytyann/OpenWrt-mihomo?style=for-the-badge&logo=github) [![Telegram](https://img.shields.io/badge/Contact-Telegram-26A5E4?style=for-the-badge&logo=telegram)](https://t.me/mihomotproxy)
 
 # MihomoTProxy
 
@@ -17,11 +17,15 @@ Transparent Proxy with Mihomo on OpenWrt.
 
 ## Install & Update
 
-`curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/install.sh | ash`
+```shell
+curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/install.sh | ash
+```
 
 ## Uninstall & Reset
 
-`curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/uninstall.sh | ash`
+```shell
+curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/uninstall.sh | ash
+```
 
 ## How To Use
 
