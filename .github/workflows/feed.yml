@@ -1,6 +1,8 @@
-name: Build Packages
+name: Build Feed
 
 on:
+  schedule:
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 jobs:
@@ -41,10 +43,39 @@ jobs:
           ARCH: ${{ matrix.arch }}
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
+          INDEX: 1
+          KEY_BUILD: ${{ secrets.KEY_BUILD }}
           NO_REFRESH_CHECK: true
+
+      - name: Compress
+        run: |
+          tar -c -z -f mihomo_${{ matrix.arch }}.tar.gz bin/packages/${{ matrix.arch }}/mihomo
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: mihomo_${{ matrix.arch }}
-          path: bin/packages/${{ matrix.arch }}/mihomo/*.ipk
+          path: mihomo_${{ matrix.arch }}.tar.gz
+
+  feed:
+    needs: build
+    name: feed
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      
+      - name: Uncompress
+        run: |
+          ls mihomo_*.tar.gz | xargs -n 1 tar -x -z -f
+
+      - name: Feed
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: bin/packages
+          force_orphan: true
+          commit_message: Update Feed
