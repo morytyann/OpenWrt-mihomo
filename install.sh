@@ -4,12 +4,20 @@
 
 # check env
 if [[ ! -x "/bin/opkg" || ! -x "/sbin/fw4" ]]; then
-	echo "Only supports OpenWrt build with firewall4!"
+	echo "only supports OpenWrt build with firewall4!"
 	exit 1
 fi
 
 # define result
 result=0
+
+# update feeds
+echo "update feeds"
+opkg update
+if [ "$?" != 0 ]; then
+	echo "update feeds failed!"
+	exit 1
+fi
 
 # traverse architectures
 while read arch; do
@@ -39,6 +47,7 @@ while read arch; do
 	break
 done < <(opkg print-architecture | grep -v all | grep -v noarch | cut -d ' ' -f 2)
 
+# check result
 if [ "$result" == 0 ]; then
 	echo "all architectures failed, maybe release is still in building, or just miss/unsupport your arch"
 fi

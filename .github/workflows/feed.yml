@@ -1,6 +1,8 @@
-name: Build Packages
+name: Build Feed
 
 on:
+  schedule:
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 jobs:
@@ -41,6 +43,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
           FEEDNAME: mihomo
           PACKAGES: luci-app-mihomo
+          INDEX: 1
           NO_REFRESH_CHECK: true
 
       - name: Upload
@@ -48,3 +51,21 @@ jobs:
         with:
           name: mihomo_${{ matrix.arch }}
           path: bin/packages/${{ matrix.arch }}/mihomo/*.ipk
+
+  feed:
+    needs: build
+    name: feed
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Feed
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          publish_dir: bin/packages
+          force_orphan: true
+          commit_message: daily update
