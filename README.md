@@ -5,26 +5,48 @@
 Transparent Proxy with Mihomo on OpenWrt.
 
 > [!WARNING]
+>
 > - Only support firewall4, it means your OpenWrt version needs to be 22.03 or above
 
 ## Feature
- - Transparent Proxy (TPROXY/TUN, IPv4 and/or IPv6)
- - Access Control
- - Compatible with Multiple WAN
- - Profile Mixin
- - Profile Editor
- - Scheduled Restart
+
+- Transparent Proxy (TPROXY/TUN, IPv4 and/or IPv6)
+- Access Control
+- Compatible with Multiple WAN
+- Profile Mixin
+- Profile Editor
+- Scheduled Restart
 
 ## Install & Update
 
+### A. Install From Feed (Recommended)
+
+1. Add Feed
+
 ```shell
-curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/install.sh | ash
+# only needs to be run once
+curl -s -L https://mirror.ghproxy.com/https://github.com/morytyann/OpenWrt-mihomo/raw/refs/heads/main/feed.sh | ash
+```
+
+2. Install
+
+```shell
+# you can install from shell or `Software` menu in LuCI
+opkg install mihomo
+opkg install luci-app-mihomo
+opkg install luci-i18n-mihomo-zh-cn
+```
+
+### B. Install From Release
+
+```shell
+curl -s -L https://mirror.ghproxy.com/https://github.com/morytyann/OpenWrt-mihomo/raw/refs/heads/main/install.sh | ash
 ```
 
 ## Uninstall & Reset
 
 ```shell
-curl -s -L https://mirror.ghproxy.com/https://raw.githubusercontent.com/morytyann/OpenWrt-mihomo/main/uninstall.sh | ash
+curl -s -L https://mirror.ghproxy.com/https://github.com/morytyann/OpenWrt-mihomo/raw/refs/heads/main/uninstall.sh | ash
 ```
 
 ## How To Use
@@ -53,6 +75,7 @@ echo "src-git mihomo https://github.com/morytyann/OpenWrt-mihomo.git;main" >> "f
 # make package
 make package/luci-app-mihomo/compile
 ```
+
 The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 
 ## Dependencies
@@ -64,5 +87,3 @@ The ipk file will be found under `bin/packages/your_architecture/mihomo`.
 - kmod-nft-tproxy
 - ip-full
 - kmod-tun
-
-
