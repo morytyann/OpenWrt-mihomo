@@ -22,4 +22,8 @@ rm -f "$key_build_pub_file"
 echo "add feed"
 echo "src/gz mihomo https://morytyann.github.io/OpenWrt-mihomo/$DISTRIB_ARCH/mihomo" >> "/etc/opkg/customfeeds.conf"
 
+# update feeds
+echo "update feeds"
+opkg update
+
 echo "success"
