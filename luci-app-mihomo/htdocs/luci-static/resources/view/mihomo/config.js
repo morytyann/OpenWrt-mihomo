@@ -260,7 +260,7 @@ return view.extend({
         o.value('debug');
 
         o = s.taboption('general', form.ListValue, 'mode', _('Proxy Mode'));
-        o.value('general', _('Global Mode'));
+        o.value('global', _('Global Mode'));
         o.value('rule', _('Rule Mode'));
         o.value('direct', _('Direct Mode'));
 
