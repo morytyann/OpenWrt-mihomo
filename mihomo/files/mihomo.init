@@ -236,6 +236,9 @@ start_service() {
 	procd_set_param user "$MIHOMO_USER"
 	procd_set_param group "$MIHOMO_GROUP"
 
+	procd_set_param limits core="unlimited"
+	procd_set_param limits nofile="1048576 1048576"
+
 	procd_add_jail mihomo requirejail procfs
 	procd_add_jail_mount "$PROG" /etc/TZ /etc/localtime /etc/hosts /etc/ssl/certs
 	procd_add_jail_mount_rw "$RUN_DIR" /dev/net
