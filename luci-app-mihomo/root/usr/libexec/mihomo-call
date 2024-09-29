@@ -6,13 +6,13 @@ action=$1
 shift
 
 case "$action" in
-	clear)
+	clear_log)
 		case "$1" in
-			app_log)
-				echo -n > "$RUN_APP_LOG_PATH"
+			app)
+				echo -n > "$APP_LOG_PATH"
 			;;
-			core_log)
-				echo -n > "$RUN_CORE_LOG_PATH"
+			core)
+				echo -n > "$CORE_LOG_PATH"
 			;;
 		esac
 	;;

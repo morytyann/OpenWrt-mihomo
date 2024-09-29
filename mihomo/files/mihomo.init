@@ -9,7 +9,7 @@ USE_PROCD=1
 
 start_service() {
 	# clear log
-	clear_all_log
+	clear_log
 	# load config
 	config_load mihomo
 	# check if enabled
@@ -135,6 +135,8 @@ start_service() {
 		fi
 		log "Use Subscription: $subscription_name"
 	else
+		log "No profile/subscription selected."
+		log "Exiting..."
 		return
 	fi
 	# mixin
@@ -215,7 +217,7 @@ start_service() {
 	# test profile
 	if [ "$test_profile" == 1 ]; then
 		log "Profile testing..."
-		if ($PROG -d "$RUN_DIR" -t >> "$RUN_CORE_LOG_PATH" 2>&1); then
+		if ($PROG -d "$RUN_DIR" -t >> "$CORE_LOG_PATH" 2>&1); then
 			log "Profile test passed!"
 		else
 			log "Profile test failed!"
@@ -227,7 +229,7 @@ start_service() {
 	log "Start Core"
 	procd_open_instance mihomo
 
-	procd_set_param command /bin/sh -c "$PROG -d $RUN_DIR >> $RUN_CORE_LOG_PATH 2>&1"
+	procd_set_param command /bin/sh -c "$PROG -d $RUN_DIR >> $CORE_LOG_PATH 2>&1"
 	procd_set_param file "$RUN_PROFILE_PATH"
 	if [ "$fast_reload" == 1 ]; then
 		procd_set_param reload_signal HUP
@@ -241,7 +243,7 @@ start_service() {
 
 	procd_add_jail mihomo requirejail procfs
 	procd_add_jail_mount "$PROG" /etc/TZ /etc/localtime /etc/hosts /etc/ssl/certs
-	procd_add_jail_mount_rw "$RUN_DIR" /dev/net
+	procd_add_jail_mount_rw "$RUN_DIR" "$LOG_DIR" /dev/net
 	procd_set_param capabilities /etc/capabilities/mihomo.json
 	procd_set_param no_new_privs 1
 
@@ -249,7 +251,7 @@ start_service() {
 	# transparent proxy
 	if [ "$transparent_proxy" == 1 ]; then
 		log "Transparent Proxy is enabled."
-		log "Transparent Proxy: Start hijack."
+		log "Transparent Proxy: Start."
 		# prepare
 		if [ "$tproxy_enable" == 1 ]; then
 			if [ "$ipv4_proxy" == 1 ]; then
@@ -417,11 +419,11 @@ cleanup() {
 	# delete hijack
 	nft delete table inet "$FW_TABLE" > /dev/null 2>&1
 	local handles handle
-	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "input" and .expr[0].match.right == "tun") | .handle')
+	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.chain == "input" and .comment == "mihomo") | .handle')
 	for handle in $handles; do
 		nft delete rule inet fw4 input handle "$handle"
 	done
-	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "forward" and .expr[0].match.right == "tun") | .handle')
+	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.chain == "forward" and .comment == "mihomo") | .handle')
 	for handle in $handles; do
 		nft delete rule inet fw4 forward handle "$handle"
 	done
@@ -431,12 +433,14 @@ cleanup() {
 }
 
 log() {
-	echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$RUN_APP_LOG_PATH"
+	echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$APP_LOG_PATH"
 }
 
-clear_all_log() {
-	echo -n > "$RUN_APP_LOG_PATH"
-	echo -n > "$RUN_CORE_LOG_PATH"
+clear_log() {
+	if [ -d "$LOG_DIR" ]; then
+		rm -rf "$LOG_DIR"
+	fi
+	mkdir "$LOG_DIR"
 }
 
 mixin_authentications() {

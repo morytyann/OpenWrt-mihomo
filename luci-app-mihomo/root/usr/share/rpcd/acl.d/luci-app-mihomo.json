@@ -13,7 +13,7 @@
                 "/etc/mihomo/run/config.yaml": ["read"],
                 "/etc/mihomo/nftables/reserved_ip.nft": ["read"],
                 "/etc/mihomo/nftables/reserved_ip6.nft": ["read"],
-                "/etc/mihomo/run/*.log": ["read"],
+                "/var/log/mihomo/*.log": ["read"],
                 "/usr/libexec/mihomo-call": ["exec"]
             }
         },

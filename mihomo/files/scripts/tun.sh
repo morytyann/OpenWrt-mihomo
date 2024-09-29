@@ -9,9 +9,9 @@ config_get tcp_transparent_proxy_mode "proxy" "tcp_transparent_proxy_mode"
 config_get udp_transparent_proxy_mode "proxy" "udp_transparent_proxy_mode"
 
 if [ "$enabled" == 1 ] && [[ "$tcp_transparent_proxy_mode" == "tun" || "$udp_transparent_proxy_mode" == "tun" ]]; then
-	nft insert rule inet fw4 input iifname "$TUN_DEVICE" counter accept
-	nft insert rule inet fw4 forward oifname "$TUN_DEVICE" counter accept
-	nft insert rule inet fw4 forward iifname "$TUN_DEVICE" counter accept
+	nft insert rule inet fw4 input iifname "$TUN_DEVICE" counter accept comment "mihomo"
+	nft insert rule inet fw4 forward oifname "$TUN_DEVICE" counter accept comment "mihomo"
+	nft insert rule inet fw4 forward iifname "$TUN_DEVICE" counter accept comment "mihomo"
 fi
 
 exit 0
