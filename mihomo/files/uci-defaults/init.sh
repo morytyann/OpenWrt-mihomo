@@ -2,16 +2,6 @@
 
 . "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
-# add firewall include for tun
-uci -q batch <<-EOF > /dev/null
-	delete firewall.mihomo
-	set firewall.mihomo=include
-	set firewall.mihomo.type=script
-	set firewall.mihomo.path=$TUN_SH
-	set firewall.mihomo.fw4_compatible=1
-	commit firewall
-EOF
-
 # check mihomo.config.init
 init=$(uci -q get mihomo.config.init); [ -z "$init" ] && return
 

@@ -12,7 +12,7 @@ TCP_RULE_PREF="1024"
 UDP_RULE_PREF="1025"
 TPROXY_ROUTE_TABLE="80"
 TUN_ROUTE_TABLE="81"
-TUN_DEVICE="tun"
+TUN_DEVICE="mihomo"
 
 # paths
 PROG="/usr/bin/mihomo"
@@ -20,10 +20,11 @@ HOME_DIR="/etc/mihomo"
 PROFILES_DIR="$HOME_DIR/profiles"
 MIXIN_FILE_PATH="$HOME_DIR/mixin.yaml"
 RUN_DIR="$HOME_DIR/run"
-RUN_APP_LOG_PATH="$RUN_DIR/app.log"
-RUN_CORE_LOG_PATH="$RUN_DIR/core.log"
 RUN_PROFILE_PATH="$RUN_DIR/config.yaml"
 RUN_UI_DIR="$RUN_DIR/ui"
+LOG_DIR="/var/log/mihomo"
+APP_LOG_PATH="$LOG_DIR/app.log"
+CORE_LOG_PATH="$LOG_DIR/core.log"
 
 # scripts
 SH_DIR="$HOME_DIR/scripts"

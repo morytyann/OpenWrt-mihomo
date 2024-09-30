@@ -8,9 +8,10 @@ const homeDir = '/etc/mihomo';
 const profilesDir = `${homeDir}/profiles`;
 const mixinFilePath = `${homeDir}/mixin.yaml`;
 const runDir = `${homeDir}/run`;
-const runAppLogPath = `${runDir}/app.log`;
-const runCoreLogPath = `${runDir}/core.log`;
 const runProfilePath = `${runDir}/config.yaml`;
+const logDir = `/var/log/mihomo`;
+const appLogPath = `${logDir}/app.log`;
+const coreLogPath = `${logDir}/core.log`;
 const nftDir = `${homeDir}/nftables`;
 const reservedIPNFT = `${nftDir}/reserved_ip.nft`;
 const reservedIP6NFT = `${nftDir}/reserved_ip6.nft`;
@@ -20,8 +21,8 @@ return baseclass.extend({
     profilesDir: profilesDir,
     mixinFilePath: mixinFilePath,
     runDir: runDir,
-    runAppLogPath: runAppLogPath,
-    runCoreLogPath: runCoreLogPath,
+    appLogPath: appLogPath,
+    coreLogPath: coreLogPath,
     runProfilePath: runProfilePath,
     reservedIPNFT: reservedIPNFT,
     reservedIP6NFT: reservedIP6NFT,
@@ -34,19 +35,19 @@ return baseclass.extend({
     }),
 
     getAppLog: function () {
-        return L.resolveDefault(fs.read_direct(this.runAppLogPath));
+        return L.resolveDefault(fs.read_direct(this.appLogPath));
     },
 
     getCoreLog: function () {
-        return L.resolveDefault(fs.read_direct(this.runCoreLogPath));
+        return L.resolveDefault(fs.read_direct(this.coreLogPath));
     },
 
     clearAppLog: function () {
-        return fs.exec_direct('/usr/libexec/mihomo-call', ['clear', 'app_log']);
+        return fs.exec_direct('/usr/libexec/mihomo-call', ['clear_log', 'app']);
     },
 
     clearCoreLog: function () {
-        return fs.exec_direct('/usr/libexec/mihomo-call', ['clear', 'core_log']);
+        return fs.exec_direct('/usr/libexec/mihomo-call', ['clear_log', 'core']);
     },
 
     listProfiles: function () {

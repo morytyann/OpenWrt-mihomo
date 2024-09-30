@@ -111,7 +111,7 @@ return view.extend({
         o.depends('scheduled_restart', '1');
 
         o = s.option(form.ListValue, 'profile', _('Choose Profile'));
-        o.rmempty = false;
+        o.optional = true;
 
         for (const profile of profiles) {
             o.value('file:' + profile.name, _('File:') + profile.name);
