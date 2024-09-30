@@ -87,22 +87,26 @@ endef
 
 define Package/mihomo/postinst
 #!/bin/sh
-uci -q batch <<-EOF > /dev/null
-	del firewall.mihomo
-	set firewall.mihomo=include
-	set firewall.mihomo.type=script
-	set firewall.mihomo.path=/etc/mihomo/scripts/tun.sh
-	set firewall.mihomo.fw4_compatible=1
-	commit firewall
-EOF
+if [ -z $${IPKG_INSTROOT} ]; then
+	uci -q batch <<-EOF > /dev/null
+		del firewall.mihomo
+		set firewall.mihomo=include
+		set firewall.mihomo.type=script
+		set firewall.mihomo.path=/etc/mihomo/scripts/tun.sh
+		set firewall.mihomo.fw4_compatible=1
+		commit firewall
+	EOF
+fi
 endef
 
 define Package/mihomo/postrm
 #!/bin/sh
-uci -q batch <<-EOF > /dev/null
-	del firewall.mihomo
-	commit firewall
-EOF
+if [ -z $${IPKG_INSTROOT} ]; then
+	uci -q batch <<-EOF > /dev/null
+		del firewall.mihomo
+		commit firewall
+	EOF
+fi
 endef
 
 define Build/Prepare
