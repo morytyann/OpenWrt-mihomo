@@ -75,6 +75,7 @@ define Package/mihomo/install
 	$(INSTALL_BIN) $(CURDIR)/files/mihomo.init $(1)/etc/init.d/mihomo
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(CURDIR)/files/uci-defaults/firewall.sh $(1)/etc/uci-defaults/99_firewall_mihomo
 	$(INSTALL_BIN) $(CURDIR)/files/uci-defaults/init.sh $(1)/etc/uci-defaults/99_init_mihomo
 	$(INSTALL_BIN) $(CURDIR)/files/uci-defaults/migrate.sh $(1)/etc/uci-defaults/99_migrate_mihomo
 
@@ -83,20 +84,6 @@ define Package/mihomo/install
 
 	$(INSTALL_DIR) $(1)/lib/upgrade/keep.d
 	$(INSTALL_DATA) $(CURDIR)/files/mihomo.upgrade $(1)/lib/upgrade/keep.d/mihomo
-endef
-
-define Package/mihomo/postinst
-#!/bin/sh
-if [ -z $${IPKG_INSTROOT} ]; then
-	uci -q batch <<-EOF > /dev/null
-		del firewall.mihomo
-		set firewall.mihomo=include
-		set firewall.mihomo.type=script
-		set firewall.mihomo.path=/etc/mihomo/scripts/tun.sh
-		set firewall.mihomo.fw4_compatible=1
-		commit firewall
-	EOF
-fi
 endef
 
 define Package/mihomo/postrm

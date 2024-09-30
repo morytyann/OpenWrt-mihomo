@@ -83,7 +83,7 @@ start_service() {
 	config_get tun_gso_max_size "mixin" "tun_gso_max_size" "65536"
 	config_get_bool tun_endpoint_independent_nat "mixin" "tun_endpoint_independent_nat" 0
 	### dns
-	local dns_port dns_mode fake_ip_range fake_ip_filter fake_ip_filter_mode fake_ip_cache dns_respect_rules dns_ipv6 dns_system_hosts dns_hosts hosts dns_nameserver dns_nameserver_policy
+	local dns_port dns_mode fake_ip_range fake_ip_filter fake_ip_filter_mode fake_ip_cache dns_respect_rules dns_doh_prefer_http3 dns_ipv6 dns_system_hosts dns_hosts hosts dns_nameserver dns_nameserver_policy
 	config_get dns_port "mixin" "dns_port" "1053"
 	config_get dns_mode "mixin" "dns_mode" "redir-host"
 	config_get fake_ip_range "mixin" "fake_ip_range" "198.18.0.1/16"
@@ -91,6 +91,7 @@ start_service() {
 	config_get fake_ip_filter_mode "mixin" "fake_ip_filter_mode" "blacklist"
 	config_get_bool fake_ip_cache "mixin" "fake_ip_cache" 0
 	config_get_bool dns_respect_rules "mixin" "dns_respect_rules" 0
+	config_get_bool dns_doh_prefer_http3 "mixin" "dns_doh_prefer_http3" 0
 	config_get_bool dns_ipv6 "mixin" "dns_ipv6" 0
 	config_get_bool dns_system_hosts "mixin" "dns_system_hosts" 0
 	config_get_bool dns_hosts "mixin" "dns_hosts" 0
@@ -163,7 +164,7 @@ start_service() {
 		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_enable="$tun_enable" tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" fake_ip_cache="$fake_ip_cache" \
-		dns_respect_rules="$dns_respect_rules" dns_ipv6="$dns_ipv6" dns_system_hosts="$dns_system_hosts" dns_hosts="$dns_hosts" \
+		dns_respect_rules="$dns_respect_rules" dns_doh_prefer_http3="$dns_doh_prefer_http3" dns_ipv6="$dns_ipv6" dns_system_hosts="$dns_system_hosts" dns_hosts="$dns_hosts" \
 		geoip_format="$geoip_format" geodata_loader="$geodata_loader" geosite_url="$geosite_url" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geoip_asn_url="$geoip_asn_url" \
 		geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
 		yq -M -i '
@@ -172,7 +173,7 @@ start_service() {
 		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.enable = env(tun_enable) == 1 | .tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range) | .profile.store-fake-ip = env(fake_ip_cache) == 1 |
-		.dns.respect-rules = env(dns_respect_rules) == 1 | .dns.ipv6 = env(dns_ipv6) == 1 | .dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 |
+		.dns.respect-rules = env(dns_respect_rules) == 1 | .dns.prefer-h3 = env(dns_doh_prefer_http3) == 1 | .dns.ipv6 = env(dns_ipv6) == 1 | .dns.use-system-hosts = env(dns_system_hosts) == 1 | .dns.use-hosts = env(dns_hosts) == 1 |
 		.geodata-mode = env(geoip_format) == "dat" | .geodata-loader = env(geodata_loader) | .geox-url.geosite = env(geosite_url) | .geox-url.mmdb = env(geoip_mmdb_url) | .geox-url.geoip = env(geoip_dat_url) | .geox-url.asn = env(geoip_asn_url) |
 		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval)
 		' "$RUN_PROFILE_PATH"

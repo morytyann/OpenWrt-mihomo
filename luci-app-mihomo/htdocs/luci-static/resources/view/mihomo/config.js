@@ -408,6 +408,9 @@ return view.extend({
         o = s.taboption('dns', form.Flag, 'dns_respect_rules', _('Respect Rules'));
         o.rmempty = false;
 
+        o = s.taboption('dns', form.Flag, 'dns_doh_prefer_http3', _('DoH Prefer HTTP/3'));
+        o.rmempty = false;
+
         o = s.taboption('dns', form.Flag, 'dns_ipv6', _('IPv6'));
         o.rmempty = false;
 

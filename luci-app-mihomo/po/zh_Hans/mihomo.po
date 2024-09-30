@@ -304,6 +304,9 @@ msgstr "Fake-IP 缓存"
 msgid "Respect Rules"
 msgstr "遵循分流规则"
 
+msgid "DoH Prefer HTTP/3"
+msgstr "DoH 优先 HTTP/3"
+
 msgid "Use System Hosts"
 msgstr "使用系统的 Hosts"
 
