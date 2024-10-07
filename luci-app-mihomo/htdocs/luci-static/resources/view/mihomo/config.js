@@ -42,9 +42,9 @@ return view.extend({
 
         let m, s, o, so;
 
-        m = new form.Map('mihomo', _('MihomoTProxy'), `${_('Transparent Proxy with Mihomo on OpenWrt.')} <a href="https://github.com/morytyann/OpenWrt-mihomo/wiki" target="_blank">${_('How To Use')}</a>`);
+        m = new form.Map('mihomo', _('<p><strong><span style="color: rgb(41, 105, 176);">✦ Mihomo</span> <span style="color: rgb(250, 197, 28);">TProxy ✦</span></strong></p>'), `${_('Transparent Proxy with Mihomo on OpenWrt.')} <a href="https://github.com/morytyann/OpenWrt-mihomo/wiki" target="_blank">${_('How To Use')}</a>`);
 
-        s = m.section(form.NamedSection, 'status', 'status', _('Status'));
+        s = m.section(form.NamedSection, 'status', 'status', _('<p><strong>📣 Status</strong></p>'));
 
         o = s.option(form.Value, '_app_version', _('App Version'));
         o.readonly = true;
@@ -97,7 +97,7 @@ return view.extend({
             return mihomo.openDashboard();
         };
 
-        s = m.section(form.NamedSection, 'config', 'config', _('Basic Config'));
+        s = m.section(form.NamedSection, 'config', 'config', _('<p><strong>⚙️ Basic Config</strong></p>'));
 
         o = s.option(form.Flag, 'enabled', _('Enable'));
         o.rmempty = false;
@@ -133,7 +133,7 @@ return view.extend({
         o = s.option(form.Flag, 'fast_reload', _('Fast Reload'));
         o.rmempty = false;
 
-        s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
+        s = m.section(form.NamedSection, 'proxy', 'proxy', _('<p><strong>🔧 Proxy Config</strong></p>'));
 
         s.tab('transparent_proxy', _('Transparent Proxy'));
 
@@ -229,7 +229,7 @@ return view.extend({
         o.value('0-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
 
-        s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
+        s = m.section(form.TableSection, 'subscription', _('<p><strong>💾 Subscription Config</strong></p>'));
         s.addremove = true;
         s.anonymous = true;
 
@@ -248,7 +248,7 @@ return view.extend({
         o.value('clash.meta');
         o.value('clash');
 
-        s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
+        s = m.section(form.NamedSection, 'mixin', 'mixin', _('<p><strong>⚒️ Mixin Config</strong></p>'));
     
         s.tab('general', _('General Config'));
 
