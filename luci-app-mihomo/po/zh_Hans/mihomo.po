@@ -244,8 +244,8 @@ msgstr "Redirect 端口"
 msgid "TPROXY Port"
 msgstr "TPROXY 端口"
 
-msgid "Authentication"
-msgid "身份验证"
+msgid "Overwrite Authentication"
+msgstr "覆盖身份验证"
 
 msgid "Edit Authentications"
 msgstr "编辑身份验证"
