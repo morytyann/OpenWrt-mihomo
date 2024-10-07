@@ -252,7 +252,7 @@ return view.extend({
     
         s.tab('general', _('General Config'));
 
-        o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
+        o = s.taboption('general', form.ListValue, 'log_level', '*' + ' ' + _('Log Level'));
         o.value('silent');
         o.value('error');
         o.value('warning');
@@ -269,11 +269,10 @@ return view.extend({
         o.value('always', _('Enable'));
         o.value('off', _('Disable'));
 
-        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
+        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', '*' + ' ' + _('Outbound Interface'));
         o.optional = true;
-        o.rmempty = false;
 
-        o = s.taboption('general', form.Flag, 'ipv6', _('IPv6'));
+        o = s.taboption('general', form.Flag, 'ipv6', '*' + ' ' + _('IPv6'));
         o.rmempty = false;
 
         o = s.taboption('general', form.Value, 'tcp_keep_alive_idle', _('TCP Keep Alive Idle'));
@@ -286,20 +285,20 @@ return view.extend({
 
         s.tab('external_control', _('External Control Config'));
 
-        o = s.taboption('external_control', form.Value, 'ui_name', _('UI Name'));
+        o = s.taboption('external_control', form.Value, 'ui_name', '*' + ' ' + _('UI Name'));
         o.rmempty = false;
 
-        o = s.taboption('external_control', form.Value, 'ui_url', _('UI Url'));
+        o = s.taboption('external_control', form.Value, 'ui_url', '*' + ' ' + _('UI Url'));
         o.rmempty = false;
         o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip', 'MetaCubeXD')
         o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/Yacd-meta/archive/refs/heads/gh-pages.zip', 'YACD')
         o.value('https://mirror.ghproxy.com/https://github.com/MetaCubeX/Razord-meta/archive/refs/heads/gh-pages.zip', 'Razord')
 
-        o = s.taboption('external_control', form.Value, 'api_port', _('API Port'));
+        o = s.taboption('external_control', form.Value, 'api_port', '*' + ' ' + _('API Port'));
         o.datatype = 'port';
         o.placeholder = '9090';
 
-        o = s.taboption('external_control', form.Value, 'api_secret', _('API Secret'));
+        o = s.taboption('external_control', form.Value, 'api_secret', '*' + ' ' + _('API Secret'));
         o.rmempty = false;
 
         o = s.taboption('external_control', form.Flag, 'selection_cache', _('Save Proxy Selection'));
@@ -307,30 +306,30 @@ return view.extend({
 
         s.tab('inbound', _('Inbound Config'));
 
-        o = s.taboption('inbound', form.Flag, 'allow_lan', _('Allow Lan'));
+        o = s.taboption('inbound', form.Flag, 'allow_lan', '*' + ' ' + _('Allow Lan'));
         o.rmempty = false;
 
-        o = s.taboption('inbound', form.Value, 'http_port', _('HTTP Port'));
+        o = s.taboption('inbound', form.Value, 'http_port', '*' + ' ' + _('HTTP Port'));
         o.datatype = 'port';
         o.placeholder = '8080';
 
-        o = s.taboption('inbound', form.Value, 'socks_port', _('SOCKS Port'));
+        o = s.taboption('inbound', form.Value, 'socks_port', '*' + ' ' + _('SOCKS Port'));
         o.datatype = 'port';
         o.placeholder = '1080';
 
-        o = s.taboption('inbound', form.Value, 'mixed_port', _('Mixed Port'));
+        o = s.taboption('inbound', form.Value, 'mixed_port', '*' + ' ' + _('Mixed Port'));
         o.datatype = 'port';
         o.placeholder = '7890';
 
-        o = s.taboption('inbound', form.Value, 'redir_port', _('Redirect Port'));
+        o = s.taboption('inbound', form.Value, 'redir_port', '*' + ' ' + _('Redirect Port'));
         o.datatype = 'port';
         o.placeholder = '7891';
 
-        o = s.taboption('inbound', form.Value, 'tproxy_port', _('TPROXY Port'));
+        o = s.taboption('inbound', form.Value, 'tproxy_port', '*' + ' ' + _('TPROXY Port'));
         o.datatype = 'port';
         o.placeholder = '7892';
 
-        o = s.taboption('inbound', form.Flag, 'authentication', _('Authentication'));
+        o = s.taboption('inbound', form.Flag, 'authentication', '*' + ' ' + _('Overwrite Authentication'));
         o.rmempty = false;
 
         o = s.taboption('inbound', form.SectionValue, '_authentications', form.TableSection, 'authentication', _('Edit Authentications'));
@@ -351,27 +350,27 @@ return view.extend({
 
         s.tab('tun', _('TUN Config'));
 
-        o = s.taboption('tun', form.ListValue, 'tun_stack', _('Stack'));
+        o = s.taboption('tun', form.ListValue, 'tun_stack', '*' + ' ' + _('Stack'));
         o.value('system', 'System');
         o.value('gvisor', 'gVisor');
         o.value('mixed', 'Mixed');
 
-        o = s.taboption('tun', form.Value, 'tun_mtu', _('MTU'));
+        o = s.taboption('tun', form.Value, 'tun_mtu', '*' + ' ' + _('MTU'));
         o.placeholder = '9000';
 
-        o = s.taboption('tun', form.Flag, 'tun_gso', _('GSO'));
+        o = s.taboption('tun', form.Flag, 'tun_gso', '*' + ' ' + _('GSO'));
         o.rmempty = false;
 
-        o = s.taboption('tun', form.Value, 'tun_gso_max_size', _('GSO Max Size'));
+        o = s.taboption('tun', form.Value, 'tun_gso_max_size', '*' + ' ' + _('GSO Max Size'));
         o.placeholder = '65536';
         o.depends('tun_gso', '1');
 
-        o = s.taboption('tun', form.Flag, 'tun_endpoint_independent_nat', _('Endpoint Independent NAT'));
+        o = s.taboption('tun', form.Flag, 'tun_endpoint_independent_nat', '*' + ' ' + _('Endpoint Independent NAT'));
         o.rmempty = false;
 
         s.tab('dns', _('DNS Config'));
 
-        o = s.taboption('dns', form.Value, 'dns_port', _('DNS Port'));
+        o = s.taboption('dns', form.Value, 'dns_port', '*' + ' ' + _('DNS Port'));
         o.datatype = 'port';
         o.placeholder = '1053';
 

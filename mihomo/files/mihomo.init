@@ -146,13 +146,13 @@ start_service() {
 		# do mixin
 		log_level="$log_level" ipv6="$ipv6" \
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
-		http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
+		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_enable="$tun_enable" tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
 		yq -M -i '
 		.log-level = env(log_level) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) |
-		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
+		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.enable = env(tun_enable) == 1 | .tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
 		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
 		' "$RUN_PROFILE_PATH"
@@ -178,10 +178,6 @@ start_service() {
 		.geo-auto-update = env(geox_auto_update) == 1 | .geo-update-interval = env(geox_update_interval)
 		' "$RUN_PROFILE_PATH"
 
-		if [ "$authentication" == 1 ]; then
-			yq -M -i 'del(.authentication)' "$RUN_PROFILE_PATH"
-			config_foreach mixin_authentications "authentication"
-		fi
 		if [ "$fake_ip_filter" == 1 ]; then
 			fake_ip_filter_mode="$fake_ip_filter_mode" \
 			yq -M -i 'del(.dns.fake-ip-filter) | .dns.fake-ip-filter-mode = env(fake_ip_filter_mode)' "$RUN_PROFILE_PATH"
@@ -205,15 +201,19 @@ start_service() {
 		fi
 	fi
 	yq -M -i 'del (.bind-address)' "$RUN_PROFILE_PATH"
-	if [ "$tun_enable" == 1 ]; then
-		yq -M -i '.tun.auto-route = false | .tun.auto-redirect = false | .tun.auto-detect-interface = false | .tun.dns-hijack = []' "$RUN_PROFILE_PATH"
-	fi
 	if [ -n "$outbound_interface" ]; then
 		local outbound_device
 		network_get_device outbound_device "$outbound_interface"
 		if [ -n "$outbound_device" ]; then
 			outbound_device="$outbound_device" yq -M -i '.interface-name = env(outbound_device)' "$RUN_PROFILE_PATH"
 		fi
+	fi
+	if [ "$authentication" == 1 ]; then
+		yq -M -i 'del(.authentication)' "$RUN_PROFILE_PATH"
+		config_foreach mixin_authentications "authentication"
+	fi
+	if [ "$tun_enable" == 1 ]; then
+		yq -M -i '.tun.auto-route = false | .tun.auto-redirect = false | .tun.auto-detect-interface = false | .tun.dns-hijack = []' "$RUN_PROFILE_PATH"
 	fi
 	# test profile
 	if [ "$test_profile" == 1 ]; then
