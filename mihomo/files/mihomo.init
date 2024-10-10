@@ -148,13 +148,13 @@ start_service() {
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
 		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_enable="$tun_enable" tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
-		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
+		dns_enable="true" dns_listen="0.0.0.0:$dns_port" dns_mode="$dns_mode" fake_ip_range="$fake_ip_range" \
 		yq -M -i '
 		.log-level = env(log_level) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.enable = env(tun_enable) == 1 | .tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
-		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen)
+		.dns.enable = env(dns_enable) | .dns.listen = env(dns_listen) | .dns.enhanced-mode = env(dns_mode) | .dns.fake-ip-range = env(fake_ip_range)
 		' "$RUN_PROFILE_PATH"
 	else
 		log "Mixin is enabled, mixin all config."
