@@ -79,8 +79,8 @@ msgstr "订阅："
 msgid "Upload Profile"
 msgstr "上传配置文件"
 
-msgid "Mixin"
-msgstr "混入"
+msgid "Mixin Config Content"
+msgstr "混入配置内容"
 
 msgid "Test Profile"
 msgstr "检查配置文件"

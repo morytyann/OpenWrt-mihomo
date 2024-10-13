@@ -124,7 +124,10 @@ return view.extend({
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = mihomo.profilesDir;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin'));
+        o = s.option(form.Flag, "mixin_config", _("Mixin Config Content"));
+        o.rmempty = false;
+
+        o = s.option(form.Flag, "mixin_file", _("Mixin File Content"));
         o.rmempty = false;
 
         o = s.option(form.Flag, 'test_profile', _('Test Profile'));
