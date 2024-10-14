@@ -517,9 +517,9 @@ return view.extend({
         o.retain = true;
         o.depends('geox_auto_update', '1');
 
-        s.tab('mixin_file_content', _('Mixin File Content'), _('Please go to the editor tab to edit the file for mixin'));
+        s.tab('mixin_file_content', _('Mixin File Content'));
 
-        o = s.taboption('mixin_file_content', form.HiddenValue, '_mixin_file_content');
+        o = s.taboption('mixin_file_content', form.Flag, 'mixin_file_content', '*' + ' ' + _('Enable'), _('Please go to the editor tab to edit the file for mixin'));
 
         return m.render();
     }

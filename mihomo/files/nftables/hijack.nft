@@ -63,7 +63,8 @@ table inet mihomo {
 	}
 
 	chain router_dns_hijack {
-		meta nfproto @dns_hijack_nfproto meta l4proto { tcp, udp } th dport 53 oifname lo meta skuid != $MIHOMO_USER counter redirect to :$DNS_PORT
+		meta skuid $MIHOMO_USER counter return
+		meta nfproto @dns_hijack_nfproto meta l4proto { tcp, udp } th dport 53 oifname lo counter redirect to :$DNS_PORT
 	}
 
 	chain all_dns_hijack {

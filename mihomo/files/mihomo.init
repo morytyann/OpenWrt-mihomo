@@ -108,6 +108,9 @@ start_service() {
 	config_get geoip_asn_url "mixin" "geoip_asn_url"
 	config_get_bool geox_auto_update "mixin" "geox_auto_update" 0
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
+	### mixin file content
+	local mixin_file_content
+	config_get_bool mixin_file_content "mixin" "mixin_file_content" 0
 	# prepare
 	local tproxy_enable; tproxy_enable=0
 	if [[ "$tcp_transparent_proxy_mode" == "tproxy" || "$udp_transparent_proxy_mode" == "tproxy" ]]; then
@@ -195,10 +198,6 @@ start_service() {
 			yq -M -i 'del(.dns.nameserver-policy)' "$RUN_PROFILE_PATH"
 			config_foreach mixin_nameserver_policies "nameserver_policy"
 		fi
-		# mixin file
-		if [ -s "$MIXIN_FILE_PATH" ]; then
-			yq ea -M -i '. as $item ireduce ({}; . * $item ) | ... comments=""' "$RUN_PROFILE_PATH" "$MIXIN_FILE_PATH"
-		fi
 	fi
 	yq -M -i 'del (.bind-address)' "$RUN_PROFILE_PATH"
 	if [ -n "$outbound_interface" ]; then
@@ -214,6 +213,11 @@ start_service() {
 	fi
 	if [ "$tun_enable" == 1 ]; then
 		yq -M -i '.tun.auto-route = false | .tun.auto-redirect = false | .tun.auto-detect-interface = false | .tun.dns-hijack = []' "$RUN_PROFILE_PATH"
+	fi
+	if [ "$mixin_file_content" == 1 ]; then
+		if [ -s "$MIXIN_FILE_PATH" ]; then
+			yq ea -M -i '. as $item ireduce ({}; . * $item ) | ... comments=""' "$RUN_PROFILE_PATH" "$MIXIN_FILE_PATH"
+		fi
 	fi
 	# test profile
 	if [ "$test_profile" == 1 ]; then
