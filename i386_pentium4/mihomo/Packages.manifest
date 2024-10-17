@@ -1,0 +1,48 @@
+Package: luci-app-mihomo
+Version: 1.8.7-1
+Depends: libc, luci-base, mihomo
+Source: /feed/luci-app-mihomo
+SourceName: luci-app-mihomo
+Section: luci
+SourceDateEpoch: 1728956444
+URL: https://github.com/openwrt/luci
+Maintainer: OpenWrt LuCI community
+Architecture: all
+Installed-Size: 40960
+Filename: luci-app-mihomo_1.8.7-1_all.ipk
+Size: 6969
+SHA256sum: 0fcc8307b5cb66cd40b6f03eacf287e2a06a0756b7fc70607fe41b950551239f
+Description:  LuCI Support for mihomo
+
+Package: luci-i18n-mihomo-zh-cn
+Version: 24.289.06044~cbe210d
+Depends: libc, luci-app-mihomo
+Source: /feed/luci-app-mihomo
+SourceName: luci-app-mihomo
+Section: luci
+SourceDateEpoch: 1728956444
+Architecture: all
+Installed-Size: 20480
+Filename: luci-i18n-mihomo-zh-cn_24.289.06044~cbe210d_all.ipk
+Size: 3619
+SHA256sum: f1a83ba8dde71c08e860877ec9732b450c31e7de99e8f3188719004de3b4efa0
+Description:  Translation for luci-app-mihomo - 简体中文 (Chinese Simplified)
+
+Package: mihomo
+Version: 2024.10.12~ca3f1eba-r1
+Depends: libc, ca-bundle, curl, yq, firewall4, kmod-nft-tproxy, ip-full, kmod-tun, procd-ujail
+Source: /feed/mihomo
+SourceName: mihomo
+License: MIT
+Section: net
+Require-User: mihomo=7890:mihomo=7890
+SourceDateEpoch: 1728956444
+URL: https://wiki.metacubex.one
+Maintainer: Joseph Mory <morytyann@gmail.com>
+Architecture: i386_pentium4
+Installed-Size: 27443200
+Filename: mihomo_2024.10.12~ca3f1eba-r1_i386_pentium4.ipk
+Size: 10346335
+SHA256sum: 5273f4712f68bb7677b2ac2a2bc5e751d4562d57b7417ad0d70f163217b4057a
+Description:  A rule based proxy in Go.
+
