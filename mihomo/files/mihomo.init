@@ -191,7 +191,7 @@ start_service() {
 			config_foreach mixin_hosts "host"
 		fi
 		if [ "$dns_nameserver" == 1 ]; then
-			yq -M -i 'del(.dns.default-nameserver) | del(.dns.proxy-server-nameserver) | del(.dns.nameserver) | del(.dns.fallback)' "$RUN_PROFILE_PATH"
+			yq -M -i 'del(.dns.default-nameserver) | del(.dns.proxy-server-nameserver) | del(.dns.direct-nameserver) | del(.dns.nameserver) | del(.dns.fallback)' "$RUN_PROFILE_PATH"
 			config_foreach mixin_nameservers "nameserver"
 		fi
 		if [ "$dns_nameserver_policy" == 1 ]; then
