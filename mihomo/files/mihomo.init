@@ -442,10 +442,11 @@ log() {
 }
 
 clear_log() {
-	if [ -d "$LOG_DIR" ]; then
-		rm -rf "$LOG_DIR"
+	if [ ! -d "$LOG_DIR" ]; then
+		mkdir "$LOG_DIR"
 	fi
-	mkdir "$LOG_DIR"
+	echo -n > "$APP_LOG_PATH"
+	echo -n > "$CORE_LOG_PATH"
 }
 
 mixin_authentications() {
