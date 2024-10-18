@@ -13,9 +13,7 @@ body:
           required: true
         - label: 使用firewall4（nftables）而非firewall3（iptables）
           required: true
-        - label: 已经安装了 procd-ujail 依赖
-          required: true
-        - label: 针对ImmortalWrt，已经关闭了DNSMASQ的`DNS 重定向`选项
+        - label: 已经关闭了DNSMASQ的`DNS 重定向`选项（如无此项请忽略）
           required: true
         - label: 已停止运行其他代理插件，并确认环境正常
           required: true
@@ -46,7 +44,7 @@ body:
       options:
         - OpenWrt
         - ImmortalWrt
-        - iStoreOS
+        - KWrt
     validations:
       required: true
   - type: input
@@ -61,6 +59,13 @@ body:
     attributes:
       label: 插件版本
       description: 填写你的插件版本
+    validations:
+      required: true
+  - type: input
+    id: core_version
+    attributes:
+      label: 核心版本
+      description: 填写你的核心版本
     validations:
       required: true
   - type: dropdown
@@ -124,6 +129,7 @@ body:
     attributes:
       label: 配置文件
       description: 附上你的配置文件
+      render: yaml
     validations:
       required: true
   - type: textarea
