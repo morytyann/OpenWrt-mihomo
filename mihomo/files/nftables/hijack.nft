@@ -1,6 +1,17 @@
 #!/usr/sbin/nft -f
 
 table inet mihomo {
+	set bypass_group {
+		type gid
+		flags interval
+		auto-merge
+		elements = {
+			ntp,
+			dnsmasq,
+			logd
+		}
+	}
+
 	set dns_hijack_nfproto {
 		type nf_proto
 		flags interval
@@ -63,7 +74,7 @@ table inet mihomo {
 	}
 
 	chain router_dns_hijack {
-		meta skuid $MIHOMO_USER counter return
+		meta skgid @bypass_group counter return
 		meta nfproto @dns_hijack_nfproto meta l4proto { tcp, udp } th dport 53 oifname lo counter redirect to :$DNS_PORT
 	}
 
@@ -157,7 +168,7 @@ table inet mihomo {
 
 	chain nat_output {
 		type nat hook output priority filter; policy accept;
-		meta skuid $MIHOMO_USER counter return
+		meta skgid @bypass_group counter return
 		fib daddr type local counter return
 		ct direction reply counter return
 		ip daddr @reserved_ip counter return
@@ -185,7 +196,7 @@ table inet mihomo {
 
 	chain mangle_output {
 		type route hook output priority mangle; policy accept;
-		meta skuid $MIHOMO_USER counter return
+		meta skgid @bypass_group counter return
 		fib daddr type local counter return
 		ct direction reply counter return
 		ip daddr @reserved_ip counter return

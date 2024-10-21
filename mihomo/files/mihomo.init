@@ -246,12 +246,6 @@ start_service() {
 	procd_set_param limits core="unlimited"
 	procd_set_param limits nofile="1048576 1048576"
 
-	procd_add_jail mihomo requirejail procfs
-	procd_add_jail_mount "$PROG" /etc/TZ /etc/localtime /etc/hosts /etc/ssl/certs
-	procd_add_jail_mount_rw "$RUN_DIR" "$LOG_DIR" /dev/net
-	procd_set_param capabilities /etc/capabilities/mihomo.json
-	procd_set_param no_new_privs 1
-
 	procd_close_instance
 	# transparent proxy
 	if [ "$transparent_proxy" == 1 ]; then
@@ -305,9 +299,10 @@ start_service() {
 				ip -6 rule add pref "$UDP_RULE_PREF" fwmark "$FW_MARK/$FW_MARK_MASK" ipproto udp table "$udp_route_table"
 			fi
 		fi
-		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D FW_MARK_MASK="$FW_MARK_MASK" -D MIHOMO_USER="$MIHOMO_USER" -D TUN_DEVICE="$TUN_DEVICE" -D DNS_PORT="$dns_port" -D REDIR_PORT="$redir_port" -D TPROXY_PORT="$tproxy_port"
+		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D FW_MARK_MASK="$FW_MARK_MASK" -D TUN_DEVICE="$TUN_DEVICE" -D DNS_PORT="$dns_port" -D REDIR_PORT="$redir_port" -D TPROXY_PORT="$tproxy_port"
 		nft -f "$RESERVED_IP_NFT"
 		nft -f "$RESERVED_IP6_NFT"
+		nft add element inet "$FW_TABLE" bypass_group \{ "$MIHOMO_GROUP" \}
 		nft add element inet "$FW_TABLE" fake_ip \{ "$fake_ip_range" \}
 		# dns hijack
 		if [ "$ipv4_dns_hijack" == 1 ]; then
