@@ -9,7 +9,9 @@ body:
       label: 自查
       description: 请按以下步骤自查，如自查后问题仍然存在，再继续提交Issue。
       options:
-        - label: OpenWrt 22.03 及以上版本的系统
+        - label: OpenWrt 版本在 22.03 及以上
+          required: true
+        - label: Linux Kernel 版本在 5.10 及以上
           required: true
         - label: 使用firewall4（nftables）而非firewall3（iptables）
           required: true
@@ -23,7 +25,7 @@ body:
       label: 确认
       description: 请你确认。
       options:
-        - label: 我已经搜索过Issue，没有找到我的问题
+        - label: 我已经搜索过Issue，没有找到相关问题
           required: true
         - label: 我已经查看过Wiki，没有找到解决办法
           required: true
@@ -33,7 +35,7 @@ body:
           required: true
         - label: 这确实是插件的问题，而不是核心/面板/订阅转换服务的问题
           required: true
-        - label: 我提供了正确的、有效的、可以帮助DEBUG的信息，而不是随意填写
+        - label: 我提供了正确的、有效的、可以帮助DEBUG的信息
           required: true
         - label: 我提供的信息里不包含公网IP、MAC、代理节点等敏感信息
           required: true
@@ -45,55 +47,7 @@ body:
         - OpenWrt
         - ImmortalWrt
         - KWrt
-    validations:
-      required: true
-  - type: input
-    id: os_version
-    attributes:
-      label: 系统版本
-      description: 填写你的系统版本
-    validations:
-      required: true
-  - type: input
-    id: app_version
-    attributes:
-      label: 插件版本
-      description: 填写你的插件版本
-    validations:
-      required: true
-  - type: input
-    id: core_version
-    attributes:
-      label: 核心版本
-      description: 填写你的核心版本
-    validations:
-      required: true
-  - type: dropdown
-    id: architecture
-    attributes:
-      label: 硬件架构
-      description: 选择你的硬件架构
-      multiple: true
-      options:
-          - arm_cortex-a5_vfpv4
-          - arm_cortex-a7_neon-vfpv4
-          - arm_cortex-a8_vfpv3
-          - arm_cortex-a9
-          - arm_cortex-a9_vfpv3-d16
-          - arm_cortex-a9_neon
-          - arm_cortex-a15_neon-vfpv4
-          - aarch64_cortex-a53
-          - aarch64_cortex-a72
-          - aarch64_generic
-          - mips_24kc
-          - mips_4kec
-          - mips_mips32
-          - mipsel_24kc
-          - mipsel_24kc_24kf
-          - mipsel_74kc
-          - mips64_octeonplus
-          - i386_pentium4
-          - x86_64
+        - 其它
     validations:
       required: true
   - type: textarea
@@ -118,18 +72,10 @@ body:
     validations:
       required: true
   - type: textarea
-    id: config
+    id: debug
     attributes:
-      label: 插件配置
-      description: 附上你的插件配置，请贴上截图或`uci show mihomo`的输出
-    validations:
-      required: true
-  - type: textarea
-    id: profile
-    attributes:
-      label: 配置文件
-      description: 附上你的配置文件
-      render: yaml
+      label: 调试信息
+      description: 运行仓库的debug.sh，将生成debug.md贴上（请在上传前对敏感信息进行处理）
     validations:
       required: true
   - type: textarea

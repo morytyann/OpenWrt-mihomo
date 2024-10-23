@@ -2,19 +2,25 @@
 
 {
 	echo "# MihomoTProxy Debug Info"
-	echo "## version"
+	echo "## system"
+	echo "\`\`\`shell"
+	cat /etc/openwrt_release
+	echo "\`\`\`"
+	echo "## kernel"
+	echo "\`\`\`"
+	uname -a
+	echo "\`\`\`"
+	echo "## application"
 	echo "\`\`\`"
 	opkg list-installed | grep mihomo
 	echo "\`\`\`"
 	echo "## config"
 	echo "\`\`\`"
-	uci show mihomo.config
-	echo
-	uci show mihomo.proxy
+	uci show mihomo
 	echo "\`\`\`"
-	echo "## service"
-	echo "\`\`\`"
-	service mihomo info
+	echo "## profile"
+	echo "\`\`\`yaml"
+	cat /etc/mihomo/run/config.yaml
 	echo "\`\`\`"
 	echo "## ip rule"
 	echo "\`\`\`"
@@ -22,7 +28,10 @@
 	echo "\`\`\`"
 	echo "## ip route"
 	echo "\`\`\`"
+	echo "TPROXY: "
 	ip route list table 80
+	echo
+	echo "TUN: "
 	ip route list table 81
 	echo "\`\`\`"
 	echo "## ip6 rule"
@@ -31,12 +40,19 @@
 	echo "\`\`\`"
 	echo "## ip6 route"
 	echo "\`\`\`"
+	echo "TPROXY: "
 	ip -6 route list table 80
+	echo
+	echo "TUN: "
 	ip -6 route list table 81
 	echo "\`\`\`"
 	echo "## nftables"
 	echo "\`\`\`"
 	nft list ruleset
+	echo "\`\`\`"
+	echo "## service"
+	echo "\`\`\`json"
+	service mihomo info
 	echo "\`\`\`"
 	echo "## process"
 	echo "\`\`\`"
