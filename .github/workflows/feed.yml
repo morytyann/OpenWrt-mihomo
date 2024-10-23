@@ -1,4 +1,4 @@
-name: Build Feed
+name: Feed Packages
 
 on:
   schedule:

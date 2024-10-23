@@ -1,0 +1,18 @@
+name: Stale issues
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-issue-message: 'This issue is stale because it has been open 3 days with no activity. Remove stale label or comment or this will be closed in 1 days.'
+          close-issue-message: 'This issue was closed because it has been stalled for 1 days with no activity.'
+          days-before-issue-stale: 3
+          days-before-issue-close: 1
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
