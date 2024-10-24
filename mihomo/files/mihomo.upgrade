@@ -1,1 +1,4 @@
-/etc/mihomo
+/etc/mihomo/profiles/
+/etc/mihomo/mixin.yaml
+/etc/mihomo/nftables/reserved_ip.nft
+/etc/mihomo/nftables/reserved_ip6.nft
