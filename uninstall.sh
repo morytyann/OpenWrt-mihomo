@@ -7,11 +7,13 @@ if [ -x "/bin/opkg" ]; then
 	opkg list-installed luci-i18n-nikki-* | cut -d ' ' -f 1 | xargs opkg remove
 	opkg remove luci-app-nikki
 	opkg remove nikki
+	opkg remove nikki-geodata
 	opkg remove mihomo-meta mihomo-alpha
 elif [ -x "/usr/bin/apk" ]; then
 	apk list --installed --manifest luci-i18n-nikki-* | cut -d ' ' -f 1 | xargs apk del
 	apk del luci-app-nikki
 	apk del nikki
+	apk del nikki-geodata
 	apk del mihomo-meta mihomo-alpha
 fi
 # remove config

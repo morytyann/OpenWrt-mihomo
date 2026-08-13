@@ -6,6 +6,8 @@ English | [中文](README.zh.md)
 
 Transparent Proxy with Mihomo on OpenWrt.
 
+The Nikki package includes the GeoSite and MetaDB GeoIP data required by Mihomo, so its first start does not need to download GeoX files from GitHub.
+
 ## Prerequisites
 
 - OpenWrt >= 24.10
@@ -97,6 +99,7 @@ The package files will be found under `bin/packages/your_architecture/nikki`.
 - kmod-nft-tproxy
 - kmod-tun
 - kmod-dummy
+- nikki-geodata
 
 ## Contributors
 

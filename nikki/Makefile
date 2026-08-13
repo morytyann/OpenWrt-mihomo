@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nikki
 PKG_VERSION:=2026.04.08
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_LICENSE:=GPL3.0+
 PKG_MAINTAINER:=Joseph Mory <morytyann@gmail.com>
@@ -14,7 +14,7 @@ define Package/nikki
   CATEGORY:=Network
   TITLE:=Transparent Proxy with Mihomo on OpenWrt.
   URL:=https://github.com/nikkinikki-org
-  DEPENDS:=+ca-bundle +curl +yq firewall4 +ip-full +kmod-inet-diag +kmod-nft-socket +kmod-nft-tproxy +kmod-tun +kmod-dummy +mihomo
+  DEPENDS:=+ca-bundle +curl +yq firewall4 +ip-full +kmod-inet-diag +kmod-nft-socket +kmod-nft-tproxy +kmod-tun +kmod-dummy +mihomo +nikki-geodata
 endef
 
 define Package/nikki/conffiles

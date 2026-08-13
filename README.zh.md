@@ -6,6 +6,8 @@
 
 在 OpenWrt 上使用 Mihomo 进行透明代理。
 
+Nikki 软件包已包含 Mihomo 所需的 GeoSite 和 MetaDB GeoIP 数据，首次启动无需从 GitHub 下载 GeoX 文件。
+
 ## 环境要求
 
 - OpenWrt >= 24.10
@@ -97,6 +99,7 @@ make package/luci-app-nikki/compile
 - kmod-nft-tproxy
 - kmod-tun
 - kmod-dummy
+- nikki-geodata
 
 ## 贡献者
 
