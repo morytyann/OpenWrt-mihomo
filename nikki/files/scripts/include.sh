@@ -10,6 +10,13 @@ RUN_PROFILE_PATH="$RUN_DIR/config.yaml"
 PROVIDERS_DIR="$RUN_DIR/providers"
 RULE_PROVIDERS_DIR="$PROVIDERS_DIR/rule"
 PROXY_PROVIDERS_DIR="$PROVIDERS_DIR/proxy"
+GEOIP_DAT_PATH="$RUN_DIR/GeoIP.dat"
+GEOSITE_DAT_PATH="$RUN_DIR/GeoSite.dat"
+
+# shared geodata
+V2RAY_GEODATA_DIR="/usr/share/v2ray"
+XRAY_GEODATA_DIR="/usr/share/xray"
+MIHOMO_GEODATA_SYMLINK_COW_PATH="/usr/share/mihomo/geodata-symlink-cow"
 
 # log
 LOG_DIR="/var/log/nikki"
@@ -78,6 +85,61 @@ prepare_files() {
 	if [ ! -d "$TEMP_DIR" ]; then
 		mkdir -p "$TEMP_DIR"
 	fi
+}
+
+prepare_geodata_file() {
+	local target; target="$1"
+	local filename; filename="$2"
+
+	# Keep Nikki-owned data. A symlink is only safe when the active Mihomo
+	# package advertises copy-on-write support for GeoData updates.
+	if [ -s "$target" ]; then
+		if [ -L "$target" ] && [ ! -f "$MIHOMO_GEODATA_SYMLINK_COW_PATH" ]; then
+			local tmpfile; tmpfile="$target.tmp.$$"
+			if cp -fpL "$target" "$tmpfile" && mv -f "$tmpfile" "$target"; then
+				log "GeoX" "Convert unsupported symlink to local file: $target."
+				return 0
+			fi
+			rm -f "$tmpfile"
+			log "GeoX" "Failed to convert unsupported symlink: $target."
+			return 1
+		fi
+		return 0
+	fi
+
+	# Remove an empty file or a dangling symlink so a usable shared file can
+	# replace it, or Mihomo can fall back to its configured download URL.
+	if [ -e "$target" ] || [ -L "$target" ]; then
+		rm -f "$target"
+	fi
+
+	local source
+	for source in "$V2RAY_GEODATA_DIR/$filename" "$XRAY_GEODATA_DIR/$filename"; do
+		[ -s "$source" ] || continue
+		if [ -f "$MIHOMO_GEODATA_SYMLINK_COW_PATH" ]; then
+			if ln -s "$source" "$target"; then
+				log "GeoX" "Use shared file: $source."
+				return 0
+			fi
+		else
+			if cp -fp "$source" "$target"; then
+				log "GeoX" "Copy shared file for unpatched core: $source."
+				return 0
+			fi
+		fi
+		log "GeoX" "Failed to use shared file: $source."
+	done
+
+	return 0
+}
+
+prepare_geodata() {
+	if ! mkdir -p "$RUN_DIR"; then
+		log "GeoX" "Failed to prepare run directory."
+		return 1
+	fi
+	prepare_geodata_file "$GEOIP_DAT_PATH" "geoip.dat" || return 1
+	prepare_geodata_file "$GEOSITE_DAT_PATH" "geosite.dat" || return 1
 }
 
 log() {

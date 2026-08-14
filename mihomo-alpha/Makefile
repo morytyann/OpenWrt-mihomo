@@ -2,6 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo-alpha
 PKG_VERSION:=2026.07.08
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -49,6 +50,8 @@ endef
 
 define Package/mihomo-alpha/install
 	$(call GoPackage/Package/Install/Bin,$(1))
+	$(INSTALL_DIR) $(1)/usr/share/mihomo
+	touch $(1)/usr/share/mihomo/geodata-symlink-cow
 endef
 
 define Build/Prepare

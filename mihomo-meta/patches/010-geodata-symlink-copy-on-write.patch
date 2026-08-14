@@ -1,0 +1,48 @@
+--- a/component/updater/update_geo.go
++++ b/component/updater/update_geo.go
+@@ -7,0 +8 @@ import (
++	"path/filepath"
+@@ -46,0 +48,37 @@ func SetGeoUpdateInterval(newGeoUpdateInterval int) {
++// writeGeoData preserves shared GeoData while it is unchanged. When an update
++// is available, atomically replace the symlink itself with a local regular file
++// instead of following the link and overwriting another package's data.
++func writeGeoData(vehicle *resource.HTTPVehicle, data []byte) error {
++	path := vehicle.Path()
++	fileInfo, err := os.Lstat(path)
++	if err != nil || fileInfo.Mode()&os.ModeSymlink == 0 {
++		return vehicle.Write(data)
++	}
++
++	mode := os.FileMode(0o644)
++	if targetInfo, err := os.Stat(path); err == nil {
++		mode = targetInfo.Mode().Perm()
++	}
++
++	tempFile, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".tmp-*")
++	if err != nil {
++		return err
++	}
++	tempPath := tempFile.Name()
++	defer func() {
++		_ = tempFile.Close()
++		_ = os.Remove(tempPath)
++	}()
++
++	if err = tempFile.Chmod(mode); err != nil {
++		return err
++	}
++	if _, err = tempFile.Write(data); err != nil {
++		return err
++	}
++	if err = tempFile.Close(); err != nil {
++		return err
++	}
++	return os.Rename(tempPath, path)
++}
++
+@@ -133 +171 @@ func UpdateGeoIp() (err error) {
+-	if err = vehicle.Write(data); err != nil {
++	if err = writeGeoData(vehicle, data); err != nil {
+@@ -163 +201 @@ func UpdateGeoSite() (err error) {
+-	if err = vehicle.Write(data); err != nil {
++	if err = writeGeoData(vehicle, data); err != nil {

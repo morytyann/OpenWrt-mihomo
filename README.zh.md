@@ -6,6 +6,8 @@
 
 在 OpenWrt 上使用 Mihomo 进行透明代理。
 
+启动时，Nikki 会在 Mihomo 尝试其配置的 GeoX 下载地址之前，优先复用 `/usr/share/v2ray` 或 `/usr/share/xray` 中的 `geoip.dat` 和 `geosite.dat`。仓库内置的 Mihomo 软件包会保持软链，直到发现更新后再将其替换为 Nikki 自有文件，且不会修改共享数据；第三方 Mihomo 软件包则安全降级为复制文件。
+
 ## 环境要求
 
 - OpenWrt >= 24.10

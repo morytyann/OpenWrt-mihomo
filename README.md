@@ -6,6 +6,8 @@ English | [中文](README.zh.md)
 
 Transparent Proxy with Mihomo on OpenWrt.
 
+On startup, Nikki reuses `geoip.dat` and `geosite.dat` from `/usr/share/v2ray` or `/usr/share/xray` before Mihomo tries its configured GeoX download URLs. The bundled Mihomo packages keep these files shared until an update is available, then replace the links with Nikki-owned files without modifying the shared data. Third-party Mihomo packages safely fall back to copying the files.
+
 ## Prerequisites
 
 - OpenWrt >= 24.10

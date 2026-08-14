@@ -54,6 +54,12 @@ start_service() {
 		log "App" "Exit."
 		return
 	fi
+	# use system GeoData before Mihomo tries its configured download URLs
+	if ! prepare_geodata; then
+		log "App" "Failed to prepare GeoData."
+		log "App" "Exit."
+		return
+	fi
 	# get config
 	## app config
 	local scheduled_restart scheduled_restart_cron profile test_profile core_only
