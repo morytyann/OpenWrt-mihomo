@@ -11,6 +11,15 @@ Transparent Proxy with Mihomo on OpenWrt.
 - OpenWrt >= 24.10
 - Linux Kernel >= 5.13
 - firewall4
+- For TPROXY mode: `net.ipv4.conf.all.src_valid_mark` must be `0` (the kernel uses `max(conf/all, conf/<iface>)`)
+
+> **Note**: Some software (e.g. Tailscale 1.98+, which defaults to `NetfilterMode=on`) sets
+> `net.ipv4.conf.all.src_valid_mark` to `1` on startup. In TPROXY mode this makes **all LAN clients
+> lose Internet access** (DNS still works and the router itself is fine), while app/core/firewall
+> logs and counters show nothing unusual, which makes it very hard to diagnose.
+> Fix: `tailscale set --netfilter-mode=off` and reboot, or `sysctl -w net.ipv4.conf.all.src_valid_mark=0`.
+>
+> See the [FAQ](https://github.com/nikkinikki-org/OpenWrt-nikki/wiki/FAQ) for details.
 
 ## Feature
 

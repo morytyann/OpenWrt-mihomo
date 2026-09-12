@@ -11,6 +11,14 @@
 - OpenWrt >= 24.10
 - Linux Kernel >= 5.13
 - firewall4
+- 使用 TPROXY 模式时：`net.ipv4.conf.all.src_valid_mark` 必须为 `0`（内核取 `max(conf/all, conf/<iface>)`）
+
+> **注意**：部分软件（如 Tailscale 1.98+，默认 `NetfilterMode=on`）会在启动时把 `net.ipv4.conf.all.src_valid_mark`
+> 写成 `1`。此时 TPROXY 下**局域网客户端会全部无法上网**（DNS 正常、路由器本机正常），
+> 而插件日志、核心日志与防火墙计数都不会有任何异常，非常难以排查。
+> 解决：`tailscale set --netfilter-mode=off` 后重启，或 `sysctl -w net.ipv4.conf.all.src_valid_mark=0`。
+>
+> 详见 [FAQ](https://github.com/nikkinikki-org/OpenWrt-nikki/wiki/FAQ)。
 
 ## 功能
 
